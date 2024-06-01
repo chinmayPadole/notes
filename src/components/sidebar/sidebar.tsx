@@ -19,12 +19,12 @@ export const Sidebar = () => {
           <svg
             data-icon-name="menu-close"
             fill="currentColor"
-            fill-rule="evenodd"
+            fillRule="evenodd"
             height="32px"
             preserveAspectRatio="xMidYMid meet"
             role="img"
             stroke="none"
-            stroke-width="1"
+            strokeWidth="1"
             viewBox="0 0 24 24"
             width="32px"
           >
@@ -36,12 +36,12 @@ export const Sidebar = () => {
           <svg
             data-icon-name="menu-open"
             fill="currentColor"
-            fill-rule="evenodd"
+            fillRule="evenodd"
             height="32px"
             preserveAspectRatio="xMidYMid meet"
             role="img"
             stroke="none"
-            stroke-width="1"
+            strokeWidth="1"
             viewBox="0 0 24 24"
             width="32px"
           >

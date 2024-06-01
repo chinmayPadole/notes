@@ -14,10 +14,10 @@ export interface NoteProps {
 }
 
 const TerminalContainer = styled.div<{
-  backgroundColor: string;
+  bgColor: string;
   fontColor: string;
 }>`
-  background-color: ${(props) => props.backgroundColor};
+  background-color: ${(props) => props.bgColor};
   color: ${(props) => props.fontColor};
   font-family: "Menlo", "Monaco", "Courier New", monospace;
   border-radius: 10px;
@@ -77,7 +77,7 @@ export const Note: React.FC<NoteProps> = ({
   const activeColorSet = ColorSet[color];
   return (
     <TerminalContainer
-      backgroundColor={activeColorSet.noteBackground}
+      bgColor={activeColorSet.noteBackground}
       fontColor={activeColorSet.fontColor}
     >
       <TerminalHeader headerColor={activeColorSet.noteHeader}>

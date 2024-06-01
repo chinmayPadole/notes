@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Sidebar } from "../sidebar/sidebar";
 import "./board.css";
 import { Note, NoteProps } from "../note/note";
-import { getUniqueId } from "../../common/utils";
+import { NewNoteDetector } from "../newNote/newNoteDetector";
 
 export const Board = () => {
   const [notes, setNotes] = useState<NoteProps[]>([]);
@@ -26,16 +26,8 @@ export const Board = () => {
     updateStateAndLocalStorage(newNoteData);
   };
 
-  const addNote = () => {
-    const newData: NoteProps = {
-      id: getUniqueId(),
-      content: "test Content",
-      createDt: new Date(),
-      color: "white",
-      removeNote: removeNote,
-      updateNote: updateNote,
-    };
-    const updatedData = [...notes, newData];
+  const addNote = (noteData: NoteProps) => {
+    const updatedData = [...notes, noteData];
     updateStateAndLocalStorage(updatedData);
   };
 
@@ -73,14 +65,18 @@ export const Board = () => {
   };
 
   return (
-    <div id="boardBody">
-      <div id="sidebar">
-        <Sidebar />
+    <>
+      <div id="boardBody">
+        <div id="sidebar">
+          <Sidebar />
+        </div>
+        <div id="board">{getNotesElement()}</div>
       </div>
-      <div id="board">{getNotesElement()}</div>
-      <button className="addNote" onClick={addNote}>
-        Add Note
-      </button>
-    </div>
+      <NewNoteDetector
+        addNote={addNote}
+        updateNote={updateNote}
+        removeNote={removeNote}
+      />
+    </>
   );
 };
