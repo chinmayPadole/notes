@@ -5,7 +5,8 @@ export const getFormattedDate = (
   const retDate = new Date(date);
 
   return Intl.DateTimeFormat(culture, {
-    month: "2-digit",
+    weekday: "short",
+    month: "long",
     day: "2-digit",
     year: "numeric",
   }).format(retDate);

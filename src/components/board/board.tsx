@@ -10,7 +10,6 @@ export const Board = () => {
   // Load state from localStorage when the component mounts
   useEffect(() => {
     const storedState = localStorage.getItem("notes");
-    console.log(storedState);
     if (storedState) {
       const parsedState: NoteProps[] = JSON.parse(storedState);
       setNotes(parsedState);
@@ -34,9 +33,28 @@ export const Board = () => {
       createDt: new Date(),
       color: "white",
       removeNote: removeNote,
+      updateNote: updateNote,
     };
     const updatedData = [...notes, newData];
     updateStateAndLocalStorage(updatedData);
+  };
+
+  const updateNote = (
+    noteId: string,
+    updatedContent: string,
+    updatedColor: string
+  ) => {
+    const updatedNotes = notes.map((note) => {
+      if (note.id === noteId) {
+        return {
+          ...note,
+          content: updatedContent,
+          color: updatedColor,
+        };
+      }
+      return note;
+    });
+    updateStateAndLocalStorage(updatedNotes);
   };
 
   const getNotesElement = () => {
@@ -48,6 +66,7 @@ export const Board = () => {
           content={note.content}
           id={note.id}
           removeNote={removeNote}
+          updateNote={updateNote}
         />
       );
     });
