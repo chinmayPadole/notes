@@ -1,0 +1,22 @@
+.root {
+  display: grid;
+  grid-template-areas:
+    "settings"
+    "board";
+  grid-template-rows: auto 1fr;
+  height: 100vh;
+  width: 100vw;
+}
+
+.settings {
+  grid-area: settings;
+  background-color: #ddd;
+  border-bottom: 1px solid #ccc;
+  overflow: auto; /* Allow scrolling if content overflows */
+  height: 35px;
+}
+
+.board {
+  grid-area: board;
+  background-color: #fff;
+}
