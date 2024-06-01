@@ -12,8 +12,7 @@
   grid-area: settings;
   background-color: #ddd;
   border-bottom: 1px solid #ccc;
-  overflow: auto; /* Allow scrolling if content overflows */
-  height: 35px;
+  height: 100%;
 }
 
 .board {

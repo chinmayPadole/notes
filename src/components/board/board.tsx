@@ -34,7 +34,8 @@ export const Board = () => {
   const updateNote = (
     noteId: string,
     updatedContent: string,
-    updatedColor: string
+    updatedColor: string,
+    isNoteLocked: boolean
   ) => {
     const updatedNotes = notes.map((note) => {
       if (note.id === noteId) {
@@ -42,6 +43,7 @@ export const Board = () => {
           ...note,
           content: updatedContent,
           color: updatedColor,
+          isNoteLocked: isNoteLocked,
         };
       }
       return note;
@@ -57,6 +59,7 @@ export const Board = () => {
           color={note.color}
           content={note.content}
           id={note.id}
+          isNoteLocked={note.isNoteLocked}
           removeNote={removeNote}
           updateNote={updateNote}
         />

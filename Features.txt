@@ -5,4 +5,13 @@ speech to text
 images as notes
 locked notes/protected notes
 masked values
+group notes
+search notes via sidebar
+encryption
+
+---
+fade in fade out effect on add/remove note
+seperate section for hidden notes
+Password for locked
+ 
 ....

@@ -1,45 +1,32 @@
 import React, { useState, useEffect } from "react";
 import "./newNoteDetector.css";
-import { NoteProps } from "../note/note";
-import { getUniqueId } from "../../common/utils";
 
-export interface NewNoteDetectorProps {
-  addNote: (noteData: NoteProps) => void;
+export interface UpdateProps {
+  noteId: string;
   updateNote: (
     noteId: string,
     updatedContent: string,
     updatedColor: string,
     isNoteLocked: boolean
   ) => void;
-  removeNote: (noteId: string) => void;
+  currentContent: string;
+  toggleModal: React.Dispatch<React.SetStateAction<boolean>>;
+  currentColor: string;
+  isNoteLocked: boolean;
 }
 
-export const NewNoteDetector: React.FC<NewNoteDetectorProps> = ({
-  addNote,
+export const UpdateNote: React.FC<UpdateProps> = ({
+  noteId,
   updateNote,
-  removeNote,
+  currentContent,
+  toggleModal,
+  currentColor,
+  isNoteLocked,
 }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [typedContent, setTypedContent] = useState("");
+  const [typedContent, setTypedContent] = useState(currentContent);
   const [showCursor, setShowCursor] = useState(true);
 
   const handleKeyPress = (event: KeyboardEvent) => {
-    // const key = event.key;
-    // if (
-    //   ((key >= "a" && key <= "z") ||
-    //     (key >= "A" && key <= "Z") ||
-    //     (key >= "0" && key <= "9") ||
-    //     key === " ") &&
-    //   key !== "Enter"
-    // ) {
-    //   setIsOpen(true);
-    //   setTypedContent((prevContent) => prevContent + key);
-    // } else if (key === "Enter" && !event.shiftKey) {
-    //   performAction();
-    // } else if (key === "Enter" && event.shiftKey) {
-    //   setTypedContent((prevContent) => prevContent + "\n");
-    // }
-
     if (
       (event.ctrlKey && event.key === "v") ||
       (event.shiftKey && event.key === "Insert")
@@ -65,8 +52,6 @@ export const NewNoteDetector: React.FC<NewNoteDetectorProps> = ({
       ) &&
         key !== "Enter")
     ) {
-      setIsOpen(true);
-
       if (key === "Enter" && !event.shiftKey) {
         performAction();
       } else if (key === "Enter" && event.shiftKey) {
@@ -100,16 +85,8 @@ export const NewNoteDetector: React.FC<NewNoteDetectorProps> = ({
       closeModal();
       return;
     }
-    const newData: NoteProps = {
-      id: getUniqueId(),
-      content: typedContent,
-      createDt: new Date(),
-      color: "white",
-      removeNote: removeNote,
-      updateNote: updateNote,
-      isNoteLocked: false,
-    };
-    addNote(newData);
+    console.log(typedContent.trim().length, typedContent);
+    updateNote(noteId, typedContent, "white", isNoteLocked);
 
     closeModal();
   };
@@ -131,32 +108,28 @@ export const NewNoteDetector: React.FC<NewNoteDetectorProps> = ({
   }, [typedContent]);
 
   const closeModal = () => {
-    setIsOpen(false);
+    toggleModal(false);
     setTypedContent("");
   };
 
   return (
-    <div>
-      {isOpen && (
-        <div className="modal-overlay">
-          <div className="modal">
-            <div className="modal-header">
-              <div className="modal-buttons">
-                <span className="close" onClick={closeModal}></span>
-                {/* <span className="minimize"></span>
-                <span className="maximize"></span> */}
-              </div>
-              <div className="modal-title">Editor</div>
-            </div>
-            <div className="modal-content">
-              <pre>
-                {typedContent}
-                {showCursor && <span className="cursor">|</span>}
-              </pre>
-            </div>
+    <div className="modal-overlay">
+      <div className="modal">
+        <div className="modal-header">
+          <div className="modal-buttons">
+            <span className="close" onClick={closeModal}></span>
+            {/* <span className="minimize"></span>
+            <span className="maximize"></span> */}
           </div>
+          <div className="modal-title">Editor</div>
         </div>
-      )}
+        <div className="modal-content">
+          <pre>
+            {typedContent}
+            {showCursor && <span className="cursor">|</span>}
+          </pre>
+        </div>
+      </div>
     </div>
   );
 };

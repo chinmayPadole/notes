@@ -1,8 +1,10 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "./note.css";
 import { getFormattedDate } from "../../common/utils";
 import { ColorSet } from "../../common/colorSet";
 import styled from "styled-components";
+import { useToast } from "../../provider/toastProvider";
+import { UpdateNote } from "../newNote/UpdateNote";
 
 export interface NoteProps {
   id: string;
@@ -10,7 +12,13 @@ export interface NoteProps {
   content: string;
   color: string;
   removeNote: (noteId: string) => void;
-  updateNote: (noteId: string, newContent: string, newColor: string) => void;
+  updateNote: (
+    noteId: string,
+    newContent: string,
+    newColor: string,
+    isNoteLocked: boolean
+  ) => void;
+  isNoteLocked: boolean;
 }
 
 const TerminalContainer = styled.div<{
@@ -46,6 +54,7 @@ const Dot = styled.div`
   background-color: ${(props) => props.color};
   border-radius: 50%;
   margin: 0 5px;
+  cursor: pointer;
 `;
 
 const Date = styled.div`
@@ -66,27 +75,61 @@ export const Note: React.FC<NoteProps> = ({
   id,
   removeNote,
   updateNote,
+  isNoteLocked,
 }): JSX.Element => {
+  const { showToast } = useToast();
+  const [istNoteEditorOpen, toggleNoteEditor] = useState<boolean>(false);
+
+  const [isLocked, toggleLock] = useState<boolean | null>(null);
+
   const drop = () => {
     removeNote(id);
   };
-  const update = () => {
-    updateNote(id, content, color);
+
+  useEffect(() => {
+    if (isLocked !== null) {
+      updateNote(id, content, color, !isLocked);
+    }
+  }, [isLocked]);
+
+  const copy = () => {
+    navigator.clipboard.writeText(content);
+    showToast("copied", "black", 3000);
+  };
+
+  const lock = () => {
+    toggleLock(!isLocked);
   };
 
   const activeColorSet = ColorSet[color];
   return (
-    <TerminalContainer
-      bgColor={activeColorSet.noteBackground}
-      fontColor={activeColorSet.fontColor}
-    >
-      <TerminalHeader headerColor={activeColorSet.noteHeader}>
-        <Dot color="#ff5f56" onClick={drop} />
-        <Date>{getFormattedDate(createDt)}</Date>
-        {/* <Dot color="#ffbd2e" />
-        <Dot color="#27c93f" /> */}
-      </TerminalHeader>
-      <TerminalBody>{content}</TerminalBody>
-    </TerminalContainer>
+    <>
+      <TerminalContainer
+        bgColor={activeColorSet.noteBackground}
+        fontColor={activeColorSet.fontColor}
+      >
+        <TerminalHeader headerColor={activeColorSet.noteHeader}>
+          <Dot color="#ff5f56" onClick={drop} />
+          <Dot color="#27c93f" onClick={copy} />
+          <Dot color="#0A20FF" onClick={lock} />
+          <Date>{getFormattedDate(createDt)}</Date>
+          {/* <Dot color="#ffbd2e" />
+           */}
+        </TerminalHeader>
+        <TerminalBody onDoubleClick={() => toggleNoteEditor(true)}>
+          {content}
+        </TerminalBody>
+      </TerminalContainer>
+      {istNoteEditorOpen && (
+        <UpdateNote
+          updateNote={updateNote}
+          noteId={id}
+          currentContent={content}
+          toggleModal={toggleNoteEditor}
+          currentColor={color}
+          isNoteLocked={isNoteLocked}
+        />
+      )}
+    </>
   );
 };
