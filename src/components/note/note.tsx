@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import "./note.css";
-import { getFormattedDate } from "../../common/utils";
+import { getFormattedDate, maskString } from "../../common/utils";
 import { ColorSet } from "../../common/colorSet";
 import styled from "styled-components";
 import { useToast } from "../../provider/toastProvider";
 import { UpdateNote } from "../newNote/UpdateNote";
+import { useSecurity } from "../../provider/securityProvider";
 
 export interface NoteProps {
   id: string;
@@ -79,11 +80,21 @@ export const Note: React.FC<NoteProps> = ({
 }): JSX.Element => {
   const { showToast } = useToast();
   const [istNoteEditorOpen, toggleNoteEditor] = useState<boolean>(false);
+  const [formattedContent, setFormattedContent] = useState<string>(content);
 
   const [isLocked, toggleLock] = useState<boolean | null>(null);
 
-  const drop = () => {
+  const [isFadingOut, setIsFadingOut] = useState(false);
+
+  const { isLocked: isPageLocked } = useSecurity();
+
+  const fadeOut = (cb: NodeJS.Timeout) => {
+    setIsFadingOut(true);
+  };
+
+  const handleRemoveItem = () => {
     removeNote(id);
+    setIsFadingOut(false);
   };
 
   useEffect(() => {
@@ -91,6 +102,12 @@ export const Note: React.FC<NoteProps> = ({
       updateNote(id, content, color, !isLocked);
     }
   }, [isLocked]);
+
+  useEffect(() => {
+    const contentData =
+      isPageLocked && isNoteLocked ? maskString(content, 3, 3, "#") : content;
+    setFormattedContent(contentData);
+  }, [content, isPageLocked, isNoteLocked]);
 
   const copy = () => {
     navigator.clipboard.writeText(content);
@@ -107,9 +124,13 @@ export const Note: React.FC<NoteProps> = ({
       <TerminalContainer
         bgColor={activeColorSet.noteBackground}
         fontColor={activeColorSet.fontColor}
+        className={isFadingOut ? "item-fadeout" : "item"}
       >
         <TerminalHeader headerColor={activeColorSet.noteHeader}>
-          <Dot color="#ff5f56" onClick={drop} />
+          <Dot
+            color="#ff5f56"
+            onClick={() => fadeOut(setTimeout(() => handleRemoveItem(), 300))}
+          />
           <Dot color="#27c93f" onClick={copy} />
           <Dot color="#0A20FF" onClick={lock} />
           <Date>{getFormattedDate(createDt)}</Date>
@@ -117,7 +138,7 @@ export const Note: React.FC<NoteProps> = ({
            */}
         </TerminalHeader>
         <TerminalBody onDoubleClick={() => toggleNoteEditor(true)}>
-          {content}
+          {formattedContent}
         </TerminalBody>
       </TerminalContainer>
       {istNoteEditorOpen && (

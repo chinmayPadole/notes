@@ -4,7 +4,7 @@ import "./board.css";
 import { Note, NoteProps } from "../note/note";
 import { NewNoteDetector } from "../newNote/newNoteDetector";
 
-export const Board = () => {
+export const Board: React.FC = () => {
   const [notes, setNotes] = useState<NoteProps[]>([]);
 
   // Load state from localStorage when the component mounts
@@ -73,7 +73,9 @@ export const Board = () => {
         <div id="sidebar">
           <Sidebar />
         </div>
-        <div id="board">{getNotesElement()}</div>
+        <div id="board-container">
+          <div id="board">{getNotesElement()}</div>
+        </div>
       </div>
       <NewNoteDetector
         addNote={addNote}

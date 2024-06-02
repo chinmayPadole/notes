@@ -1,21 +1,18 @@
+import { useSecurity } from "../../provider/securityProvider";
 import "./settings.css";
 
-interface SettingsProps {
-  isLocked: boolean;
-  setLock: React.Dispatch<React.SetStateAction<boolean>>;
-}
-
-export const Settings: React.FC<SettingsProps> = ({ isLocked, setLock }) => {
-  const toggleLock = () => {
-    setLock(!isLocked);
+export const Settings: React.FC = () => {
+  const { isLocked, toggleLock } = useSecurity();
+  const lock = () => {
+    toggleLock(!isLocked);
   };
 
   return (
     <header className="header">
-      <h1 className="title">macOS Themed Header</h1>
+      <h1 className="title">Header</h1>
       <button
         className={`lock-button ${isLocked ? "locked" : "unlocked"}`}
-        onClick={toggleLock}
+        onClick={lock}
       >
         {isLocked ? "🔒" : "🔓"}
       </button>
