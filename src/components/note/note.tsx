@@ -6,6 +6,7 @@ import styled from "styled-components";
 import { useToast } from "../../provider/toastProvider";
 import { UpdateNote } from "../newNote/UpdateNote";
 import { useSecurity } from "../../provider/securityProvider";
+import { JailBars } from "../jailBars/jailBars";
 
 export interface NoteProps {
   id: string;
@@ -37,6 +38,7 @@ const TerminalContainer = styled.div<{
   min-width: 300px;
   word-wrap: break-word;
   overflow: auto;
+  position: relative;
 `;
 
 const TerminalHeader = styled.div<{
@@ -67,6 +69,7 @@ const TerminalBody = styled.div`
   padding: 20px;
   font-size: 14px;
   white-space: pre-wrap;
+  position: relative;
 `;
 
 export const Note: React.FC<NoteProps> = ({
@@ -140,6 +143,8 @@ export const Note: React.FC<NoteProps> = ({
         <TerminalBody onDoubleClick={() => toggleNoteEditor(true)}>
           {formattedContent}
         </TerminalBody>
+
+        <JailBars showBars={(isPageLocked && isNoteLocked) || false} />
       </TerminalContainer>
       {istNoteEditorOpen && (
         <UpdateNote
