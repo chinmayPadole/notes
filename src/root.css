@@ -17,5 +17,6 @@
 
 .board {
   grid-area: board;
-  background-color: #fff;
+  background-color: #d5f2e3;
+  overflow-x: hidden;
 }

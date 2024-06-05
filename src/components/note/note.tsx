@@ -32,13 +32,13 @@ const TerminalContainer = styled.div<{
   font-family: "Menlo", "Monaco", "Courier New", monospace;
   border-radius: 10px;
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-  margin: 20px;
-  width: max-content;
-  max-width: 800px;
+  // width: max-content;
+  // max-width: 800px;
   min-width: 300px;
   word-wrap: break-word;
   overflow: auto;
   position: relative;
+  margin: 1%;
 `;
 
 const TerminalHeader = styled.div<{
@@ -49,6 +49,15 @@ const TerminalHeader = styled.div<{
   background-color: ${(props) => props.headerColor};
   padding: 10px;
   border-radius: 10px 10px 0 0;
+
+  /*Prevent text selection*/
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Old versions of Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Non-prefixed version, currently
+                                supported by Chrome, Edge, Opera and Firefox */
 `;
 
 const Dot = styled.div`

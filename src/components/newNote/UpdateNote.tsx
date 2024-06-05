@@ -85,7 +85,6 @@ export const UpdateNote: React.FC<UpdateProps> = ({
       closeModal();
       return;
     }
-    console.log(typedContent.trim().length, typedContent);
     updateNote(noteId, typedContent, "white", isNoteLocked);
 
     closeModal();

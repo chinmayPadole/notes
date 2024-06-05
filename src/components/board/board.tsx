@@ -3,9 +3,33 @@ import { Sidebar } from "../sidebar/sidebar";
 import "./board.css";
 import { Note, NoteProps } from "../note/note";
 import { NewNoteDetector } from "../newNote/newNoteDetector";
+import { Voice } from "../voice/voice";
+import { Wave } from "../voice/wave";
+import { getUniqueId } from "../../common/utils";
 
 export const Board: React.FC = () => {
   const [notes, setNotes] = useState<NoteProps[]>([]);
+  const [transcript, setTranscript] = useState<string>("");
+  const [isVoiceOn, setVoiceOn] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (
+      transcript !== undefined &&
+      transcript !== null &&
+      transcript.trim() !== ""
+    ) {
+      const newData: NoteProps = {
+        id: getUniqueId(),
+        content: transcript,
+        createDt: new Date(),
+        color: "white",
+        removeNote: removeNote,
+        updateNote: updateNote,
+        isNoteLocked: false,
+      };
+      addNote(newData);
+    }
+  }, [transcript]);
 
   // Load state from localStorage when the component mounts
   useEffect(() => {
@@ -70,9 +94,9 @@ export const Board: React.FC = () => {
   return (
     <>
       <div id="boardBody">
-        <div id="sidebar">
+        {/* <div id="sidebar">
           <Sidebar />
-        </div>
+        </div> */}
         <div id="board-container">
           <div id="board">{getNotesElement()}</div>
         </div>
@@ -82,6 +106,10 @@ export const Board: React.FC = () => {
         updateNote={updateNote}
         removeNote={removeNote}
       />
+
+      <Voice setTranscript={setTranscript} setVoice={setVoiceOn} />
+      <Wave showWave={isVoiceOn} />
+      {/* {transcript} */}
     </>
   );
 };
