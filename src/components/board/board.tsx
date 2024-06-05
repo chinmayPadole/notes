@@ -1,16 +1,21 @@
 import React, { useState, useEffect } from "react";
 import { Sidebar } from "../sidebar/sidebar";
 import "./board.css";
-import { Note, NoteProps } from "../note/note";
+import { Note } from "../note/note";
+import { NoteProps } from "../note/NoteProps";
 import { NewNoteDetector } from "../newNote/newNoteDetector";
 import { Voice } from "../voice/voice";
 import { Wave } from "../voice/wave";
 import { getUniqueId } from "../../common/utils";
+import { Search } from "../search/search";
+import { searchAndSort } from "../../common/search";
 
 export const Board: React.FC = () => {
   const [notes, setNotes] = useState<NoteProps[]>([]);
   const [transcript, setTranscript] = useState<string>("");
   const [isVoiceOn, setVoiceOn] = useState<boolean>(false);
+  const [isSearchMode, setSearchMode] = useState<boolean>(false);
+  const [searchText, setSearchText] = useState<string>("");
 
   useEffect(() => {
     if (
@@ -76,7 +81,13 @@ export const Board: React.FC = () => {
   };
 
   const getNotesElement = () => {
-    return notes.map((note, i) => {
+    let source = [...notes];
+
+    if (isSearchMode) {
+      source = searchAndSort(source, searchText);
+    }
+
+    return source.map((note, i) => {
       return (
         <Note
           createDt={note.createDt}
@@ -91,6 +102,21 @@ export const Board: React.FC = () => {
     });
   };
 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === "f") {
+        e.preventDefault();
+        setSearchMode(true);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
+
   return (
     <>
       <div id="boardBody">
@@ -101,14 +127,25 @@ export const Board: React.FC = () => {
           <div id="board">{getNotesElement()}</div>
         </div>
       </div>
-      <NewNoteDetector
-        addNote={addNote}
-        updateNote={updateNote}
-        removeNote={removeNote}
-      />
+      {!isSearchMode && (
+        <>
+          <NewNoteDetector
+            addNote={addNote}
+            updateNote={updateNote}
+            removeNote={removeNote}
+          />
 
-      <Voice setTranscript={setTranscript} setVoice={setVoiceOn} />
-      <Wave showWave={isVoiceOn} />
+          <Voice setTranscript={setTranscript} setVoice={setVoiceOn} />
+          <Wave showWave={isVoiceOn} />
+        </>
+      )}
+      {isSearchMode && (
+        <Search
+          visible={isSearchMode}
+          onClose={setSearchMode}
+          setSearchText={setSearchText}
+        />
+      )}
       {/* {transcript} */}
     </>
   );

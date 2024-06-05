@@ -7,21 +7,7 @@ import { useToast } from "../../provider/toastProvider";
 import { UpdateNote } from "../newNote/UpdateNote";
 import { useSecurity } from "../../provider/securityProvider";
 import { JailBars } from "../jailBars/jailBars";
-
-export interface NoteProps {
-  id: string;
-  createDt: Date;
-  content: string;
-  color: string;
-  removeNote: (noteId: string) => void;
-  updateNote: (
-    noteId: string,
-    newContent: string,
-    newColor: string,
-    isNoteLocked: boolean
-  ) => void;
-  isNoteLocked: boolean;
-}
+import { NoteProps } from "./NoteProps";
 
 const TerminalContainer = styled.div<{
   bgColor: string;

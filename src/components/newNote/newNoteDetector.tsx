@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./newNoteDetector.css";
-import { NoteProps } from "../note/note";
+import { NoteProps } from "../note/NoteProps";
 import { getUniqueId } from "../../common/utils";
 
 export interface NewNoteDetectorProps {
