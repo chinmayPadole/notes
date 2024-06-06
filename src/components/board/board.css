@@ -16,9 +16,9 @@
 }
 
 #board {
-  width: 100%;
+  width: 100vw;
   display: flex;
   flex-wrap: wrap;
   gap: 1em;
-  justify-content: space-evenly;
+  place-content: flex-start;
 }

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./newNoteDetector.css";
 import { NoteProps } from "../note/NoteProps";
-import { getUniqueId } from "../../common/utils";
+import { blobToBase64, getUniqueId } from "../../common/utils";
 
 export interface NewNoteDetectorProps {
   addNote: (noteData: NoteProps) => void;
@@ -21,33 +21,10 @@ export const NewNoteDetector: React.FC<NewNoteDetectorProps> = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [typedContent, setTypedContent] = useState("");
+  const [isImage, setIsImage] = useState<boolean>(false);
   const [showCursor, setShowCursor] = useState(true);
 
   const handleKeyPress = (event: KeyboardEvent) => {
-    // const key = event.key;
-    // if (
-    //   ((key >= "a" && key <= "z") ||
-    //     (key >= "A" && key <= "Z") ||
-    //     (key >= "0" && key <= "9") ||
-    //     key === " ") &&
-    //   key !== "Enter"
-    // ) {
-    //   setIsOpen(true);
-    //   setTypedContent((prevContent) => prevContent + key);
-    // } else if (key === "Enter" && !event.shiftKey) {
-    //   performAction();
-    // } else if (key === "Enter" && event.shiftKey) {
-    //   setTypedContent((prevContent) => prevContent + "\n");
-    // }
-
-    if (
-      (event.ctrlKey && event.key === "v") ||
-      (event.shiftKey && event.key === "Insert")
-    ) {
-      // Do nothing, we handle pasting in the paste event listener
-      return;
-    }
-
     const key = event.key;
 
     if (key === "Escape") {
@@ -88,10 +65,32 @@ export const NewNoteDetector: React.FC<NewNoteDetectorProps> = ({
     }
   };
 
-  const handlePaste = (event: any) => {
-    const paste = (
-      event.clipboardData || (window as any).clipboardData
-    ).getData("text");
+  const handlePaste = async (event: any) => {
+    // if not open, open the view
+    setIsOpen(true);
+    setIsImage(false);
+    let paste = (event.clipboardData || (window as any).clipboardData).getData(
+      "text"
+    );
+
+    if (paste === undefined || paste === null || paste.trim().length === 0) {
+      const items = (event.clipboardData || (window as any).clipboardData)
+        .items;
+      for (let i = 0; i < items.length; i++) {
+        if (items[i].type.indexOf("image") !== -1) {
+          const blob = items[i].getAsFile();
+          if (blob) {
+            const URLObj = window.URL || window.webkitURL;
+            const blobURL = URLObj.createObjectURL(blob);
+
+            paste = await blobToBase64(blobURL);
+
+            setIsImage(true);
+          }
+        }
+      }
+    }
+
     setTypedContent((prevContent) => prevContent + paste);
   };
 
@@ -149,10 +148,19 @@ export const NewNoteDetector: React.FC<NewNoteDetectorProps> = ({
               <div className="modal-title">Editor</div>
             </div>
             <div className="modal-content">
-              <pre>
-                {typedContent}
-                {showCursor && <span className="cursor">|</span>}
-              </pre>
+              {!isImage && (
+                <pre>
+                  {typedContent}
+                  {showCursor && <span className="cursor">|</span>}
+                </pre>
+              )}
+              {isImage && (
+                <img
+                  className="imageNote"
+                  src={typedContent}
+                  alt={typedContent}
+                />
+              )}
             </div>
           </div>
         </div>

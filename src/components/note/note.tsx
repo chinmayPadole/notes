@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
 import "./note.css";
-import { getFormattedDate, maskString } from "../../common/utils";
+import { getFormattedDate, isValidImage, maskString } from "../../common/utils";
 import { ColorSet } from "../../common/colorSet";
 import styled from "styled-components";
 import { useToast } from "../../provider/toastProvider";
 import { UpdateNote } from "../newNote/UpdateNote";
 import { useSecurity } from "../../provider/securityProvider";
-import { JailBars } from "../jailBars/jailBars";
 import { NoteProps } from "./NoteProps";
 
 const TerminalContainer = styled.div<{
@@ -79,6 +78,7 @@ export const Note: React.FC<NoteProps> = ({
   const { showToast } = useToast();
   const [istNoteEditorOpen, toggleNoteEditor] = useState<boolean>(false);
   const [formattedContent, setFormattedContent] = useState<string>(content);
+  const [isImage, setIsImage] = useState<boolean>(false);
 
   const [isLocked, toggleLock] = useState<boolean | null>(null);
 
@@ -105,6 +105,10 @@ export const Note: React.FC<NoteProps> = ({
     const contentData =
       isPageLocked && isNoteLocked ? maskString(content, 3, 3, "#") : content;
     setFormattedContent(contentData);
+
+    if (isValidImage(contentData)) {
+      setIsImage(true);
+    }
   }, [content, isPageLocked, isNoteLocked]);
 
   const copy = () => {
@@ -114,6 +118,7 @@ export const Note: React.FC<NoteProps> = ({
 
   const lock = () => {
     toggleLock(!isLocked);
+    showToast(isLocked ? "locked" : "unlocked", "black", 3000);
   };
 
   const activeColorSet = ColorSet[color];
@@ -136,10 +141,15 @@ export const Note: React.FC<NoteProps> = ({
            */}
         </TerminalHeader>
         <TerminalBody onDoubleClick={() => toggleNoteEditor(true)}>
-          {formattedContent}
+          {!isImage && formattedContent}
+          {isImage && (
+            <img
+              className="imageNote"
+              src={formattedContent}
+              alt={formattedContent}
+            />
+          )}
         </TerminalBody>
-
-        <JailBars showBars={(isPageLocked && isNoteLocked) || false} />
       </TerminalContainer>
       {istNoteEditorOpen && (
         <UpdateNote

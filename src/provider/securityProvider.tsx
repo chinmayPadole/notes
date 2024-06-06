@@ -8,7 +8,7 @@ const SecurityContext = createContext({
 export const useSecurity = () => useContext(SecurityContext);
 
 export const SecurityProvider = ({ children }: any) => {
-  const [isLocked, toggleLock] = useState<boolean>(false);
+  const [isLocked, toggleLock] = useState<boolean>(true);
 
   return (
     <SecurityContext.Provider value={{ isLocked, toggleLock }}>

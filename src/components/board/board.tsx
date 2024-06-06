@@ -83,6 +83,10 @@ export const Board: React.FC = () => {
   const getNotesElement = () => {
     let source = [...notes];
 
+    source = source.sort(
+      (a, b) => new Date(b.createDt).getTime() - new Date(a.createDt).getTime()
+    );
+
     if (isSearchMode) {
       source = searchAndSort(source, searchText);
     }

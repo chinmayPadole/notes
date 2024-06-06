@@ -40,3 +40,38 @@ export const maskString = (
     input.slice(inputLength - showEnd)
   );
 };
+
+export const isValidImage = (str: string): boolean => {
+  const imagePrefixPattern = /^data:image\/(png|jpg|jpeg|gif|bmp|webp);base64,/;
+  // Check if it's a valid Base64 string
+  const bas64String = str.replace(imagePrefixPattern, "");
+  const base64Pattern =
+    /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/;
+  if (!base64Pattern.test(bas64String)) {
+    return false;
+  }
+
+  // Check if it has a valid image prefix
+
+  return imagePrefixPattern.test(str);
+};
+
+export const blobToBase64 = (url: string) => {
+  return new Promise(async (resolve, _) => {
+    // do a request to the blob uri
+    const response = await fetch(url);
+
+    // response has a method called .blob() to get the blob file
+    const blob = await response.blob();
+
+    // instantiate a file reader
+    const fileReader = new FileReader();
+
+    // read the file
+    fileReader.readAsDataURL(blob);
+
+    fileReader.onloadend = function () {
+      resolve(fileReader.result); // Here is the base64 string
+    };
+  });
+};
