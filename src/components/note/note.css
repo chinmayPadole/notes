@@ -48,3 +48,80 @@
   height: 100%;
   object-fit: contain;
 }
+
+.options-component {
+  position: relative;
+}
+
+.options-container {
+  top: 40px;
+  left: 0;
+  padding: 10px;
+  background: #f5f5f5;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  opacity: 0;
+  transition: opacity 300ms ease-in-out;
+}
+
+.options-container.fade-in {
+  opacity: 1;
+}
+
+.options-container.fade-out {
+  opacity: 0;
+}
+
+.options-content {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.options-content > button {
+  background: none;
+  border-style: solid;
+  padding: 10px;
+  border-radius: 14px;
+  border-color: #0054e9;
+  color: #0054e9;
+}
+
+.colorPalettes-container {
+  display: flex;
+  gap: 1em;
+  flex-direction: row;
+}
+
+.circle {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.left-half,
+.right-half {
+  position: absolute;
+  width: 25px; /* Half of the circle's width */
+  height: 50px;
+  top: 0;
+}
+
+.left-half {
+  left: 0;
+}
+
+.right-half {
+  right: 0;
+}

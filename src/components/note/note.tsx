@@ -7,6 +7,7 @@ import { useToast } from "../../provider/toastProvider";
 import { UpdateNote } from "../newNote/UpdateNote";
 import { useSecurity } from "../../provider/securityProvider";
 import { NoteProps } from "./NoteProps";
+import { isReminderPossible } from "../../common/remider";
 
 const TerminalContainer = styled.div<{
   bgColor: string;
@@ -86,6 +87,11 @@ export const Note: React.FC<NoteProps> = ({
 
   const { isLocked: isPageLocked } = useSecurity();
 
+  const [showSummaryOption, setSummaryOption] = useState(false);
+  const [showReminderOption, setReminderOption] = useState(false);
+  const [reminderText, setReminderText] = useState("");
+  const [showOptions, setShowOptions] = useState(false);
+
   const fadeOut = (cb: NodeJS.Timeout) => {
     setIsFadingOut(true);
   };
@@ -94,6 +100,9 @@ export const Note: React.FC<NoteProps> = ({
     removeNote(id);
     setIsImage(false);
     setIsFadingOut(false);
+    setSummaryOption(false);
+    setReminderOption(false);
+    setReminderText("");
   };
 
   useEffect(() => {
@@ -111,6 +120,18 @@ export const Note: React.FC<NoteProps> = ({
     }
   }, [content, isPageLocked, isNoteLocked]);
 
+  useEffect(() => {
+    if (content.length > 180) {
+      setSummaryOption(true);
+    }
+    const reminderText = isReminderPossible(content);
+    if (reminderText !== null) {
+      console.log("TRUE");
+      setReminderText(reminderText);
+      setReminderOption(true);
+    }
+  }, [content, showOptions]);
+
   const copy = () => {
     navigator.clipboard.writeText(content);
     showToast("copied", "black", 3000);
@@ -121,36 +142,89 @@ export const Note: React.FC<NoteProps> = ({
     showToast(isLocked ? "locked" : "unlocked", "black", 3000);
   };
 
+  const toggleOptions = () => {
+    setShowOptions(!showOptions);
+  };
+
+  const getColorPaletteItems = () => {
+    return Object.values(ColorSet).map((value) => {
+      return (
+        <div className="circle">
+          <div
+            className="left-half"
+            style={{ background: value.noteHeader }}
+          ></div>
+          <div
+            className="right-half"
+            style={{ background: value.noteBackground }}
+          ></div>
+        </div>
+      );
+    });
+  };
+
   const activeColorSet = ColorSet[color];
   return (
     <>
-      <TerminalContainer
-        bgColor={activeColorSet.noteBackground}
-        fontColor={activeColorSet.fontColor}
-        className={isFadingOut ? "item-fadeout" : "item"}
-      >
-        <TerminalHeader headerColor={activeColorSet.noteHeader}>
-          <Dot
-            color="#ff5f56"
-            onClick={() => fadeOut(setTimeout(() => handleRemoveItem(), 300))}
-          />
-          <Dot color="#27c93f" onClick={copy} />
-          <Dot color="#0A20FF" onClick={lock} />
-          <Date>{getFormattedDate(createDt)}</Date>
-          {/* <Dot color="#ffbd2e" />
-           */}
-        </TerminalHeader>
-        <TerminalBody onDoubleClick={() => toggleNoteEditor(true)}>
-          {!isImage && formattedContent}
-          {isImage && (
-            <img
-              className="imageNote"
-              src={formattedContent}
-              alt={formattedContent}
+      <div>
+        <TerminalContainer
+          bgColor={activeColorSet.noteBackground}
+          fontColor={activeColorSet.fontColor}
+          className={isFadingOut ? "item-fadeout" : "item"}
+        >
+          <TerminalHeader headerColor={activeColorSet.noteHeader}>
+            <Dot
+              color="#ff5f56"
+              onClick={() => fadeOut(setTimeout(() => handleRemoveItem(), 300))}
             />
-          )}
-        </TerminalBody>
-      </TerminalContainer>
+            <Dot color="#27c93f" onClick={copy} />
+            <Dot color="#0A20FF" onClick={lock} />
+            <Dot color="#FF9500" onClick={toggleOptions} />
+            <Date>{getFormattedDate(createDt)}</Date>
+            {/* <Dot color="#ffbd2e" />
+             */}
+          </TerminalHeader>
+          <TerminalBody onDoubleClick={() => toggleNoteEditor(true)}>
+            {!isImage && formattedContent}
+            {isImage && (
+              <img
+                className="imageNote"
+                src={formattedContent}
+                alt={formattedContent}
+              />
+            )}
+          </TerminalBody>
+        </TerminalContainer>
+        {showOptions && (
+          <div
+            className={`options-container ${
+              showOptions ? "fade-in" : "fade-out"
+            }`}
+          >
+            <button
+              className="close-button"
+              onClick={() => setShowOptions(false)}
+            >
+              ×
+            </button>
+            <div className="options-content">
+              <div className="colorPalettes-container">
+                {getColorPaletteItems()}
+              </div>
+              {showReminderOption && (
+                <button>
+                  <p>set reminder {reminderText}?</p>
+                </button>
+              )}
+              {showSummaryOption && (
+                <button>
+                  <p>summarize ?</p>
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
       {istNoteEditorOpen && (
         <UpdateNote
           updateNote={updateNote}

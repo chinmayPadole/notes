@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import "./newNoteDetector.css";
 import { NoteProps } from "../note/NoteProps";
 import { blobToBase64, getUniqueId } from "../../common/utils";
+import { setReminder } from "../../common/remider";
 
 export interface NewNoteDetectorProps {
   addNote: (noteData: NoteProps) => void;
