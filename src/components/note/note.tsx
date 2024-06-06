@@ -92,6 +92,7 @@ export const Note: React.FC<NoteProps> = ({
 
   const handleRemoveItem = () => {
     removeNote(id);
+    setIsImage(false);
     setIsFadingOut(false);
   };
 
@@ -105,7 +106,6 @@ export const Note: React.FC<NoteProps> = ({
     const contentData =
       isPageLocked && isNoteLocked ? maskString(content, 3, 3, "#") : content;
     setFormattedContent(contentData);
-
     if (isValidImage(contentData)) {
       setIsImage(true);
     }
