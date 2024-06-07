@@ -7,7 +7,7 @@ import { useToast } from "../../provider/toastProvider";
 import { UpdateNote } from "../newNote/UpdateNote";
 import { useSecurity } from "../../provider/securityProvider";
 import { NoteProps } from "./NoteProps";
-import { isReminderPossible } from "../../common/remider";
+import { isReminderPossible, setReminder } from "../../common/remider";
 
 const TerminalContainer = styled.div<{
   bgColor: string;
@@ -80,6 +80,15 @@ export const Note: React.FC<NoteProps> = ({
   const [istNoteEditorOpen, toggleNoteEditor] = useState<boolean>(false);
   const [formattedContent, setFormattedContent] = useState<string>(content);
   const [isImage, setIsImage] = useState<boolean>(false);
+  const [colorSet, setActiveColorSet] = useState<{
+    noteHeader: string;
+    fontColor: string;
+    noteBackground: string;
+  }>(ColorSet["white"]);
+
+  useEffect(() => {
+    setActiveColorSet(ColorSet[color]);
+  }, [color]);
 
   const [isLocked, toggleLock] = useState<boolean | null>(null);
 
@@ -103,6 +112,7 @@ export const Note: React.FC<NoteProps> = ({
     setSummaryOption(false);
     setReminderOption(false);
     setReminderText("");
+    setActiveColorSet(ColorSet["white"]);
   };
 
   useEffect(() => {
@@ -126,7 +136,6 @@ export const Note: React.FC<NoteProps> = ({
     }
     const reminderText = isReminderPossible(content);
     if (reminderText !== null) {
-      console.log("TRUE");
       setReminderText(reminderText);
       setReminderOption(true);
     }
@@ -146,10 +155,15 @@ export const Note: React.FC<NoteProps> = ({
     setShowOptions(!showOptions);
   };
 
+  const updateNoteColor = (color: string) => {
+    setActiveColorSet(ColorSet[color]);
+    updateNote(id, content, color, isNoteLocked);
+  };
+
   const getColorPaletteItems = () => {
-    return Object.values(ColorSet).map((value) => {
+    return Object.entries(ColorSet).map(([key, value]) => {
       return (
-        <div className="circle">
+        <div className="palettecircle" onClick={() => updateNoteColor(key)}>
           <div
             className="left-half"
             style={{ background: value.noteHeader }}
@@ -163,16 +177,15 @@ export const Note: React.FC<NoteProps> = ({
     });
   };
 
-  const activeColorSet = ColorSet[color];
   return (
     <>
       <div>
         <TerminalContainer
-          bgColor={activeColorSet.noteBackground}
-          fontColor={activeColorSet.fontColor}
+          bgColor={colorSet.noteBackground}
+          fontColor={colorSet.fontColor}
           className={isFadingOut ? "item-fadeout" : "item"}
         >
-          <TerminalHeader headerColor={activeColorSet.noteHeader}>
+          <TerminalHeader headerColor={colorSet.noteHeader}>
             <Dot
               color="#ff5f56"
               onClick={() => fadeOut(setTimeout(() => handleRemoveItem(), 300))}
@@ -212,7 +225,12 @@ export const Note: React.FC<NoteProps> = ({
                 {getColorPaletteItems()}
               </div>
               {showReminderOption && (
-                <button>
+                <button
+                  onClick={() => {
+                    setReminder(content);
+                    setShowOptions(false);
+                  }}
+                >
                   <p>set reminder {reminderText}?</p>
                 </button>
               )}

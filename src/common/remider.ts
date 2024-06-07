@@ -25,7 +25,6 @@ export const setReminder = (inputText: string) => {
   // Parse the input text using compromise
   const doc = nlp(inputText) as any;
   const task = doc.sentences().out("text");
-  const timeText = doc.dates().out("text");
   const time = doc.dates().get()[0];
 
   if (task && time) {
@@ -41,6 +40,7 @@ export const setReminder = (inputText: string) => {
           new Notification("Reminder", {
             body: task,
           });
+
         } else {
           alert(`Reminder: ${task}`);
         }
