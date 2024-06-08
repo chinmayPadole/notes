@@ -20,7 +20,7 @@ const TerminalContainer = styled.div<{
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
   // width: max-content;
   // max-width: 800px;
-  min-width: 300px;
+  min-width: 315px;
   word-wrap: break-word;
   overflow: auto;
   position: relative;
