@@ -4,6 +4,7 @@ import "./index.css";
 import { Root } from "./root";
 import { ToastProvider } from "./provider/toastProvider";
 import { SecurityProvider } from "./provider/securityProvider";
+import * as serviceWorkerRegistration from "./serviceWorker";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
@@ -17,3 +18,5 @@ root.render(
     </SecurityProvider>
   </React.StrictMode>
 );
+
+serviceWorkerRegistration.register();
