@@ -10,6 +10,24 @@ export const Voice: React.FC<{
   const [isListening, setIsListening] = useState<boolean>(false);
   const recognitionRef = useRef<any>(null);
 
+  const [hasPermission, setHasPermission] = useState<boolean>(false);
+
+  const requestMicrophonePermission = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      setHasPermission(true);
+      // You can now use the stream object to access the microphone
+      console.log("Microphone stream:", stream);
+    } catch (err) {
+      setHasPermission(false);
+      console.error("Error accessing microphone:", err);
+    }
+  };
+
+  useEffect(() => {
+    requestMicrophonePermission();
+  }, [hasPermission]);
+
   useEffect(() => {
     // Check if the browser supports the Web Speech API
     const SpeechRecognition =
@@ -49,6 +67,7 @@ export const Voice: React.FC<{
   }, []);
 
   const handleStartListening = () => {
+    requestMicrophonePermission();
     if (recognitionRef.current && !isListening) {
       recognitionRef.current.start();
       setIsListening(true);

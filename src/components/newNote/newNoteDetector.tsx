@@ -178,7 +178,14 @@ export const NewNoteDetector: React.FC<NewNoteDetectorProps> = ({
               type="text"
               ref={inputRef}
               placeholder="Focus me on button click"
-              style={{ width: "0", height: "0", opacity: "0" }}
+              style={{
+                position: "absolute",
+                opacity: 0,
+                height: 0,
+                width: 0,
+                border: "none",
+                outline: "none",
+              }}
             />
             <div className="modal-content">
               {!isImage && (
