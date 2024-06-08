@@ -76,7 +76,7 @@ export const FloatingMenu: React.FC<{
 
   return (
     <>
-      <div className="floatingMenu-container" tabIndex={-1}>
+      <div className="floatingMenu-container">
         <label
           className="floatingMenu-button"
           onClick={() => setMenuVisibility(!isMenuOpen)}
