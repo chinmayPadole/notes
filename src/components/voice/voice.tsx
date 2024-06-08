@@ -12,12 +12,18 @@ export const Voice: React.FC<{
 
   const [hasPermission, setHasPermission] = useState<boolean>(false);
 
-  const requestMicrophonePermission = async () => {
+  const requestMicrophonePermission = () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      setHasPermission(true);
-      // You can now use the stream object to access the microphone
-      console.log("Microphone stream:", stream);
+      navigator.mediaDevices
+        .getUserMedia({ video: false, audio: true })
+        .then((stream) => {
+          setHasPermission(true);
+          window.localStream = stream; // A
+          window.localAudio.srcObject = stream; // B
+          window.localAudio.autoplay = true; // C
+          // You can now use the stream object to access the microphone
+          console.log("Microphone stream:", stream);
+        });
     } catch (err) {
       setHasPermission(false);
       console.error("Error accessing microphone:", err);
@@ -25,7 +31,9 @@ export const Voice: React.FC<{
   };
 
   useEffect(() => {
-    requestMicrophonePermission();
+    if (hasPermission === false) {
+      requestMicrophonePermission();
+    }
   }, [hasPermission]);
 
   useEffect(() => {

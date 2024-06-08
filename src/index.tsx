@@ -6,6 +6,12 @@ import { ToastProvider } from "./provider/toastProvider";
 import { SecurityProvider } from "./provider/securityProvider";
 import * as serviceWorker from "./serviceWorker";
 
+declare global {
+  interface Window {
+    localStream: any;
+    localAudio: any;
+  }
+}
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );

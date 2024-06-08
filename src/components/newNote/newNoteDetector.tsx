@@ -32,9 +32,12 @@ export const NewNoteDetector: React.FC<NewNoteDetectorProps> = ({
 
   const handleButtonClick = () => {
     // Focus the input element when the button is clicked
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
+
+    setTimeout(() => {
+      if (inputRef.current) {
+        inputRef.current.focus();
+      }
+    }, 100); // Adding a delay of 100ms
   };
 
   useEffect(() => {
@@ -180,7 +183,7 @@ export const NewNoteDetector: React.FC<NewNoteDetectorProps> = ({
               placeholder="Focus me on button click"
               style={{
                 position: "absolute",
-                opacity: 0,
+                opacity: 0.1,
                 height: 0,
                 width: 0,
                 border: "none",
