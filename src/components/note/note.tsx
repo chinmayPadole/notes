@@ -65,6 +65,7 @@ const TerminalBody = styled.div`
   font-size: 14px;
   white-space: pre-wrap;
   position: relative;
+  word-break: break-word;
 `;
 
 const NoteContainer = styled.div`

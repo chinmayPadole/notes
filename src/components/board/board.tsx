@@ -9,6 +9,7 @@ import { getUniqueId } from "../../common/utils";
 import { Search } from "../search/search";
 import { searchAndSort } from "../../common/search";
 import { FloatingMenu } from "../floatingMenu/floatingMenu";
+import { NewNoteEditor } from "../newNote/newNoteEditor";
 
 export const Board: React.FC = () => {
   const [notes, setNotes] = useState<NoteProps[]>([]);
@@ -135,7 +136,15 @@ export const Board: React.FC = () => {
       </div>
       {!isSearchMode && !isNoteUpdating && (
         <>
-          <NewNoteDetector
+          {/* <NewNoteDetector
+            addNote={addNote}
+            updateNote={updateNote}
+            removeNote={removeNote}
+            openNoteEditor={istNoteEditorOpen}
+            toggleNoteEditorMode={toggleNoteEditorMode}
+          /> */}
+
+          <NewNoteEditor
             addNote={addNote}
             updateNote={updateNote}
             removeNote={removeNote}
