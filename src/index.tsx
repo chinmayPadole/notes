@@ -4,7 +4,7 @@ import "./index.css";
 import { Root } from "./root";
 import { ToastProvider } from "./provider/toastProvider";
 import { SecurityProvider } from "./provider/securityProvider";
-import * as serviceWorkerRegistration from "./serviceWorker";
+import * as serviceWorker from "./serviceWorker";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
@@ -19,4 +19,4 @@ root.render(
   </React.StrictMode>
 );
 
-serviceWorkerRegistration.register();
+serviceWorker.register();
