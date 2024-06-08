@@ -39,4 +39,4 @@ jobs:
         run: firebase login --no-localhost
 
       - name: Deploy to Firebase
-        run: firebase deploy --token "$FIREBASE_TOKEN" --non-interactive --project your-firebase-project-id
+        run: firebase deploy --token "$FIREBASE_TOKEN" --non-interactive --project super-notes-ed64f
