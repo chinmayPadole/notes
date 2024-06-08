@@ -1,0 +1,80 @@
+.floatingMenu-container {
+  position: fixed;
+  bottom: 85px;
+  left: 10px;
+}
+
+.floatingMenu-button {
+  position: absolute;
+  z-index: 999;
+  width: max-content;
+  height: 65px;
+  background: #222;
+  border-radius: 15px;
+  cursor: pointer;
+  display: flex;
+  justify-content: left;
+  align-items: center;
+  padding: 0 30px;
+  overflow: hidden;
+  transition: width 300ms linear;
+}
+
+.x-icon {
+  position: absolute;
+  left: 15px;
+  width: 30px;
+  height: 3px;
+  border-radius: 50px;
+  background-color: #eeff00;
+  pointer-events: none;
+  transition: 0.5s;
+}
+
+.floatingMenu-button .x-icon:nth-child(1) {
+  transform: rotate(90deg);
+}
+
+.floatingMenu-button .x-icon:nth-child(2) {
+  transform: rotate(0deg);
+}
+
+.icon1 {
+  transform: rotate(45deg) !important;
+}
+
+.icon2 {
+  transform: rotate(135deg) !important;
+}
+
+.hiddenMenu {
+  opacity: 0 !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+.nav {
+  margin-left: 30px;
+  transition: all 0.2s ease-in-out;
+}
+
+.nav > ul {
+  display: flex;
+  justify-content: space-between;
+  margin: 0;
+  padding: 0;
+  flex-direction: row;
+}
+
+.nav > ul > li {
+  list-style: none;
+  height: 35px;
+  width: 35px;
+  padding: 10px;
+}
+
+.nav > ul > li:hover {
+  color: #fff;
+  background: #1c1c1c;
+  border-radius: 15px;
+}

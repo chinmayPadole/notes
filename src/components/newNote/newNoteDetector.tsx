@@ -13,17 +13,30 @@ export interface NewNoteDetectorProps {
     isNoteLocked: boolean
   ) => void;
   removeNote: (noteId: string) => void;
+  openNoteEditor: boolean;
 }
 
 export const NewNoteDetector: React.FC<NewNoteDetectorProps> = ({
   addNote,
   updateNote,
   removeNote,
+  openNoteEditor,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [typedContent, setTypedContent] = useState("");
   const [isImage, setIsImage] = useState<boolean>(false);
   const [showCursor, setShowCursor] = useState(true);
+
+  useEffect(() => {
+    if (openNoteEditor === true) {
+      setIsOpen(true);
+    }
+
+    return () => {
+      // whenever the component removes it will executes
+      setIsOpen(false);
+    };
+  }, [openNoteEditor]);
 
   const handleKeyPress = (event: KeyboardEvent) => {
     const key = event.key;

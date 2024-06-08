@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { Sidebar } from "../sidebar/sidebar";
 import "./board.css";
 import { Note } from "../note/note";
 import { NoteProps } from "../note/NoteProps";
@@ -9,6 +8,7 @@ import { Wave } from "../voice/wave";
 import { getUniqueId } from "../../common/utils";
 import { Search } from "../search/search";
 import { searchAndSort } from "../../common/search";
+import { FloatingMenu } from "../floatingMenu/floatingMenu";
 
 export const Board: React.FC = () => {
   const [notes, setNotes] = useState<NoteProps[]>([]);
@@ -16,6 +16,8 @@ export const Board: React.FC = () => {
   const [isVoiceOn, setVoiceOn] = useState<boolean>(false);
   const [isSearchMode, setSearchMode] = useState<boolean>(false);
   const [searchText, setSearchText] = useState<string>("");
+
+  const [istNoteEditorOpen, openNoteEditor] = useState(Boolean);
 
   useEffect(() => {
     if (
@@ -124,9 +126,6 @@ export const Board: React.FC = () => {
   return (
     <>
       <div id="boardBody">
-        {/* <div id="sidebar">
-          <Sidebar />
-        </div> */}
         <div id="board-container">
           <div id="board">{getNotesElement()}</div>
         </div>
@@ -137,9 +136,15 @@ export const Board: React.FC = () => {
             addNote={addNote}
             updateNote={updateNote}
             removeNote={removeNote}
+            openNoteEditor={istNoteEditorOpen}
           />
 
-          <Voice setTranscript={setTranscript} setVoice={setVoiceOn} />
+          {/* <Voice setTranscript={setTranscript} setVoice={setVoiceOn} /> */}
+          <FloatingMenu
+            setTranscript={setTranscript}
+            setVoice={setVoiceOn}
+            setNoteEditorOpen={openNoteEditor}
+          />
           <Wave showWave={isVoiceOn} />
         </>
       )}

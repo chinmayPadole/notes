@@ -15,7 +15,7 @@ const TerminalContainer = styled.div<{
 }>`
   background-color: ${(props) => props.bgColor};
   color: ${(props) => props.fontColor};
-  font-family: "Menlo", "Monaco", "Courier New", monospace;
+
   border-radius: 10px;
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
   // width: max-content;
@@ -46,7 +46,7 @@ const TerminalHeader = styled.div<{
                                 supported by Chrome, Edge, Opera and Firefox */
 `;
 
-const Dot = styled.div`
+export const Dot = styled.div`
   height: 12px;
   width: 12px;
   background-color: ${(props) => props.color};
@@ -65,6 +65,10 @@ const TerminalBody = styled.div`
   font-size: 14px;
   white-space: pre-wrap;
   position: relative;
+`;
+
+const NoteContainer = styled.div`
+  padding: 10px;
 `;
 
 export const Note: React.FC<NoteProps> = ({
@@ -179,7 +183,7 @@ export const Note: React.FC<NoteProps> = ({
 
   return (
     <>
-      <div>
+      <NoteContainer>
         <TerminalContainer
           bgColor={colorSet.noteBackground}
           fontColor={colorSet.fontColor}
@@ -242,7 +246,7 @@ export const Note: React.FC<NoteProps> = ({
             </div>
           </div>
         )}
-      </div>
+      </NoteContainer>
       {istNoteEditorOpen && (
         <UpdateNote
           updateNote={updateNote}
