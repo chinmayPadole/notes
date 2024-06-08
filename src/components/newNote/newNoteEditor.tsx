@@ -64,6 +64,7 @@ export interface NewNoteEditorProps {
   removeNote: (noteId: string) => void;
   openNoteEditor: boolean;
   toggleNoteEditorMode: (isNoteEditorOpen: boolean) => void;
+  turnOffOpenNoteEditorFlag: (isNoteEditorOpen: boolean) => void;
 }
 
 export const NewNoteEditor: React.FC<NewNoteEditorProps> = ({
@@ -72,6 +73,7 @@ export const NewNoteEditor: React.FC<NewNoteEditorProps> = ({
   removeNote,
   openNoteEditor,
   toggleNoteEditorMode,
+  turnOffOpenNoteEditorFlag,
 }) => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   let [inputValue, setInputValue] = useState<string>("");
@@ -85,6 +87,8 @@ export const NewNoteEditor: React.FC<NewNoteEditorProps> = ({
   const closeModal = () => {
     setInputValue("");
     setModalIsOpen(false);
+
+    turnOffOpenNoteEditorFlag(false);
   };
 
   const handleButtonClick = () => {
@@ -103,12 +107,12 @@ export const NewNoteEditor: React.FC<NewNoteEditorProps> = ({
     if (openNoteEditor === true) {
       handleButtonClick();
       openModal();
-    }
 
-    return () => {
-      // whenever the component removes it will executes
-      closeModal();
-    };
+      return () => {
+        // whenever the component removes it will executes
+        closeModal();
+      };
+    }
   }, [openNoteEditor]);
 
   const handleKeyPress = (event: KeyboardEvent) => {
@@ -216,7 +220,7 @@ export const NewNoteEditor: React.FC<NewNoteEditorProps> = ({
   }, [inputValue]);
 
   return (
-    <div>
+    <>
       <Modal isOpen={modalIsOpen} onClose={closeModal}>
         <TerminalContainer>
           <div className="modal-header">
@@ -242,6 +246,6 @@ export const NewNoteEditor: React.FC<NewNoteEditorProps> = ({
           )}
         </TerminalContainer>
       </Modal>
-    </div>
+    </>
   );
 };

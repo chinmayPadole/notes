@@ -150,6 +150,7 @@ export const Board: React.FC = () => {
             removeNote={removeNote}
             openNoteEditor={istNoteEditorOpen}
             toggleNoteEditorMode={toggleNoteEditorMode}
+            turnOffOpenNoteEditorFlag={openNoteEditor}
           />
 
           {/* <Voice setTranscript={setTranscript} setVoice={setVoiceOn} /> */}
