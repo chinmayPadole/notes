@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "./newNoteDetector.css";
 import { NoteProps } from "../note/NoteProps";
 import { blobToBase64, getUniqueId } from "../../common/utils";
-import { setReminder } from "../../common/remider";
 
 export interface NewNoteDetectorProps {
   addNote: (noteData: NoteProps) => void;
@@ -29,8 +28,18 @@ export const NewNoteDetector: React.FC<NewNoteDetectorProps> = ({
   const [isImage, setIsImage] = useState<boolean>(false);
   const [showCursor, setShowCursor] = useState(true);
 
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleButtonClick = () => {
+    // Focus the input element when the button is clicked
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  };
+
   useEffect(() => {
     if (openNoteEditor === true) {
+      handleButtonClick();
       setIsOpen(true);
     }
 
@@ -58,6 +67,7 @@ export const NewNoteDetector: React.FC<NewNoteDetectorProps> = ({
       ) &&
         key !== "Enter")
     ) {
+      handleButtonClick();
       setIsOpen(true);
 
       if (key === "Enter" && !event.shiftKey) {
@@ -164,6 +174,12 @@ export const NewNoteDetector: React.FC<NewNoteDetectorProps> = ({
               </div>
               <div className="modal-title">Editor</div>
             </div>
+            <input
+              type="text"
+              ref={inputRef}
+              placeholder="Focus me on button click"
+              style={{ width: "0", height: "0", opacity: "0" }}
+            />
             <div className="modal-content">
               {!isImage && (
                 <pre>

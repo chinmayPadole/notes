@@ -9,7 +9,7 @@ export const Settings: React.FC = () => {
 
   return (
     <header className="header">
-      <h1 className="title">notes!</h1>
+      <h1 className="title">Super Notes</h1>
       <button
         className={`lock-button ${isLocked ? "locked" : "unlocked"}`}
         onClick={lock}
