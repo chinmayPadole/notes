@@ -163,7 +163,7 @@ export const NewNoteDetector: React.FC<NewNoteDetectorProps> = ({
             </div>
             <div className="modal-content">
               {!isImage && (
-                <pre>
+                <pre style={{ whiteSpace: "pre-wrap" }}>
                   {typedContent}
                   {showCursor && <span className="cursor">|</span>}
                 </pre>
