@@ -11,4 +11,5 @@ export interface NoteProps {
     isNoteLocked: boolean
   ) => void;
   isNoteLocked: boolean;
+  toggleNoteUpdateMode: (isEditing: boolean) => void;
 }

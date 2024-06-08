@@ -36,7 +36,6 @@ export const Voice: React.FC<{
     };
 
     recognition.onend = () => {
-      console.log("END");
       setVoice(false);
       setIsListening(false);
     };

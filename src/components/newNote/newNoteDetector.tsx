@@ -14,6 +14,7 @@ export interface NewNoteDetectorProps {
   ) => void;
   removeNote: (noteId: string) => void;
   openNoteEditor: boolean;
+  toggleNoteEditorMode: (isNoteEditorOpen: boolean) => void;
 }
 
 export const NewNoteDetector: React.FC<NewNoteDetectorProps> = ({
@@ -21,6 +22,7 @@ export const NewNoteDetector: React.FC<NewNoteDetectorProps> = ({
   updateNote,
   removeNote,
   openNoteEditor,
+  toggleNoteEditorMode,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [typedContent, setTypedContent] = useState("");
@@ -121,6 +123,7 @@ export const NewNoteDetector: React.FC<NewNoteDetectorProps> = ({
       removeNote: removeNote,
       updateNote: updateNote,
       isNoteLocked: false,
+      toggleNoteUpdateMode: toggleNoteEditorMode,
     };
     addNote(newData);
 
@@ -163,7 +166,7 @@ export const NewNoteDetector: React.FC<NewNoteDetectorProps> = ({
             </div>
             <div className="modal-content">
               {!isImage && (
-                <pre style={{ whiteSpace: "pre-wrap" }}>
+                <pre>
                   {typedContent}
                   {showCursor && <span className="cursor">|</span>}
                 </pre>

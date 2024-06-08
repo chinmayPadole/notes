@@ -16,6 +16,7 @@ export const Board: React.FC = () => {
   const [isVoiceOn, setVoiceOn] = useState<boolean>(false);
   const [isSearchMode, setSearchMode] = useState<boolean>(false);
   const [searchText, setSearchText] = useState<string>("");
+  const [isNoteUpdating, toggleNoteEditorMode] = useState(false);
 
   const [istNoteEditorOpen, openNoteEditor] = useState(Boolean);
 
@@ -33,6 +34,7 @@ export const Board: React.FC = () => {
         removeNote: removeNote,
         updateNote: updateNote,
         isNoteLocked: false,
+        toggleNoteUpdateMode: toggleNoteEditorMode,
       };
       addNote(newData);
     }
@@ -103,6 +105,7 @@ export const Board: React.FC = () => {
           isNoteLocked={note.isNoteLocked}
           removeNote={removeNote}
           updateNote={updateNote}
+          toggleNoteUpdateMode={toggleNoteEditorMode}
         />
       );
     });
@@ -130,13 +133,14 @@ export const Board: React.FC = () => {
           <div id="board">{getNotesElement()}</div>
         </div>
       </div>
-      {!isSearchMode && (
+      {!isSearchMode && !isNoteUpdating && (
         <>
           <NewNoteDetector
             addNote={addNote}
             updateNote={updateNote}
             removeNote={removeNote}
             openNoteEditor={istNoteEditorOpen}
+            toggleNoteEditorMode={toggleNoteEditorMode}
           />
 
           {/* <Voice setTranscript={setTranscript} setVoice={setVoiceOn} /> */}

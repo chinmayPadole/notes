@@ -79,6 +79,7 @@ export const Note: React.FC<NoteProps> = ({
   removeNote,
   updateNote,
   isNoteLocked,
+  toggleNoteUpdateMode,
 }): JSX.Element => {
   const { showToast } = useToast();
   const [istNoteEditorOpen, toggleNoteEditor] = useState<boolean>(false);
@@ -117,6 +118,7 @@ export const Note: React.FC<NoteProps> = ({
     setReminderOption(false);
     setReminderText("");
     setActiveColorSet(ColorSet["white"]);
+    toggleNoteUpdateMode(false);
   };
 
   useEffect(() => {
@@ -201,7 +203,12 @@ export const Note: React.FC<NoteProps> = ({
             {/* <Dot color="#ffbd2e" />
              */}
           </TerminalHeader>
-          <TerminalBody onDoubleClick={() => toggleNoteEditor(true)}>
+          <TerminalBody
+            onDoubleClick={() => {
+              toggleNoteEditor(true);
+              toggleNoteUpdateMode(true);
+            }}
+          >
             {!isImage && formattedContent}
             {isImage && (
               <img
@@ -233,6 +240,7 @@ export const Note: React.FC<NoteProps> = ({
                   onClick={() => {
                     setReminder(content);
                     setShowOptions(false);
+                    showToast(`reminder set ${reminderText}`, "black", 3000);
                   }}
                 >
                   <p>set reminder {reminderText}?</p>
