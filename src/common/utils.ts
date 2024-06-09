@@ -85,3 +85,4 @@ export const isMobile = () => {
     userAgent.toLowerCase()
   );
 };
+

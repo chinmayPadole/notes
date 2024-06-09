@@ -4,10 +4,16 @@ import { Settings } from "./components/settings/settings";
 import "./root.css";
 
 export const Root = () => {
+  // Request notification permission on component mount
   useEffect(() => {
-    // Request notification permission on component mount
-    if (Notification.permission !== "granted") {
-      Notification.requestPermission();
+    if ("Notification" in window && "serviceWorker" in navigator) {
+      Notification.requestPermission().then((permission) => {
+        if (permission === "granted") {
+          console.log("Notification permission granted.");
+        } else {
+          console.log("Notification permission denied.");
+        }
+      });
     }
   }, []);
 

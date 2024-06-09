@@ -15,3 +15,8 @@ seperate section for hidden notes
 Password for locked
  
 ....
+
+
+USE PUSH API TO send/Receive notification instead of notification API
+as push API works when app is offline
+

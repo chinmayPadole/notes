@@ -1,4 +1,4 @@
-// /* eslint-disable no-restricted-globals */
+/* eslint-disable no-restricted-globals */
 // self.addEventListener("install", (event) => {
 //   event.waitUntil(
 //     caches.open("my-pwa-cache").then((cache) => {
@@ -20,3 +20,43 @@
 //     })
 //   );
 // });
+
+self.addEventListener("push", function (event) {
+  const data = event.data ? event.data.json() : {};
+  console.log("push received", data);
+  const options = {
+    body: data.body,
+    icon: data.icon,
+    badge: data.badge,
+  };
+  event.waitUntil(self.registration.showNotification(data.title, options));
+});
+
+self.addEventListener("notificationclick", function (event) {
+  event.notification.close();
+  //   event.waitUntil(clients.openWindow(event.notification.data.url));
+});
+
+self.addEventListener("message", function (event) {
+  const data = event.data;
+
+  console.log("Recived PUSH Message", data);
+
+  if (data && data.type === "TRIGGER_PUSH") {
+    const options = {
+      body: data.body,
+      icon: "/icon.png",
+      badge: "/badge.png",
+      actions: [
+        {
+          action: "view",
+          title: "View",
+        },
+      ],
+    };
+
+    this.setTimeout(() => {
+      self.registration.showNotification(data.title, options);
+    }, data.delay);
+  }
+});

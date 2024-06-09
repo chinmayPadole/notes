@@ -49,7 +49,8 @@ export const Reminders: React.FC<{ show: boolean; onClose: () => void }> = ({
   show,
   onClose,
 }) => {
-  const { timers, addTimer, removeTimer, clearAllTimers } = useTimerManager();
+  // const { timers, addTimer, removeTimer, clearAllTimers } = useTimerManager();
+  const { timers, addTimer } = useTimerManager();
 
   console.log(timers);
 

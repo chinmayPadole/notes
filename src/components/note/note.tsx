@@ -112,7 +112,7 @@ export const Note: React.FC<NoteProps> = ({
   const [showReminderOption, setReminderOption] = useState(false);
   const [reminderText, setReminderText] = useState("");
   const [showOptions, setShowOptions] = useState(false);
-  const { timers, addTimer, removeTimer, clearAllTimers } = useTimerManager();
+  const { timers, addTimer } = useTimerManager();
 
   const fadeOut = (cb: NodeJS.Timeout) => {
     setIsFadingOut(true);
@@ -254,15 +254,10 @@ export const Note: React.FC<NoteProps> = ({
                   onClick={() => {
                     const remiderData = getReminderTime(content);
                     if (remiderData !== undefined) {
-                      addTimer(() => {
-                        if (Notification.permission === "granted") {
-                          new Notification("Reminder", {
-                            body: remiderData.reminderText,
-                          });
-                        } else {
-                          alert(`Reminder: ${remiderData.reminderText}`);
-                        }
-                      }, remiderData.reminderTime); // 5 seconds timer
+                      addTimer(
+                        remiderData.reminderTime,
+                        remiderData.reminderText
+                      ); // 5 seconds timer
                     }
                     setShowOptions(false);
                     showToast(`reminder set ${reminderText}`, "black", 3000);
