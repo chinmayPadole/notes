@@ -159,7 +159,7 @@ export const NewNoteEditor: React.FC<NewNoteEditorProps> = ({
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === "Enter" && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey && !isMobileBrowser) {
       e.preventDefault();
       // Add logic here if you want to handle Enter key without Shift (e.g., execute command)
     }
