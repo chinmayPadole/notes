@@ -2,11 +2,14 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import "./voice.css";
+import { useToast } from "../../provider/toastProvider";
 
 export const Voice: React.FC<{
   setTranscript: (transcript: string) => void;
   setVoice: (isVoiceOn: boolean) => void;
 }> = ({ setTranscript, setVoice }) => {
+  const { showToast } = useToast();
+
   const [isListening, setIsListening] = useState<boolean>(false);
   const recognitionRef = useRef<any>(null);
 
@@ -25,6 +28,7 @@ export const Voice: React.FC<{
           console.log("Microphone stream:", stream);
         });
     } catch (err) {
+      showToast("microphone permission denied", "red", 3000);
       setHasPermission(false);
       console.error("Error accessing microphone:", err);
     }

@@ -78,3 +78,10 @@ export const blobToBase64 = (url: string) => {
     };
   });
 };
+
+export const isMobile = () => {
+  const userAgent: string = navigator.userAgent || (navigator as any).vendor;
+  return /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(
+    userAgent.toLowerCase()
+  );
+};

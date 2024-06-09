@@ -20,11 +20,15 @@ const TerminalContainer = styled.div<{
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
   // width: max-content;
   // max-width: 800px;
-  min-width: 315px;
+  min-width: max(350px, calc(100vw - 45px));
   word-wrap: break-word;
   overflow: auto;
   position: relative;
   margin: 1%;
+
+  @media (max-width: 500px) {
+    min-width: max(350px, calc(100vw - 25px));
+  }
 `;
 
 const TerminalHeader = styled.div<{
@@ -62,7 +66,8 @@ const Date = styled.div`
 
 const TerminalBody = styled.div`
   padding: 20px;
-  font-size: 14px;
+  font-size: 18px !important;
+  letter-spacing: 0.007em !important;
   white-space: pre-wrap;
   position: relative;
   word-break: break-word;
@@ -83,7 +88,7 @@ export const Note: React.FC<NoteProps> = ({
   toggleNoteUpdateMode,
 }): JSX.Element => {
   const { showToast } = useToast();
-  const [istNoteEditorOpen, toggleNoteEditor] = useState<boolean>(false);
+  const [isNoteUpdatorOpen, toggleNoteEditor] = useState<boolean>(false);
   const [formattedContent, setFormattedContent] = useState<string>(content);
   const [isImage, setIsImage] = useState<boolean>(false);
   const [colorSet, setActiveColorSet] = useState<{
@@ -184,6 +189,12 @@ export const Note: React.FC<NoteProps> = ({
     });
   };
 
+  useEffect(() => {
+    if (!isNoteUpdatorOpen) {
+      toggleNoteUpdateMode(false);
+    }
+  }, [isNoteUpdatorOpen]);
+
   return (
     <>
       <NoteContainer>
@@ -256,7 +267,7 @@ export const Note: React.FC<NoteProps> = ({
           </div>
         )}
       </NoteContainer>
-      {istNoteEditorOpen && (
+      {isNoteUpdatorOpen && (
         <UpdateNote
           updateNote={updateNote}
           noteId={id}

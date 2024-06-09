@@ -2,18 +2,55 @@ import React, { useEffect, useRef, useState } from "react";
 import "./floatingMenu.css";
 import { useSecurity } from "../../provider/securityProvider";
 import { Legend } from "../legend/legend";
+import { useToast } from "../../provider/toastProvider";
 
 export const FloatingMenu: React.FC<{
   setTranscript: (transcript: string) => void;
   setVoice: (isVoiceOn: boolean) => void;
   setNoteEditorOpen: (openNoteEditor: boolean) => void;
 }> = ({ setTranscript, setVoice, setNoteEditorOpen }) => {
+  const { showToast } = useToast();
   const [isMenuOpen, setMenuVisibility] = useState(false);
   const { isLocked, toggleLock } = useSecurity();
 
   /* Voice Region */
   const [isListening, setIsListening] = useState<boolean>(false);
   const recognitionRef = useRef<any>(null);
+
+  const [hasPermission, setHasPermission] = useState<boolean>(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const streamRef = useRef<MediaStream | null>(null);
+
+  const requestMicrophonePermission = () => {
+    navigator.mediaDevices
+      .getUserMedia({ video: false, audio: true })
+      .then((stream) => {
+        setHasPermission(true);
+        if (streamRef.current) {
+          streamRef.current = stream; // A
+        }
+        // window.localAudio.srcObject = stream; // B
+        // window.localAudio.autoplay = true; // C
+        // You can now use the stream object to access the microphone
+
+        if (audioRef.current) {
+          audioRef.current.srcObject = stream;
+          audioRef.current.autoplay = true;
+        }
+        console.log("Microphone stream:", stream);
+      })
+      .catch((error) => {
+        showToast("microphone permission denied", "red", 3000);
+        setHasPermission(false);
+        console.error("Error accessing microphone:", error);
+      });
+  };
+
+  // useEffect(() => {
+  //   if (hasPermission === false) {
+  //     requestMicrophonePermission();
+  //   }
+  // }, [hasPermission]);
 
   useEffect(() => {
     // Check if the browser supports the Web Speech API
@@ -41,9 +78,9 @@ export const FloatingMenu: React.FC<{
     };
 
     recognition.onend = () => {
-    
       setVoice(false);
       setIsListening(false);
+      handleStopListening();
     };
 
     recognition.onerror = (event: any) => {
@@ -55,6 +92,9 @@ export const FloatingMenu: React.FC<{
   }, []);
 
   const handleStartListening = () => {
+    if (!hasPermission) {
+      requestMicrophonePermission();
+    }
     if (recognitionRef.current && !isListening) {
       recognitionRef.current.start();
       setIsListening(true);
@@ -62,10 +102,22 @@ export const FloatingMenu: React.FC<{
   };
 
   const handleStopListening = () => {
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((track) => track.stop());
+      streamRef.current = null;
+      setIsListening(false);
+      setHasPermission(false);
+    }
+
+    if (audioRef.current) {
+      audioRef.current.srcObject = null;
+    }
     if (recognitionRef.current && isListening) {
       recognitionRef.current.stop();
       setIsListening(false);
     }
+
+    console.log(audioRef.current, streamRef.current);
   };
   /* Voice Region End*/
 

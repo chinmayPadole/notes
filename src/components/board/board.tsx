@@ -19,7 +19,7 @@ export const Board: React.FC = () => {
   const [searchText, setSearchText] = useState<string>("");
   const [isNoteUpdating, toggleNoteEditorMode] = useState(false);
 
-  const [istNoteEditorOpen, openNoteEditor] = useState(Boolean);
+  const [isNoteEditorOpen, openNoteEditor] = useState(Boolean);
 
   useEffect(() => {
     if (
@@ -148,18 +148,12 @@ export const Board: React.FC = () => {
             addNote={addNote}
             updateNote={updateNote}
             removeNote={removeNote}
-            openNoteEditor={istNoteEditorOpen}
+            openNoteEditor={isNoteEditorOpen}
             toggleNoteEditorMode={toggleNoteEditorMode}
             turnOffOpenNoteEditorFlag={openNoteEditor}
           />
 
           {/* <Voice setTranscript={setTranscript} setVoice={setVoiceOn} /> */}
-          <FloatingMenu
-            setTranscript={setTranscript}
-            setVoice={setVoiceOn}
-            setNoteEditorOpen={openNoteEditor}
-          />
-          <Wave showWave={isVoiceOn} />
         </>
       )}
       {isSearchMode && (
@@ -169,6 +163,13 @@ export const Board: React.FC = () => {
           setSearchText={setSearchText}
         />
       )}
+
+      <FloatingMenu
+        setTranscript={setTranscript}
+        setVoice={setVoiceOn}
+        setNoteEditorOpen={openNoteEditor}
+      />
+      <Wave showWave={isVoiceOn} />
       {/* {transcript} */}
     </>
   );
