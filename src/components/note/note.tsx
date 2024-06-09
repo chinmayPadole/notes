@@ -7,7 +7,8 @@ import { useToast } from "../../provider/toastProvider";
 import { UpdateNote } from "../newNote/UpdateNote";
 import { useSecurity } from "../../provider/securityProvider";
 import { NoteProps } from "./NoteProps";
-import { isReminderPossible, setReminder } from "../../common/remider";
+import { isReminderPossible, getReminderTime } from "../../common/remider";
+import { useTimerManager } from "../../service/useTimeManager";
 
 const TerminalContainer = styled.div<{
   bgColor: string;
@@ -111,6 +112,7 @@ export const Note: React.FC<NoteProps> = ({
   const [showReminderOption, setReminderOption] = useState(false);
   const [reminderText, setReminderText] = useState("");
   const [showOptions, setShowOptions] = useState(false);
+  const { timers, addTimer, removeTimer, clearAllTimers } = useTimerManager();
 
   const fadeOut = (cb: NodeJS.Timeout) => {
     setIsFadingOut(true);
@@ -250,7 +252,18 @@ export const Note: React.FC<NoteProps> = ({
               {showReminderOption && (
                 <button
                   onClick={() => {
-                    setReminder(content);
+                    const remiderData = getReminderTime(content);
+                    if (remiderData !== undefined) {
+                      addTimer(() => {
+                        if (Notification.permission === "granted") {
+                          new Notification("Reminder", {
+                            body: remiderData.reminderText,
+                          });
+                        } else {
+                          alert(`Reminder: ${remiderData.reminderText}`);
+                        }
+                      }, remiderData.reminderTime); // 5 seconds timer
+                    }
                     setShowOptions(false);
                     showToast(`reminder set ${reminderText}`, "black", 3000);
                   }}

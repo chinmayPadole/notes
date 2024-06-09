@@ -21,7 +21,7 @@ export const isReminderPossible = (inputText: string): string | null => {
   return null;
 };
 
-export const setReminder = (inputText: string) => {
+export const getReminderTime = (inputText: string): {reminderTime: number, reminderText: string} | undefined => {
   // Parse the input text using compromise
   const doc = nlp(inputText) as any;
   const task = doc.sentences().out("text");
@@ -33,18 +33,21 @@ export const setReminder = (inputText: string) => {
     const reminderTime = new Date(time.start).getTime();
     const timeInterval = reminderTime - now;
 
+    console.log(timeInterval, time.start, reminderTime);
+
     if (timeInterval > 0) {
       // Set a reminder
-      setTimeout(() => {
-        if (Notification.permission === "granted") {
-          new Notification("Reminder", {
-            body: task,
-          });
+      // setTimeout(() => {
+      //   if (Notification.permission === "granted") {
+      //     new Notification("Reminder", {
+      //       body: task,
+      //     });
+      //   } else {
+      //     alert(`Reminder: ${task}`);
+      //   }
+      // }, timeInterval);
 
-        } else {
-          alert(`Reminder: ${task}`);
-        }
-      }, timeInterval);
+      return {reminderTime: timeInterval, reminderText: task};
     }
   }
 };
