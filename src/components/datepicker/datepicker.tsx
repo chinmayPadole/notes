@@ -97,7 +97,7 @@ export const DateTimePickerModal: React.FC<{
       {isOpen && (
         <ModalOverlay>
           <Modal ref={modalRef}>
-            <Title>Select reminder time</Title>
+            <Title>set reminder time</Title>
             <DateTimeInput
               type="datetime-local"
               value={selectedDate ?? ""}
