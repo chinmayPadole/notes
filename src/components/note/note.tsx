@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import "./note.css";
 import { getFormattedDate, isValidImage, maskString } from "../../common/utils";
 import { ColorSet } from "../../common/colorSet";
@@ -9,6 +9,7 @@ import { useSecurity } from "../../provider/securityProvider";
 import { NoteProps } from "./NoteProps";
 import { isReminderPossible, getReminderTime } from "../../common/remider";
 import { useTimerManager } from "../../service/useTimeManager";
+import DateTimePickerModal from "../datepicker/datepicker";
 
 const TerminalContainer = styled.div<{
   bgColor: string;
@@ -63,7 +64,6 @@ const Date = styled.div`
 
 const TerminalBody = styled.div`
   padding: 20px;
-  font-size: 18px !important;
   letter-spacing: 0.007em !important;
   white-space: pre-wrap;
   position: relative;
@@ -72,6 +72,8 @@ const TerminalBody = styled.div`
 
 const NoteContainer = styled.div`
   padding-top: 10px;
+  transition: border 0.4s linear;
+  border-radius: 10px;
 `;
 
 export const Note: React.FC<NoteProps> = ({
@@ -106,7 +108,46 @@ export const Note: React.FC<NoteProps> = ({
   const [showReminderOption, setReminderOption] = useState(false);
   const [reminderText, setReminderText] = useState("");
   const [showOptions, setShowOptions] = useState(false);
-  const { timers, addTimer } = useTimerManager();
+  const { addTimer } = useTimerManager();
+
+  const [isPressing, setIsPressing] = useState(false);
+  const [isLongPress, setIsLongPress] = useState(false);
+  const timerRef = useRef<number | null>(null);
+
+  const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (isPressing) {
+      timerRef.current = window.setTimeout(() => {
+        setIsLongPress(true);
+        setIsDatePickerOpen(true);
+      }, 1000); // Adjust the time to your need (1000ms = 1s)
+    } else {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+      setIsLongPress(false);
+    }
+
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+    };
+  }, [isPressing]);
+
+  const handleMouseDown = () => {
+    setIsPressing(true);
+  };
+
+  const handleMouseUp = () => {
+    setIsPressing(false);
+  };
+
+  const handleMouseLeave = () => {
+    setIsPressing(false);
+  };
 
   const fadeOut = (cb: NodeJS.Timeout) => {
     setIsFadingOut(true);
@@ -187,7 +228,12 @@ export const Note: React.FC<NoteProps> = ({
 
   return (
     <>
-      <NoteContainer>
+      <NoteContainer
+        className={`long-press-button ${isLongPress ? "long-press" : ""}`}
+        onMouseDown={handleMouseDown}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseLeave}
+      >
         <TerminalContainer
           bgColor={colorSet.noteBackground}
           fontColor={colorSet.fontColor}
@@ -223,8 +269,9 @@ export const Note: React.FC<NoteProps> = ({
         </TerminalContainer>
         {showOptions && (
           <div
-            className={`options-container ${showOptions ? "fade-in" : "fade-out"
-              }`}
+            className={`options-container ${
+              showOptions ? "fade-in" : "fade-out"
+            }`}
           >
             <button
               className="close-button"
@@ -270,6 +317,14 @@ export const Note: React.FC<NoteProps> = ({
           toggleModal={toggleNoteEditor}
           currentColor={color}
           isNoteLocked={isNoteLocked}
+        />
+      )}
+      {isDatePickerOpen && (
+        <DateTimePickerModal
+          selectedDate={selectedDate}
+          setSelectedDate={setSelectedDate}
+          isOpen={isDatePickerOpen}
+          setIsOpen={setIsDatePickerOpen}
         />
       )}
     </>

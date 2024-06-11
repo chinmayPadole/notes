@@ -128,3 +128,7 @@
 .right-half {
   right: 0;
 }
+
+.long-press {
+  border: 2px solid green;
+}

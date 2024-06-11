@@ -10,7 +10,7 @@
   z-index: 999;
   width: max-content;
   height: 65px;
-  background: #222;
+  background: radial-gradient(circle, #0e0e0e 15%, #010101);
   border-radius: 15px;
   cursor: pointer;
   display: flex;
@@ -19,6 +19,13 @@
   padding: 0 30px;
   overflow: hidden;
   transition: width 300ms linear;
+  transition: all 0.3s cubic-bezier(0, 0, 0.5, 1);
+  box-shadow: 2px 4px 12px #00000014;
+}
+
+.floatingMenu-button:hover {
+  box-shadow: 2px 4px 16px #333;
+  transform: scale3d(1.01, 1.01, 1.01);
 }
 
 .x-icon {
@@ -27,7 +34,7 @@
   width: 30px;
   height: 3px;
   border-radius: 50px;
-  background-color: #eeff00;
+  background-color: red;
   pointer-events: none;
   transition: 0.5s;
 }
