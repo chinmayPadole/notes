@@ -2,8 +2,6 @@ import React, { useState, useEffect } from "react";
 import "./board.css";
 import { Note } from "../note/note";
 import { NoteProps } from "../note/NoteProps";
-import { NewNoteDetector } from "../newNote/newNoteDetector";
-import { Voice } from "../voice/voice";
 import { Wave } from "../voice/wave";
 import { getUniqueId } from "../../common/utils";
 import { Search } from "../search/search";
@@ -11,11 +9,13 @@ import { searchAndSort } from "../../common/search";
 import { FloatingMenu } from "../floatingMenu/floatingMenu";
 import { NewNoteEditor } from "../newNote/newNoteEditor";
 
-export const Board: React.FC = () => {
+export const Board: React.FC<{
+  isSearchMode: boolean;
+  setSearchMode: (toggleSearchMode: boolean) => void;
+}> = ({ isSearchMode, setSearchMode }) => {
   const [notes, setNotes] = useState<NoteProps[]>([]);
   const [transcript, setTranscript] = useState<string>("");
   const [isVoiceOn, setVoiceOn] = useState<boolean>(false);
-  const [isSearchMode, setSearchMode] = useState<boolean>(false);
   const [searchText, setSearchText] = useState<string>("");
   const [isNoteUpdating, toggleNoteEditorMode] = useState(false);
 
@@ -111,21 +111,6 @@ export const Board: React.FC = () => {
       );
     });
   };
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === "f") {
-        e.preventDefault();
-        setSearchMode(true);
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, []);
 
   return (
     <>

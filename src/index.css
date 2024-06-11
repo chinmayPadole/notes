@@ -1,12 +1,13 @@
-* {
-  margin: 0;
-
+.board {
   /* Font Style */
   font-size: 14px;
   line-height: 1.42859;
   font-weight: 400;
   letter-spacing: -0.016em;
+}
 
+* {
+  margin: 0;
   font-family: SF Pro Display, SF Pro Icons, Helvetica Neue, Helvetica, Arial,
     sans-serif;
 }

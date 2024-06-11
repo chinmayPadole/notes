@@ -9,5 +9,9 @@
   display: flex;
   flex-wrap: wrap;
   gap: 1em;
-  place-content: flex-start;
+  justify-content: center;
+}
+
+.board-container {
+  z-index: 2;
 }

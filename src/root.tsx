@@ -1,7 +1,8 @@
 import { useEffect } from "react";
 import { Board } from "./components/board/board";
-import { Settings } from "./components/settings/settings";
 import "./root.css";
+import * as serviceWorker from "./serviceWorker";
+import { SuperNotes } from "./components/superNotes/superNotes";
 
 export const Root = () => {
   // Request notification permission on component mount
@@ -17,14 +18,24 @@ export const Root = () => {
     }
   }, []);
 
+  useEffect(() => {
+    serviceWorker.register({
+      onUpdate: (registration) => {
+        registration.waiting?.postMessage({ type: "SKIP_WAITING" });
+      },
+    });
+  }, []);
+
   return (
-    <div className="root">
-      <div className="settings">
-        <Settings />
-      </div>
-      <div className="board">
-        <Board />
-      </div>
-    </div>
+    // <div className="root">
+    //   <div className="header">
+    //     <span>Hello, Chinmay How can I help you today?</span>
+    //   </div>
+    //   <div className="board">
+    //     <Board />
+    //   </div>
+    // </div>
+
+    <SuperNotes />
   );
 };

@@ -126,6 +126,14 @@ export const UpdateNote: React.FC<UpdateProps> = ({
     setInputValue(e.target.value);
   };
 
+  // Function to remove empty lines
+  const removeEmptyLines = (input: string): string => {
+    return input
+      .split("\n")
+      .filter((line) => line.trim() !== "")
+      .join("\n");
+  };
+
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey && !isMobileBrowser) {
       e.preventDefault();
@@ -179,7 +187,7 @@ export const UpdateNote: React.FC<UpdateProps> = ({
       closeModal();
       return;
     }
-    updateNote(noteId, inputValue, "white", isNoteLocked);
+    updateNote(noteId, removeEmptyLines(inputValue), "white", isNoteLocked);
 
     closeModal();
   };

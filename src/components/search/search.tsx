@@ -46,6 +46,23 @@ export const Search: React.FC<SearchProps> = ({
     }
   }, [visible]);
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        visible &&
+        inputRef.current &&
+        !inputRef.current.contains(event.target as Node)
+      ) {
+        onClose(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [visible, onClose]);
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setSearchText(value);

@@ -52,8 +52,6 @@ export const Reminders: React.FC<{ show: boolean; onClose: () => void }> = ({
   // const { timers, addTimer, removeTimer, clearAllTimers } = useTimerManager();
   const { timers, addTimer } = useTimerManager();
 
-  console.log(timers);
-
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {

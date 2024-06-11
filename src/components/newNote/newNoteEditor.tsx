@@ -158,6 +158,14 @@ export const NewNoteEditor: React.FC<NewNoteEditorProps> = ({
     setInputValue(e.target.value);
   };
 
+  // Function to remove empty lines
+  const removeEmptyLines = (input: string): string => {
+    return input
+      .split("\n")
+      .filter((line) => line.trim() !== "")
+      .join("\n");
+  };
+
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey && !isMobileBrowser) {
       e.preventDefault();
@@ -213,7 +221,7 @@ export const NewNoteEditor: React.FC<NewNoteEditorProps> = ({
     }
     const newData: NoteProps = {
       id: getUniqueId(),
-      content: inputValue,
+      content: removeEmptyLines(inputValue),
       createDt: new Date(),
       color: "white",
       removeNote: removeNote,

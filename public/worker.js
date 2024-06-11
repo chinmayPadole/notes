@@ -21,6 +21,18 @@
 //   );
 // });
 
+self.addEventListener("install", (event) => {
+  console.log("Service Worker installing.");
+  self.skipWaiting(); // Activate the service worker immediately
+});
+
+self.addEventListener("activate", (event) => {
+  console.log("Service Worker activating.");
+  event.waitUntil(
+    self.clients.claim() // Take control of uncontrolled clients as soon as possible
+  );
+});
+
 self.addEventListener("push", function (event) {
   const data = event.data ? event.data.json() : {};
   console.log("push received", data);
@@ -34,7 +46,7 @@ self.addEventListener("push", function (event) {
 
 self.addEventListener("notificationclick", function (event) {
   event.notification.close();
-  //   event.waitUntil(clients.openWindow(event.notification.data.url));
+  event.waitUntil(self.clients.openWindow("/"));
 });
 
 self.addEventListener("message", function (event) {

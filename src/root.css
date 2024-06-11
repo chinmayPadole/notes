@@ -1,22 +1,22 @@
 .root {
   display: grid;
-  grid-template-areas:
-    "settings"
-    "board";
   grid-template-rows: auto 1fr;
   height: 100vh;
   width: 100vw;
 }
 
-.settings {
-  grid-area: settings;
-  background-color: #ddd;
-  border-bottom: 1px solid #ccc;
-  height: 100%;
+.board {
+  overflow-x: hidden;
 }
 
-.board {
-  grid-area: board;
-  background-color: #d5f2e3;
-  overflow-x: hidden;
+.header {
+  z-index: 1;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100px;
+  /* background-color: #fff; */
+  z-index: 1;
+  color: green;
 }

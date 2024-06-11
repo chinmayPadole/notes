@@ -18,18 +18,14 @@ const TerminalContainer = styled.div<{
   color: ${(props) => props.fontColor};
 
   border-radius: 10px;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  box-shadow: 2px 4px 12px #00000014;
   // width: max-content;
   // max-width: 800px;
-  min-width: max(350px, calc(100vw - 45px));
+  min-width: max(350px, calc(100vw - 100px));
+  max-width: max(350px, calc(100vw - 100px));
   word-wrap: break-word;
   overflow: auto;
   position: relative;
-  margin: 1%;
-
-  @media (max-width: 500px) {
-    min-width: max(350px, calc(100vw - 25px));
-  }
 `;
 
 const TerminalHeader = styled.div<{
@@ -75,7 +71,7 @@ const TerminalBody = styled.div`
 `;
 
 const NoteContainer = styled.div`
-  padding: 10px;
+  padding-top: 10px;
 `;
 
 export const Note: React.FC<NoteProps> = ({

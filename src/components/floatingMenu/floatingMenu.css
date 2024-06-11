@@ -2,6 +2,7 @@
   position: fixed;
   bottom: 85px;
   left: 10px;
+  z-index: 3;
 }
 
 .floatingMenu-button {

@@ -4,7 +4,6 @@ import "./index.css";
 import { Root } from "./root";
 import { ToastProvider } from "./provider/toastProvider";
 import { SecurityProvider } from "./provider/securityProvider";
-import * as serviceWorker from "./serviceWorker";
 
 declare global {
   interface Window {
@@ -25,4 +24,4 @@ root.render(
   </React.StrictMode>
 );
 
-serviceWorker.register();
+// serviceWorker.register();
