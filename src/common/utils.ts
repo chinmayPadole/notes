@@ -86,3 +86,16 @@ export const isMobile = () => {
   );
 };
 
+export const getClipBoardData = async (): Promise<string | null> => {
+  let clipboardText: string = "";
+  if (!navigator.clipboard) {
+    console.error("Clipboard API not available");
+    return null;
+  }
+  try {
+    clipboardText = await navigator.clipboard.readText();
+  } catch (err) {
+    return null;
+  }
+  return clipboardText;
+};

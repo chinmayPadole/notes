@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
 import styled from "styled-components";
-import { blobToBase64, getUniqueId, isMobile } from "../../common/utils";
+import { blobToBase64, getClipBoardData, getUniqueId, isMobile } from "../../common/utils";
 import { NoteProps } from "../note/NoteProps";
+import { useToast } from "../../provider/toastProvider";
 
 const TerminalTextArea = styled.textarea`
   width: 100%;
@@ -115,6 +116,8 @@ export const NewNoteEditor: React.FC<NewNoteEditorProps> = ({
   let [inputValue, setInputValue] = useState<string>("");
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
   const [isImage, setIsImage] = useState<boolean>(false);
+
+  const { showToast } = useToast();
 
   const openModal = () => {
     setModalIsOpen(true);
@@ -231,6 +234,16 @@ export const NewNoteEditor: React.FC<NewNoteEditorProps> = ({
     setInputValue((prevContent) => prevContent + paste);
   };
 
+  const performClipboardPaste = async () => {
+    const clipBoardText = await getClipBoardData()
+    if (clipBoardText !== null) {
+      setInputValue((prevContent) => prevContent + clipBoardText);
+    }
+    else {
+      showToast("Permission Denied", "#6a040f", 2000, "error");
+    }
+  }
+
   const performAction = () => {
     if (inputValue.trim().length === 0) {
       closeModal();
@@ -291,7 +304,7 @@ export const NewNoteEditor: React.FC<NewNoteEditorProps> = ({
 
           <ContentActions>
             <TextActionButtons>
-              <ActionButton>
+              <ActionButton onClick={() => performClipboardPaste()}>
                 <svg
                   viewBox="0 0 24.00 24.00"
                   xmlns="http://www.w3.org/2000/svg"

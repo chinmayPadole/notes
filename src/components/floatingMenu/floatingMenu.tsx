@@ -40,7 +40,7 @@ export const FloatingMenu: React.FC<{
         }
       })
       .catch((error) => {
-        showToast("microphone permission denied", "red", 3000);
+        showToast("microphone permission denied", "#6a040f", 3000, "error");
         setHasPermission(false);
         console.error("Error accessing microphone:", error);
       });

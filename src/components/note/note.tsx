@@ -145,12 +145,12 @@ export const Note: React.FC<NoteProps> = ({
 
   const copy = () => {
     navigator.clipboard.writeText(content);
-    showToast("copied", "black", 3000);
+    showToast("copied", "#333", 3000);
   };
 
   const lock = () => {
     updateNote(id, content, color, !isNoteLocked);
-    showToast(isNoteLocked ? "locked" : "unlocked", "black", 3000);
+    showToast(isNoteLocked ? "locked" : "unlocked", "#333", 3000);
   };
 
   const toggleOptions = () => {
@@ -223,9 +223,8 @@ export const Note: React.FC<NoteProps> = ({
         </TerminalContainer>
         {showOptions && (
           <div
-            className={`options-container ${
-              showOptions ? "fade-in" : "fade-out"
-            }`}
+            className={`options-container ${showOptions ? "fade-in" : "fade-out"
+              }`}
           >
             <button
               className="close-button"
@@ -248,7 +247,7 @@ export const Note: React.FC<NoteProps> = ({
                       ); // 5 seconds timer
                     }
                     setShowOptions(false);
-                    showToast(`reminder set ${reminderText}`, "black", 3000);
+                    showToast(`reminder set ${reminderText}`, "#333", 3000);
                   }}
                 >
                   <p>set reminder {reminderText}?</p>

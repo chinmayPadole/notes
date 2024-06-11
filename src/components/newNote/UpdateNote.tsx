@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import "./newNoteDetector.css";
-import { blobToBase64, isMobile } from "../../common/utils";
+import { blobToBase64, getClipBoardData, isMobile } from "../../common/utils";
 import styled from "styled-components";
+import { useToast } from "../../provider/toastProvider";
 
 const TerminalTextArea = styled.textarea`
   width: 100%;
@@ -115,6 +116,8 @@ export const UpdateNote: React.FC<UpdateProps> = ({
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
   const [isImage, setIsImage] = useState<boolean>(false);
 
+  const { showToast } = useToast();
+
   const openModal = () => {
     setModalIsOpen(true);
   };
@@ -197,6 +200,16 @@ export const UpdateNote: React.FC<UpdateProps> = ({
     setInputValue((prevContent) => prevContent + paste);
   };
 
+  const performClipboardPaste = async () => {
+    const clipBoardText = await getClipBoardData()
+    if (clipBoardText !== null) {
+      setInputValue((prevContent) => prevContent + clipBoardText);
+    }
+    else {
+      showToast("Permission Denied", "#6a040f", 2000, "error");
+    }
+  }
+
   const performAction = () => {
     if (inputValue.trim().length === 0) {
       closeModal();
@@ -245,7 +258,7 @@ export const UpdateNote: React.FC<UpdateProps> = ({
 
           <ContentActions>
             <TextActionButtons>
-              <ActionButton>
+              <ActionButton onClick={() => performClipboardPaste()}>
                 <svg
                   viewBox="0 0 24.00 24.00"
                   xmlns="http://www.w3.org/2000/svg"
