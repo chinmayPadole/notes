@@ -10,9 +10,6 @@ const TerminalTextArea = styled.textarea`
   border: none;
   outline: none;
   resize: none;
-
-  border-bottom-right-radius: 10px;
-  border-bottom-left-radius: 10px;
   padding: 20px;
 `;
 
@@ -44,20 +41,38 @@ const Overlay = styled.div`
 
 const ContentActions = styled.div`
   width: 100%;
-  height: 60px;
-  margin-bottom: min(70%, 380px);
-  max-width: 600px;
-  width: min(600px, 85%);
+  height: 40px;
   display: flex;
   justify-content: flex-end;
+
+  border-bottom-right-radius: 10px;
+  border-bottom-left-radius: 10px;
+  background-color: #575353;
+
+  padding-right: 40px;
 `;
 const SaveContentButton = styled.div`
   width: max-content;
   cursor: pointer;
+  transform: translateX(80%);
   svg {
-    width: 50px;
-    height: 50px;
+    width: 35px;
+    height: 35px;
     fill: #27c93f;
+  }
+`;
+
+const TextActionButtons = styled.div`
+  display: flex;
+  width: 100%;
+  padding-left: 2%;
+  align-items: center;
+`;
+const ActionButton = styled.div`
+  cursor: pointer;
+  svg {
+    width: 30px;
+    height: 30px;
   }
 `;
 
@@ -66,7 +81,7 @@ const isMobileBrowser = isMobile();
 const Modal: React.FC<{
   isOpen: boolean;
   onClose: () => void;
-  children: JSX.Element[];
+  children: JSX.Element;
 }> = ({ isOpen, onClose, children }) => {
   if (!isOpen) return null;
 
@@ -227,35 +242,58 @@ export const UpdateNote: React.FC<UpdateProps> = ({
           {isImage && (
             <img className="imageNote" src={inputValue} alt={inputValue} />
           )}
+
+          <ContentActions>
+            <TextActionButtons>
+              <ActionButton>
+                <svg
+                  viewBox="0 0 24.00 24.00"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="#ffffff"
+                  stroke="#ffffff"
+                  stroke-width="0.00024000000000000003"
+                >
+                  <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                  <g
+                    id="SVGRepo_tracerCarrier"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  ></g>
+                  <g id="SVGRepo_iconCarrier">
+                    <path d="M3 21h5v-1H4V4h2v2h10V4h2v3h.4a.989.989 0 0 1 .6.221V3h-3V2h-3a2 2 0 0 0-4 0H6v1H3zM7 3h3V1.615A.615.615 0 0 1 10.614 1h.771a.615.615 0 0 1 .615.615V3h3v2H7zm4 14h9v1h-9zM9 8v16h13V11.6L18.4 8zm12 15H10V9h7v4h4zm0-11h-3V9h.31L21 11.69zm-10 2h9v1h-9zm0 6h7v1h-7z"></path>
+                    <path fill="none" d="M0 0h24v24H0z"></path>
+                  </g>
+                </svg>
+              </ActionButton>
+            </TextActionButtons>
+            <SaveContentButton onClick={() => performAction()}>
+              <svg
+                fill="#ffffff"
+                width="151px"
+                height="151px"
+                viewBox="0 0 24 24"
+                id="send"
+                data-name="Line Color"
+                xmlns="http://www.w3.org/2000/svg"
+                stroke="#ffffff"
+              >
+                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                <g
+                  id="SVGRepo_tracerCarrier"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                ></g>
+                <g id="SVGRepo_iconCarrier">
+                  <line id="secondary" x1="7" y1="12" x2="11" y2="12"></line>
+                  <path
+                    id="primary"
+                    d="M5.44,4.15l14.65,7a1,1,0,0,1,0,1.8l-14.65,7A1,1,0,0,1,4.1,18.54l2.72-6.13a1.06,1.06,0,0,0,0-.82L4.1,5.46A1,1,0,0,1,5.44,4.15Z"
+                  ></path>
+                </g>
+              </svg>
+            </SaveContentButton>
+          </ContentActions>
         </TerminalContainer>
-        <ContentActions>
-          <SaveContentButton onClick={() => performAction()}>
-            <svg
-              fill="#ffffff"
-              width="151px"
-              height="151px"
-              viewBox="0 0 24 24"
-              id="send"
-              data-name="Line Color"
-              xmlns="http://www.w3.org/2000/svg"
-              stroke="#ffffff"
-            >
-              <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-              <g
-                id="SVGRepo_tracerCarrier"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              ></g>
-              <g id="SVGRepo_iconCarrier">
-                <line id="secondary" x1="7" y1="12" x2="11" y2="12"></line>
-                <path
-                  id="primary"
-                  d="M5.44,4.15l14.65,7a1,1,0,0,1,0,1.8l-14.65,7A1,1,0,0,1,4.1,18.54l2.72-6.13a1.06,1.06,0,0,0,0-.82L4.1,5.46A1,1,0,0,1,5.44,4.15Z"
-                ></path>
-              </g>
-            </svg>
-          </SaveContentButton>
-        </ContentActions>
       </Modal>
     </>
   );

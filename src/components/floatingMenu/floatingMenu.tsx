@@ -24,7 +24,7 @@ export const FloatingMenu: React.FC<{
 
   const requestMicrophonePermission = () => {
     navigator.mediaDevices
-      .getUserMedia({ video: false, audio: true })
+      .getUserMedia({ audio: true })
       .then((stream) => {
         setHasPermission(true);
         if (streamRef.current) {
@@ -38,7 +38,6 @@ export const FloatingMenu: React.FC<{
           audioRef.current.srcObject = stream;
           audioRef.current.autoplay = true;
         }
-        console.log("Microphone stream:", stream);
       })
       .catch((error) => {
         showToast("microphone permission denied", "red", 3000);
@@ -46,6 +45,24 @@ export const FloatingMenu: React.FC<{
         console.error("Error accessing microphone:", error);
       });
   };
+
+  useEffect(() => {
+    const requestMicrophonePermission = async () => {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          audio: true,
+        });
+        setHasPermission(true);
+        // Remember to stop the tracks to release the microphone
+        stream.getTracks().forEach((track) => track.stop());
+      } catch (error) {
+        console.log(error);
+        setHasPermission(false);
+      }
+    };
+
+    requestMicrophonePermission();
+  }, []);
 
   // useEffect(() => {
   //   if (hasPermission === false) {
@@ -67,6 +84,7 @@ export const FloatingMenu: React.FC<{
     recognition.lang = "en-US";
     recognition.interimResults = false;
     recognition.maxAlternatives = 1;
+    recognition.continuous = false;
 
     recognition.onresult = (event: any) => {
       const lastResultIndex = event.results.length - 1;
@@ -79,6 +97,7 @@ export const FloatingMenu: React.FC<{
     };
 
     recognition.onend = () => {
+      recognitionRef.current.stop();
       setVoice(false);
       setIsListening(false);
       handleStopListening();
@@ -113,12 +132,6 @@ export const FloatingMenu: React.FC<{
     if (audioRef.current) {
       audioRef.current.srcObject = null;
     }
-    if (recognitionRef.current && isListening) {
-      recognitionRef.current.stop();
-      setIsListening(false);
-    }
-
-    console.log(audioRef.current, streamRef.current);
   };
   /* Voice Region End*/
 
@@ -377,7 +390,10 @@ export const FloatingMenu: React.FC<{
         </label>
       </div>
       <Legend show={isLegendOpen} onClose={() => setIsLegendOpen(false)} />
-      <Reminders show={isReminderOpen} onClose={() => setIsReminderOpen(false)} />
+      <Reminders
+        show={isReminderOpen}
+        onClose={() => setIsReminderOpen(false)}
+      />
     </>
   );
 };

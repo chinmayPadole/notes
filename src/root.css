@@ -6,6 +6,7 @@
 }
 
 .board {
+  padding-bottom: 20px;
   overflow-x: hidden;
 }
 

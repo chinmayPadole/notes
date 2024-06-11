@@ -98,8 +98,6 @@ export const Note: React.FC<NoteProps> = ({
     setActiveColorSet(ColorSet[color]);
   }, [color]);
 
-  const [isLocked, toggleLock] = useState<boolean | null>(null);
-
   const [isFadingOut, setIsFadingOut] = useState(false);
 
   const { isLocked: isPageLocked } = useSecurity();
@@ -124,12 +122,6 @@ export const Note: React.FC<NoteProps> = ({
     setActiveColorSet(ColorSet["white"]);
     toggleNoteUpdateMode(false);
   };
-
-  useEffect(() => {
-    if (isLocked !== null) {
-      updateNote(id, content, color, !isLocked);
-    }
-  }, [isLocked]);
 
   useEffect(() => {
     const contentData =
@@ -157,8 +149,8 @@ export const Note: React.FC<NoteProps> = ({
   };
 
   const lock = () => {
-    toggleLock(!isLocked);
-    showToast(isLocked ? "locked" : "unlocked", "black", 3000);
+    updateNote(id, content, color, !isNoteLocked);
+    showToast(isNoteLocked ? "locked" : "unlocked", "black", 3000);
   };
 
   const toggleOptions = () => {
