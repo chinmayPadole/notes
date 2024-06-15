@@ -52,9 +52,18 @@ self.addEventListener("notificationclick", function (event) {
 self.addEventListener("message", function (event) {
   const data = event.data;
 
-  console.log("Recived PUSH Message", data);
+  //console.log("Recived PUSH Message", data);
 
-  if (data && data.type === "TRIGGER_PUSH") {
+  if (data === "keep-alive") {
+    // console.log("Keeping service worker alive");
+    setInterval(
+      () =>
+        self.clients.matchAll().then((clients) => {
+          clients.forEach((client) => client.postMessage("keep-alive"));
+        }),
+      10000
+    ); // Adjust the interval as needed
+  } else if (data && data.type === "TRIGGER_PUSH") {
     const options = {
       body: data.body,
       icon: "/icon.png",

@@ -19,7 +19,8 @@ const Modal = styled.div`
   padding: 20px;
   border-radius: 20px;
   box-shadow: 2px 4px 16px #333;
-  width: 300px;
+  width: 70%;
+  height: 30%;
   text-align: center;
   position: relative;
 `;
@@ -31,7 +32,7 @@ const Title = styled.h2`
 `;
 
 const DateTimeInput = styled.input`
-  width: 100%;
+  margin-top: 60px;
   padding: 10px;
   transform: translateX(-10px);
   margin-bottom: 20px;
@@ -61,6 +62,13 @@ const Button = styled.button`
   }
 `;
 
+const toLocalISOString = (date: Date) => {
+  const localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000); //offset in milliseconds. Credit https://stackoverflow.com/questions/10830357/javascript-toisostring-ignores-timezone-offset
+
+  // Optionally remove second/millisecond if needed
+  return localDate.toISOString().slice(0, -1);
+};
+
 export const DateTimePickerModal: React.FC<{
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
@@ -69,10 +77,16 @@ export const DateTimePickerModal: React.FC<{
 }> = ({ isOpen, setIsOpen, selectedDate, setSelectedDate }) => {
   const modalRef = useRef<HTMLDivElement>(null);
 
-  const closeModal = () => setIsOpen(false);
+  const [date, setDate] = useState(toLocalISOString(new Date()));
+  const closeModal = (setDate: boolean = false) => {
+    setIsOpen(false);
+    if (setDate) {
+      setSelectedDate(date);
+    }
+  };
 
   const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSelectedDate(event.target.value);
+    setDate(event.target.value);
   };
 
   const handleClickOutside = (event: MouseEvent) => {
@@ -84,6 +98,8 @@ export const DateTimePickerModal: React.FC<{
   useEffect(() => {
     if (isOpen) {
       document.addEventListener("mousedown", handleClickOutside);
+
+      setSelectedDate(null);
     } else {
       document.removeEventListener("mousedown", handleClickOutside);
     }
@@ -100,10 +116,10 @@ export const DateTimePickerModal: React.FC<{
             <Title>set reminder time</Title>
             <DateTimeInput
               type="datetime-local"
-              value={selectedDate ?? ""}
+              value={date}
               onChange={handleDateChange}
             />
-            <Button onClick={closeModal}>Confirm</Button>
+            <Button onClick={() => closeModal(true)}>Confirm</Button>
           </Modal>
         </ModalOverlay>
       )}

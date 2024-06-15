@@ -12,6 +12,10 @@ const Container = styled.div`
   z-index: 1000;
   display: flex;
   justify-content: center;
+
+  && input {
+    color: #fff;
+  }
 `;
 
 const Input = styled.input`

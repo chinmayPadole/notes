@@ -99,3 +99,32 @@ export const getClipBoardData = async (): Promise<string | null> => {
   }
   return clipboardText;
 };
+
+export const formatDateTime = (date: Date) => {
+  const now = new Date();
+
+  const inputDate = new Date(date);
+
+  // Check if the date is today's date
+  const isToday =
+    inputDate.getDate() === now.getDate() &&
+    inputDate.getMonth() === now.getMonth() &&
+    inputDate.getFullYear() === now.getFullYear();
+
+  const options = {
+    hour: "numeric",
+    minute: "numeric",
+    hour12: true,
+  };
+
+  if (isToday) {
+    return inputDate.toLocaleTimeString("en-US", options as any);
+  } else {
+    const dateOptions = {
+      day: "numeric",
+      month: "long",
+      ...options,
+    };
+    return inputDate.toLocaleDateString("en-US", dateOptions as any);
+  }
+};

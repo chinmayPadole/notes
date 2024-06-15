@@ -1,18 +1,37 @@
 // useTimerManager.tsx
-import { useState, useEffect } from "react";
-
 interface Timer {
-  id: number;
+  reminderText: string;
   delay: number;
-  timeoutId: NodeJS.Timeout;
+  reminderDate: Date;
 }
 
-export const useTimerManager = () => {
-  const [timers, setTimers] = useState<Timer[]>([]);
+export const getReminders = (): Timer[] => {
+  const storedState = localStorage.getItem("reminders");
+  if (storedState) {
+    const parsedState: Timer[] = JSON.parse(storedState);
+    return parsedState;
+  }
+  return [];
+};
 
+export const storeReminder = (timer: Timer) => {
+  var reminders = getReminders() ?? [];
+  reminders = reminders.filter(
+    (x) => new Date(x.reminderDate).getTime() > new Date().getTime()
+  );
+  reminders.push(timer);
+  localStorage.setItem("reminders", JSON.stringify(reminders));
+};
+
+export const useTimerManager = () => {
   const addTimer = (delay: number, reminderText: string) => {
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker.ready.then((registration) => {
+        storeReminder({
+          reminderText: reminderText,
+          delay: delay,
+          reminderDate: new Date(new Date().getTime() + delay),
+        });
         // You can send a message to the service worker to trigger a notification
         console.log("SENDING PUSH MESSAGE");
         registration.active?.postMessage({
@@ -35,5 +54,5 @@ export const useTimerManager = () => {
   //   };
 
   //  return { timers, addTimer, removeTimer, clearAllTimers };
-  return { timers, addTimer };
+  return { addTimer };
 };

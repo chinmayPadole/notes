@@ -1,0 +1,29 @@
+.reminder-container {
+  display: flex;
+  flex-flow: column;
+  padding-bottom: 10px;
+  width: 300px;
+}
+
+.reminder-header {
+  text-align: left;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.reminder-content {
+  font-size: 15px;
+  text-align: left;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  padding-left: 25px;
+  width: 82%;
+}
+.reminder-circle {
+  width: 15px;
+  height: 15px;
+  background: #44ff29;
+  border-radius: 50%;
+}

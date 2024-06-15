@@ -390,10 +390,13 @@ export const FloatingMenu: React.FC<{
         </label>
       </div>
       <Legend show={isLegendOpen} onClose={() => setIsLegendOpen(false)} />
-      <Reminders
-        show={isReminderOpen}
-        onClose={() => setIsReminderOpen(false)}
-      />
+
+      {isReminderOpen && (
+        <Reminders
+          show={isReminderOpen}
+          onClose={() => setIsReminderOpen(false)}
+        />
+      )}
     </>
   );
 };

@@ -26,6 +26,31 @@ export const Root = () => {
     });
   }, []);
 
+  useEffect(() => {
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.ready.then((registration) => {
+        if (registration.active) {
+          const keepAlive = () => {
+            if (registration.active) {
+              registration.active.postMessage("keep-alive");
+            }
+          };
+          keepAlive();
+          setInterval(keepAlive, 10000); // Send a message every 10 seconds
+        }
+      });
+    }
+
+    // return () => {
+    //   navigator.serviceWorker.getRegistrations().then((registrations) => {
+    //     registrations.forEach((registration) => {
+    //       registration.unregister();
+    //       console.log("UNREGISTER");
+    //     });
+    //   });
+    // };
+  }, []);
+
   return (
     // <div className="root">
     //   <div className="header">

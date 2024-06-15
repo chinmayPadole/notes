@@ -42,6 +42,13 @@ const LegendItem = styled.div`
   align-items: center;
 `;
 
+const dotItems = [
+  { icon: <Dot color="#ff5f56" />, text: "delete note" },
+  { icon: <Dot color="#27c93f" />, text: "copy content" },
+  { icon: <Dot color="#0A20FF" />, text: "lock / unlock" },
+  { icon: <Dot color="#FF9500" />, text: "note options" },
+];
+
 export const Legend: React.FC<{ show: boolean; onClose: () => void }> = ({
   show,
   onClose,
@@ -66,19 +73,12 @@ export const Legend: React.FC<{ show: boolean; onClose: () => void }> = ({
     return null;
   }
 
-  const items = [
-    { icon: <Dot color="#ff5f56" />, text: "delete note" },
-    { icon: <Dot color="#27c93f" />, text: "copy content" },
-    { icon: <Dot color="#0A20FF" />, text: "lock / unlock" },
-    { icon: <Dot color="#FF9500" />, text: "note options" },
-  ];
-
   return (
     <Overlay onClick={onClose}>
       <ModalWrapper onClick={(e) => e.stopPropagation()}>
         <ModalHeader>Legend</ModalHeader>
         <ModalContent>
-          {items.map((item) => {
+          {dotItems.map((item) => {
             return (
               <LegendItem>
                 {item.icon}

@@ -57,7 +57,7 @@ export const Dot = styled.div`
   cursor: pointer;
 `;
 
-const Date = styled.div`
+const DateElement = styled.div`
   border-radius: 50%;
   margin: 0 5px;
 `;
@@ -122,7 +122,7 @@ export const Note: React.FC<NoteProps> = ({
       timerRef.current = window.setTimeout(() => {
         setIsLongPress(true);
         setIsDatePickerOpen(true);
-      }, 1000); // Adjust the time to your need (1000ms = 1s)
+      }, 1500); // Adjust the time to your need (1000ms = 1s)
     } else {
       if (timerRef.current) {
         clearTimeout(timerRef.current);
@@ -226,6 +226,14 @@ export const Note: React.FC<NoteProps> = ({
     }
   }, [isNoteUpdatorOpen]);
 
+  useEffect(() => {
+    if (selectedDate !== null) {
+      const reminderDelay =
+        new Date(selectedDate).getTime() - new Date().getTime();
+      addTimer(reminderDelay, content);
+    }
+  }, [selectedDate]);
+
   return (
     <>
       <NoteContainer
@@ -233,6 +241,8 @@ export const Note: React.FC<NoteProps> = ({
         onMouseDown={handleMouseDown}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseLeave}
+        onTouchStart={handleMouseDown}
+        onTouchEnd={handleMouseUp}
       >
         <TerminalContainer
           bgColor={colorSet.noteBackground}
@@ -247,7 +257,7 @@ export const Note: React.FC<NoteProps> = ({
             <Dot color="#27c93f" onClick={copy} />
             <Dot color="#0A20FF" onClick={lock} />
             <Dot color="#FF9500" onClick={toggleOptions} />
-            <Date>{getFormattedDate(createDt)}</Date>
+            <DateElement>{getFormattedDate(createDt)}</DateElement>
             {/* <Dot color="#ffbd2e" />
              */}
           </TerminalHeader>
