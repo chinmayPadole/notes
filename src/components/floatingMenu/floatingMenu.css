@@ -78,7 +78,8 @@
   list-style: none;
   height: 35px;
   width: 35px;
-  padding: 10px;
+  padding: 9px;
+  cursor: pointer;
 }
 
 .nav > ul > li:hover {

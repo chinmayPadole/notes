@@ -99,6 +99,7 @@ export const Board: React.FC<{
     return source.map((note, i) => {
       return (
         <Note
+          key={i}
           createDt={note.createDt}
           color={note.color}
           content={note.content}

@@ -78,9 +78,9 @@ export const Legend: React.FC<{ show: boolean; onClose: () => void }> = ({
       <ModalWrapper onClick={(e) => e.stopPropagation()}>
         <ModalHeader>Legend</ModalHeader>
         <ModalContent>
-          {dotItems.map((item) => {
+          {dotItems.map((item, index) => {
             return (
-              <LegendItem>
+              <LegendItem key={index}>
                 {item.icon}
                 <span>{item.text}</span>
               </LegendItem>

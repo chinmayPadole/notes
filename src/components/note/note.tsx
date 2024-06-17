@@ -12,11 +12,11 @@ import { useTimerManager } from "../../service/useTimeManager";
 import DateTimePickerModal from "../datepicker/datepicker";
 
 const TerminalContainer = styled.div<{
-  bgColor: string;
-  fontColor: string;
+  bgcolor: string;
+  fontcolor: string;
 }>`
-  background-color: ${(props) => props.bgColor};
-  color: ${(props) => props.fontColor};
+  background-color: ${(props) => props.bgcolor};
+  color: ${(props) => props.fontcolor};
 
   border-radius: 10px;
   box-shadow: 2px 4px 12px #00000014;
@@ -30,11 +30,11 @@ const TerminalContainer = styled.div<{
 `;
 
 const TerminalHeader = styled.div<{
-  headerColor: string;
+  headercolor: string;
 }>`
   display: flex;
   align-items: center;
-  background-color: ${(props) => props.headerColor};
+  background-color: ${(props) => props.headercolor};
   padding: 10px;
   border-radius: 10px 10px 0 0;
 
@@ -245,11 +245,11 @@ export const Note: React.FC<NoteProps> = ({
         onTouchEnd={handleMouseUp}
       >
         <TerminalContainer
-          bgColor={colorSet.noteBackground}
-          fontColor={colorSet.fontColor}
+          bgcolor={colorSet.noteBackground}
+          fontcolor={colorSet.fontColor}
           className={isFadingOut ? "item-fadeout" : "item"}
         >
-          <TerminalHeader headerColor={colorSet.noteHeader}>
+          <TerminalHeader headercolor={colorSet.noteHeader}>
             <Dot
               color="#ff5f56"
               onClick={() => fadeOut(setTimeout(() => handleRemoveItem(), 300))}

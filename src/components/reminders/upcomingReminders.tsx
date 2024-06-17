@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import styled from "styled-components";
-import { getReminders, useTimerManager } from "../../service/useTimeManager";
+import { getReminders } from "../../service/useTimeManager";
 import { formatDateTime } from "../../common/utils";
 import "./reminders.css";
 
@@ -86,7 +86,7 @@ export const Reminders: React.FC<{ show: boolean; onClose: () => void }> = ({
             )
             .map((event, index) => {
               return (
-                <div className="reminder-container">
+                <div className="reminder-container" key={index}>
                   <div className="reminder-header">
                     <div className="reminder-circle"></div>
                     {formatDateTime(event.reminderDate)}

@@ -201,14 +201,13 @@ export const UpdateNote: React.FC<UpdateProps> = ({
   };
 
   const performClipboardPaste = async () => {
-    const clipBoardText = await getClipBoardData()
+    const clipBoardText = await getClipBoardData();
     if (clipBoardText !== null) {
       setInputValue((prevContent) => prevContent + clipBoardText);
-    }
-    else {
+    } else {
       showToast("Permission Denied", "#6a040f", 2000, "error");
     }
-  }
+  };
 
   const performAction = () => {
     if (inputValue.trim().length === 0) {
@@ -264,13 +263,13 @@ export const UpdateNote: React.FC<UpdateProps> = ({
                   xmlns="http://www.w3.org/2000/svg"
                   fill="#ffffff"
                   stroke="#ffffff"
-                  stroke-width="0.00024000000000000003"
+                  strokeWidth="0.00024000000000000003"
                 >
-                  <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                  <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
                   <g
                     id="SVGRepo_tracerCarrier"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                   ></g>
                   <g id="SVGRepo_iconCarrier">
                     <path d="M3 21h5v-1H4V4h2v2h10V4h2v3h.4a.989.989 0 0 1 .6.221V3h-3V2h-3a2 2 0 0 0-4 0H6v1H3zM7 3h3V1.615A.615.615 0 0 1 10.614 1h.771a.615.615 0 0 1 .615.615V3h3v2H7zm4 14h9v1h-9zM9 8v16h13V11.6L18.4 8zm12 15H10V9h7v4h4zm0-11h-3V9h.31L21 11.69zm-10 2h9v1h-9zm0 6h7v1h-7z"></path>
@@ -290,11 +289,11 @@ export const UpdateNote: React.FC<UpdateProps> = ({
                 xmlns="http://www.w3.org/2000/svg"
                 stroke="#ffffff"
               >
-                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
                 <g
                   id="SVGRepo_tracerCarrier"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 ></g>
                 <g id="SVGRepo_iconCarrier">
                   <line id="secondary" x1="7" y1="12" x2="11" y2="12"></line>

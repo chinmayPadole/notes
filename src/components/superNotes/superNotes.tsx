@@ -8,10 +8,10 @@ const Container = styled.div`
   background: #fff;
 `;
 
-const StaticElement = styled.div<{ isFixed: boolean }>`
-  position: ${(props) => (props.isFixed ? "relative" : "fixed")};
-  top: ${(props) => (props.isFixed ? "0" : "auto")};
-  // bottom: ${(props) => (props.isFixed ? "auto" : "0")};
+const StaticElement = styled.div<{ isfixed: string }>`
+  position: ${(props) => (props.isfixed === "true" ? "relative" : "fixed")};
+  top: ${(props) => (props.isfixed === "true" ? "0" : "auto")};
+  // bottom: ${(props) => (props.isfixed === "true" ? "auto" : "0")};
   left: 0;
   width: 100%;
   height: 100px; /* Adjust height as needed */
@@ -52,7 +52,7 @@ export const SuperNotes: React.FC = () => {
 
   return (
     <Container>
-      <StaticElement isFixed={isFixed}>
+      <StaticElement isfixed={isFixed ? "true" : "false"}>
         <div className="panel">
           <h1 className="jj">
             <span>Super</span>
@@ -70,20 +70,20 @@ export const SuperNotes: React.FC = () => {
               stroke="#ffffff"
               transform="matrix(1, 0, 0, 1, 0, 0)"
             >
-              <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+              <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
               <g
                 id="SVGRepo_tracerCarrier"
-                stroke-linecap="round"
-                stroke-linejoin="round"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               ></g>
               <g id="SVGRepo_iconCarrier">
                 {" "}
                 <path
                   d="M15.7955 15.8111L21 21M18 10.5C18 14.6421 14.6421 18 10.5 18C6.35786 18 3 14.6421 3 10.5C3 6.35786 6.35786 3 10.5 3C14.6421 3 18 6.35786 18 10.5Z"
                   stroke="#ffffff"
-                  stroke-width="0.696"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
+                  strokeWidth="0.696"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 ></path>{" "}
               </g>
             </svg>
