@@ -13,6 +13,7 @@
     "@yudiel/react-qr-scanner": "^2.0.4",
     "compromise": "^14.13.0",
     "compromise-dates": "^3.5.0",
+    "peerjs": "^1.5.4",
     "qrcode.react": "^3.1.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
@@ -43,5 +44,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@types/peerjs": "^1.1.0"
   }
 }

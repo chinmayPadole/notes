@@ -5,6 +5,7 @@ import { Legend } from "../legend/legend";
 import { useToast } from "../../provider/toastProvider";
 import { Reminders } from "../reminders/upcomingReminders";
 import { GenerateQRCode } from "../qrcode/qrcode";
+import { usePeer } from "../../provider/PeerContext";
 
 export const FloatingMenu: React.FC<{
   setTranscript: (transcript: string) => void;
@@ -23,6 +24,8 @@ export const FloatingMenu: React.FC<{
   const [hasPermission, setHasPermission] = useState<boolean>(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
+
+  const { syncNotes, isConnectionEstablished } = usePeer();
 
   const requestMicrophonePermission = () => {
     navigator.mediaDevices
@@ -387,7 +390,15 @@ export const FloatingMenu: React.FC<{
                     </svg>
                   </a>
                 </li>
-                <li onClick={() => setQRCodeVisibility(true)}>
+                <li
+                  onClick={() => {
+                    if (isConnectionEstablished) {
+                      syncNotes();
+                    } else {
+                      setQRCodeVisibility(true);
+                    }
+                  }}
+                >
                   <a>
                     <svg
                       viewBox="0 0 24 24"
@@ -428,7 +439,7 @@ export const FloatingMenu: React.FC<{
         />
       )}
 
-      {isQRCodeVisible && (
+      {isQRCodeVisible && !isConnectionEstablished && (
         <GenerateQRCode
           show={isQRCodeVisible}
           onClose={() => setQRCodeVisibility(false)}

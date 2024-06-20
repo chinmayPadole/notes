@@ -8,10 +8,10 @@ const Container = styled.div`
   background: #fff;
 `;
 
-const StaticElement = styled.div<{ isfixed: string }>`
-  position: ${(props) => (props.isfixed === "true" ? "relative" : "fixed")};
-  top: ${(props) => (props.isfixed === "true" ? "0" : "auto")};
-  // bottom: ${(props) => (props.isfixed === "true" ? "auto" : "0")};
+const StaticElement = styled.div<{ $isfixed: string }>`
+  position: ${(props) => (props.$isfixed === "true" ? "relative" : "fixed")};
+  top: ${(props) => (props.$isfixed === "true" ? "0" : "auto")};
+  // bottom: ${(props) => (props.$isfixed === "true" ? "auto" : "0")};
   left: 0;
   width: 100%;
   height: 100px; /* Adjust height as needed */
@@ -21,14 +21,14 @@ const StaticElement = styled.div<{ isfixed: string }>`
 `;
 
 export const SuperNotes: React.FC = () => {
-  const [isFixed, setIsFixed] = useState<boolean>(true);
+  const [$isfixed, setisfixed] = useState<boolean>(true);
   const [isSearchMode, setSearchMode] = useState<boolean>(false);
 
   useEffect(() => {
     const handleScroll = () => {
       const scrollPos = window.scrollY;
       const initialOffset = 120; // Adjust as needed
-      setIsFixed(scrollPos <= initialOffset);
+      setisfixed(scrollPos <= initialOffset);
     };
 
     window.addEventListener("scroll", handleScroll);
@@ -52,7 +52,7 @@ export const SuperNotes: React.FC = () => {
 
   return (
     <Container>
-      <StaticElement isfixed={isFixed ? "true" : "false"}>
+      <StaticElement $isfixed={$isfixed ? "true" : "false"}>
         <div className="panel">
           <h1 className="jj">
             <span>Super</span>

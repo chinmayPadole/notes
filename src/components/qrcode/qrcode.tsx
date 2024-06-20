@@ -1,10 +1,11 @@
 import QRCode from "qrcode.react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import "./qrcode.css";
 import { getUniqueId } from "../../common/utils";
-import { useSocket } from "../../provider/socketProvider";
 import { Scanner } from "@yudiel/react-qr-scanner";
+import Peer, { DataConnection } from "peerjs";
+import { usePeer } from "../../provider/PeerContext";
 
 const Overlay = styled.div`
   position: fixed;
@@ -42,51 +43,34 @@ export const GenerateQRCode: React.FC<{
   show: boolean;
   onClose: () => void;
 }> = ({ show, onClose }) => {
-  const [isSessionPresent, setSessionPresent] = useState<boolean>(false);
-  const [sessionId, setSessionId] = useState<string>("");
+  const { isConnectionEstablished } = usePeer();
 
   useEffect(() => {
-    if (sessionId === "") {
-      let id = localStorage.getItem("ws_server_id");
-      if (id !== null && id !== "") {
-        setSessionPresent(true);
-      } else {
-        id = getUniqueId();
-      }
-
-      setSessionId(id);
+    const id = localStorage.getItem("peer_id");
+    if (id !== null && id !== "" && isConnectionEstablished) {
+      setSessionPresent(true);
     }
   }, []);
+
+  const [isSessionPresent, setSessionPresent] = useState<boolean>(false);
 
   const [qrCodeValue, setQRCodeValue] = useState<string>("");
   const [hostCode, setHostMode] = useState<boolean>(false);
 
   const [scanCode, setScanMode] = useState<boolean>(false);
 
-  const { syncNotes, setupSocket } = useSocket();
-
-  const triggerSync = () => {
-    const notes = localStorage.getItem("notes");
-    if (notes) {
-      syncNotes(notes);
-    }
-  };
-
-  useEffect(() => {
-    if (isSessionPresent) {
-      triggerSync();
-    }
-  }, [isSessionPresent]);
+  const { connectToPeer, initialPeerId } = usePeer();
 
   const handleScan = async (e: string | null) => {
     if (e !== null) {
       console.log(e);
-      const data = JSON.parse(e);
       setScanMode(false);
-      if (data.sessionId != null && data.sessionId.trim() !== "") {
-        console.log(data.sessionId);
-        localStorage.setItem("ws_server_id", data.sessionId);
+      if (e.trim() !== "") {
+        console.log(e);
+        localStorage.setItem("peer_id", e);
+        localStorage.setItem("is_primary", "false");
         setSessionPresent(true);
+        connectToPeer();
         // await setupSocket(data.sessionId);
       }
 
@@ -95,11 +79,9 @@ export const GenerateQRCode: React.FC<{
   };
 
   const createQRCode = () => {
-    setQRCodeValue(JSON.stringify({ sessionId }));
-    if (sessionId != null) {
-      localStorage.setItem("ws_server_id", sessionId);
-      console.log("SOCKET SETUP");
-      setupSocket(sessionId);
+    if (qrCodeValue != null) {
+      setQRCodeValue(initialPeerId);
+      localStorage.setItem("is_primary", "true");
     }
   };
 

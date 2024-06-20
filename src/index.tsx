@@ -4,7 +4,7 @@ import "./index.css";
 import { Root } from "./root";
 import { ToastProvider } from "./provider/toastProvider";
 import { SecurityProvider } from "./provider/securityProvider";
-import { SocketProvider } from "./provider/socketProvider";
+import { PeerProvider } from "./provider/PeerContext";
 
 declare global {
   interface Window {
@@ -18,11 +18,11 @@ const root = ReactDOM.createRoot(
 root.render(
   <React.StrictMode>
     <SecurityProvider>
-      <SocketProvider>
-        <ToastProvider>
+      <ToastProvider>
+        <PeerProvider>
           <Root />
-        </ToastProvider>
-      </SocketProvider>
+        </PeerProvider>
+      </ToastProvider>
     </SecurityProvider>
   </React.StrictMode>
 );

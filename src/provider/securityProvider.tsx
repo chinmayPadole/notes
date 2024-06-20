@@ -18,11 +18,11 @@ export const SecurityProvider = ({ children }: any) => {
       });
 
       if (credentials != null) {
-        console.log("PASS");
+        //console.log("PASS");
         // Successfully authenticated with biometric credentials
         toggleLock(true);
       } else {
-        console.log("FAIL");
+        //console.log("FAIL");
         // Biometric authentication failed or user canceled
         toggleLock(false);
       }

@@ -3,6 +3,7 @@ import { Board } from "./components/board/board";
 import "./root.css";
 import * as serviceWorker from "./serviceWorker";
 import { SuperNotes } from "./components/superNotes/superNotes";
+import { Chat } from "./components/qrcode/testChat";
 
 export const Root = () => {
   // Request notification permission on component mount
@@ -60,7 +61,7 @@ export const Root = () => {
     //     <Board />
     //   </div>
     // </div>
-
+    // <Chat />
     <SuperNotes />
   );
 };

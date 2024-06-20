@@ -8,6 +8,8 @@ import { Search } from "../search/search";
 import { searchAndSort } from "../../common/search";
 import { FloatingMenu } from "../floatingMenu/floatingMenu";
 import { NewNoteEditor } from "../newNote/newNoteEditor";
+import { usePeer } from "../../provider/PeerContext";
+import { useToast } from "../../provider/toastProvider";
 
 export const Board: React.FC<{
   isSearchMode: boolean;
@@ -20,6 +22,15 @@ export const Board: React.FC<{
   const [isNoteUpdating, toggleNoteEditorMode] = useState(false);
 
   const [isNoteEditorOpen, openNoteEditor] = useState(Boolean);
+  const { isDataReceived, syncNotes } = usePeer();
+  const { showToast } = useToast();
+
+  useEffect(() => {
+    if (isDataReceived > 0) {
+      refreshNotes();
+      showToast("synced", "#30DB5B", 3000, "info");
+    }
+  }, [isDataReceived]);
 
   useEffect(() => {
     if (
@@ -43,26 +54,33 @@ export const Board: React.FC<{
 
   // Load state from localStorage when the component mounts
   useEffect(() => {
+    refreshNotes();
+  }, []);
+
+  const refreshNotes = () => {
     const storedState = localStorage.getItem("notes");
     if (storedState) {
       const parsedState: NoteProps[] = JSON.parse(storedState);
       setNotes(parsedState);
     }
-  }, []);
+  };
 
   const updateStateAndLocalStorage = (newData: NoteProps[]) => {
     setNotes(newData);
     localStorage.setItem("notes", JSON.stringify(newData));
+    syncNotes();
   };
 
   const removeNote = (noteId: string) => {
     const newNoteData = notes.filter((data) => data.id !== noteId);
     updateStateAndLocalStorage(newNoteData);
+    syncNotes();
   };
 
   const addNote = (noteData: NoteProps) => {
     const updatedData = [...notes, noteData];
     updateStateAndLocalStorage(updatedData);
+    syncNotes();
   };
 
   const updateNote = (
