@@ -63,12 +63,9 @@ export const GenerateQRCode: React.FC<{
 
   const handleScan = async (e: string | null) => {
     if (e !== null) {
-      console.log(e);
       setScanMode(false);
       if (e.trim() !== "") {
-        console.log(e);
         localStorage.setItem("peer_id", e);
-        localStorage.setItem("is_primary", "false");
         setSessionPresent(true);
         connectToPeer();
         // await setupSocket(data.sessionId);
@@ -81,7 +78,6 @@ export const GenerateQRCode: React.FC<{
   const createQRCode = () => {
     if (qrCodeValue != null) {
       setQRCodeValue(initialPeerId);
-      localStorage.setItem("is_primary", "true");
     }
   };
 

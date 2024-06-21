@@ -204,9 +204,13 @@ export const Note: React.FC<NoteProps> = ({
   };
 
   const getColorPaletteItems = () => {
-    return Object.entries(ColorSet).map(([key, value]) => {
+    return Object.entries(ColorSet).map(([key, value], index) => {
       return (
-        <div className="palettecircle" onClick={() => updateNoteColor(key)}>
+        <div
+          key={index}
+          className="palettecircle"
+          onClick={() => updateNoteColor(key)}
+        >
           <div
             className="left-half"
             style={{ background: value.noteHeader }}

@@ -394,6 +394,7 @@ export const FloatingMenu: React.FC<{
                   onClick={() => {
                     if (isConnectionEstablished) {
                       syncNotes();
+                      setQRCodeVisibility(false);
                     } else {
                       setQRCodeVisibility(true);
                     }

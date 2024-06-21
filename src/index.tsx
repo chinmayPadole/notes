@@ -5,6 +5,7 @@ import { Root } from "./root";
 import { ToastProvider } from "./provider/toastProvider";
 import { SecurityProvider } from "./provider/securityProvider";
 import { PeerProvider } from "./provider/PeerContext";
+import { CoreProvider } from "./provider/CoreProvider";
 
 declare global {
   interface Window {
@@ -17,13 +18,15 @@ const root = ReactDOM.createRoot(
 );
 root.render(
   <React.StrictMode>
-    <SecurityProvider>
-      <ToastProvider>
-        <PeerProvider>
-          <Root />
-        </PeerProvider>
-      </ToastProvider>
-    </SecurityProvider>
+    <CoreProvider>
+      <SecurityProvider>
+        <ToastProvider>
+          <PeerProvider>
+            <Root />
+          </PeerProvider>
+        </ToastProvider>
+      </SecurityProvider>
+    </CoreProvider>
   </React.StrictMode>
 );
 
