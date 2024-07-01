@@ -8,10 +8,20 @@ interface Timer {
 export const getReminders = (): Timer[] => {
   const storedState = localStorage.getItem("reminders");
   if (storedState) {
-    const parsedState: Timer[] = JSON.parse(storedState);
+    let parsedState: Timer[] = JSON.parse(storedState);
+    parsedState = cleanupPastReminders(parsedState);
     return parsedState;
   }
   return [];
+};
+
+const cleanupPastReminders = (reminders: Timer[]) => {
+  reminders = reminders.filter(
+    (x) => new Date(x.reminderDate).getTime() > new Date().getTime()
+  );
+
+  localStorage.setItem("reminders", JSON.stringify(reminders));
+  return reminders;
 };
 
 export const storeReminder = (timer: Timer) => {

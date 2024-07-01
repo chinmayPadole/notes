@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import styled from "styled-components";
+import { useToast } from "../../provider/toastProvider";
 
 const ModalOverlay = styled.div`
   position: fixed;
@@ -66,7 +67,7 @@ const toLocalISOString = (date: Date) => {
   const localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000); //offset in milliseconds. Credit https://stackoverflow.com/questions/10830357/javascript-toisostring-ignores-timezone-offset
 
   // Optionally remove second/millisecond if needed
-  return localDate.toISOString().slice(0, -1);
+  return localDate.toISOString().slice(0, -8);
 };
 
 export const DateTimePickerModal: React.FC<{
@@ -76,12 +77,14 @@ export const DateTimePickerModal: React.FC<{
   setSelectedDate: (date: string | null) => void;
 }> = ({ isOpen, setIsOpen, selectedDate, setSelectedDate }) => {
   const modalRef = useRef<HTMLDivElement>(null);
+  const { showToast } = useToast();
 
   const [date, setDate] = useState(toLocalISOString(new Date()));
   const closeModal = (setDate: boolean = false) => {
     setIsOpen(false);
     if (setDate) {
       setSelectedDate(date);
+      showToast("Reminder set!", "#333", 2000, "success");
     }
   };
 

@@ -15,3 +15,9 @@
 .board-container {
   z-index: 2;
 }
+
+#noteEditorDoubleClick {
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+}

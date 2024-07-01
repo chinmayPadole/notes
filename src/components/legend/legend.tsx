@@ -17,7 +17,8 @@ const Overlay = styled.div`
 
 const ModalWrapper = styled.div`
   width: max-content;
-  background: white;
+  background: radial-gradient(circle, #0e0e0e 15%, #010101);
+  color: #fff;
   border-radius: 10px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   padding: 20px;
@@ -27,11 +28,23 @@ const ModalWrapper = styled.div`
 const ModalHeader = styled.div`
   font-size: 24px;
   margin-bottom: 20px;
+  color: red;
 `;
 
 const ModalContent = styled.div`
   font-size: 18px;
   margin-bottom: 20px;
+`;
+const IconLegend = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+`;
+const Shortcuts = styled.div`
+  & ul {
+    list-style-type: circle;
+    text-align: left;
+    padding-left: 25px;
+  }
 `;
 
 const LegendItem = styled.div`
@@ -78,14 +91,26 @@ export const Legend: React.FC<{ show: boolean; onClose: () => void }> = ({
       <ModalWrapper onClick={(e) => e.stopPropagation()}>
         <ModalHeader>Legend</ModalHeader>
         <ModalContent>
-          {dotItems.map((item, index) => {
-            return (
-              <LegendItem key={index}>
-                {item.icon}
-                <span>{item.text}</span>
-              </LegendItem>
-            );
-          })}
+          <IconLegend>
+            {dotItems.map((item, index) => {
+              return (
+                <LegendItem key={index}>
+                  {item.icon}
+                  <span>{item.text}</span>
+                </LegendItem>
+              );
+            })}
+          </IconLegend>
+          <Shortcuts>
+            <ul>
+              <li>Long press on note to set reminder</li>
+              <li>Double tap on empty area to open note editor</li>
+              <li>
+                With external keyboard, just start typing to open the note
+                editor
+              </li>
+            </ul>
+          </Shortcuts>
         </ModalContent>
       </ModalWrapper>
     </Overlay>

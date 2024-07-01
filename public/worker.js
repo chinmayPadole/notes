@@ -68,6 +68,8 @@ self.addEventListener("message", function (event) {
       body: data.body,
       icon: "/icon.png",
       badge: "/badge.png",
+      requireInteraction: true,
+      priority: "high",
       actions: [
         {
           action: "view",

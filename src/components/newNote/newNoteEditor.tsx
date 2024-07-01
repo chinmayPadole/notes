@@ -135,6 +135,14 @@ export const NewNoteEditor: React.FC<NewNoteEditorProps> = ({
     turnOffOpenNoteEditorFlag(false);
   };
 
+  //This code is needed to set the pointer when first char is pressed
+
+  useEffect(() => {
+    if (inputValue.length === 1) {
+      handleButtonClick();
+    }
+  }, [inputValue]);
+
   const handleButtonClick = () => {
     // Focus the input element when the button is clicked
 
@@ -161,22 +169,33 @@ export const NewNoteEditor: React.FC<NewNoteEditorProps> = ({
 
   const handleKeyPress = (event: KeyboardEvent) => {
     const key = event.key;
-    if (
-      !modalIsOpen &&
-      ((key >= "a" && key <= "z") ||
-        (key >= "A" && key <= "Z") ||
-        (key >= "0" && key <= "9") ||
-        key === " " ||
-        key === "Enter" ||
-        key === "Shift" ||
-        key === "Tab" ||
-        key.match(
-          /[\!\@\#\$\%\^\&\*\(\)\_\+\[\]\{\}\|\;\:\'\"\<\>\,.\?\/\~\`\\\-]/
-        ))
-    ) {
-      openModal();
-      handleButtonClick();
+
+    // if (
+    //   !modalIsOpen &&
+    //   ((key >= "a" && key <= "z") ||
+    //     (key >= "A" && key <= "Z") ||
+    //     (key >= "0" && key <= "9") ||
+    //     key === " " ||
+    //     key === "Enter" ||
+    //     key === "Shift" ||
+    //     key === "Tab" ||
+    //     key.match(
+    //       /[\!\@\#\$\%\^\&\*\(\)\_\+\[\]\{\}\|\;\:\'\"\<\>\,.\?\/\~\`\\\-]/
+    //     ))
+    // ) {
+    //   //console.log("HERE");
+    //   setInputValue((value) => (value.length === 0 ? key : value));
+
+    //   handleButtonClick();
+    // }
+
+    //setInputValue((value) => (value.length === 0 ? key : value));
+    if (inputValue.length === 0 && textAreaRef.current) {
+      textAreaRef.current.value = key;
+      setInputValue(key);
     }
+    handleButtonClick();
+    openModal();
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {

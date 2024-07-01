@@ -88,7 +88,9 @@ export const PeerProvider = ({ children }: any) => {
       peer.on("error", (error) => {
         console.error(error);
         resetStore();
-        setRetryCount(10);
+        if (retryCounter > 0) {
+          setRetryCount(10);
+        }
       });
 
       return () => {
@@ -143,7 +145,9 @@ export const PeerProvider = ({ children }: any) => {
       conn.on("error", (error) => {
         console.log(error);
         resetStore();
-        setRetryCount(10);
+        if (retryCounter > 0) {
+          setRetryCount(10);
+        }
       });
     }
   };

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "./board.css";
 import { Note } from "../note/note";
 import { NoteProps } from "../note/NoteProps";
@@ -24,6 +24,8 @@ export const Board: React.FC<{
   const [isNoteEditorOpen, openNoteEditor] = useState(Boolean);
   const { isDataReceived, syncNotes } = usePeer();
   const { showToast } = useToast();
+
+  const lastTap = useRef<number | null>(null);
 
   useEffect(() => {
     if (isDataReceived > 0) {
@@ -131,8 +133,26 @@ export const Board: React.FC<{
     });
   };
 
+  const handleTouch = (e: React.TouchEvent) => {
+    const currentTime = new Date().getTime();
+    const tapLength = 300;
+
+    if (lastTap.current && currentTime - lastTap.current < tapLength) {
+      openNoteEditor(true);
+    } else {
+      lastTap.current = currentTime;
+    }
+  };
+
   return (
     <>
+      <div
+        id="noteEditorDoubleClick"
+        onDoubleClick={() => {
+          openNoteEditor(true);
+        }}
+        onTouchEnd={handleTouch}
+      ></div>
       <div id="boardBody">
         <div id="board-container">
           <div id="board">{getNotesElement()}</div>
