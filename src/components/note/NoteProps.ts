@@ -3,6 +3,7 @@ export interface NoteProps {
   createDt: Date;
   content: string;
   color: string;
+  isImage: boolean;
   removeNote: (noteId: string) => void;
   updateNote: (
     noteId: string,

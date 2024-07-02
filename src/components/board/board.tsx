@@ -45,6 +45,7 @@ export const Board: React.FC<{
         content: transcript,
         createDt: new Date(),
         color: "white",
+        isImage: false,
         removeNote: removeNote,
         updateNote: updateNote,
         isNoteLocked: false,
@@ -124,6 +125,7 @@ export const Board: React.FC<{
           color={note.color}
           content={note.content}
           id={note.id}
+          isImage={note.isImage}
           isNoteLocked={note.isNoteLocked}
           removeNote={removeNote}
           updateNote={updateNote}

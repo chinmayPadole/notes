@@ -12,6 +12,11 @@ const TerminalTextArea = styled.textarea`
   outline: none;
   resize: none;
   padding: 20px;
+
+  letter-spacing: 0.007em !important;
+  line-height: 1.5; /* Adjusts line spacing */
+  letter-spacing: 0.1em; /* Adjusts letter spacing */
+  word-spacing: 0.2em; /* Adjusts word spacing */
 `;
 
 const TerminalContainer = styled.div`
@@ -146,10 +151,19 @@ export const UpdateNote: React.FC<UpdateProps> = ({
 
   // Function to remove empty lines
   const removeEmptyLines = (input: string): string => {
-    return input
-      .split("\n")
-      .filter((line) => line.trim() !== "")
-      .join("\n");
+    const lines = input.split("\n");
+
+    // Remove empty lines from the start
+    while (lines.length > 0 && lines[0].trim() === "") {
+      lines.shift();
+    }
+
+    // Remove empty lines from the end
+    while (lines.length > 0 && lines[lines.length - 1].trim() === "") {
+      lines.pop();
+    }
+
+    return lines.join("\n");
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {

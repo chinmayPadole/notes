@@ -18,6 +18,11 @@ const TerminalTextArea = styled.textarea`
   resize: none;
 
   padding: 20px;
+
+  letter-spacing: 0.007em !important;
+  line-height: 1.5; /* Adjusts line spacing */
+  letter-spacing: 0.1em; /* Adjusts letter spacing */
+  word-spacing: 0.2em; /* Adjusts word spacing */
 `;
 
 const TerminalContainer = styled.div`
@@ -130,6 +135,7 @@ export const NewNoteEditor: React.FC<NewNoteEditorProps> = ({
 
   const closeModal = () => {
     setInputValue("");
+    setIsImage(false);
     setModalIsOpen(false);
 
     turnOffOpenNoteEditorFlag(false);
@@ -194,8 +200,11 @@ export const NewNoteEditor: React.FC<NewNoteEditorProps> = ({
       textAreaRef.current.value = key;
       setInputValue(key);
     }
-    handleButtonClick();
-    openModal();
+
+    if (key !== "Enter") {
+      openModal();
+      handleButtonClick();
+    }
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -204,10 +213,19 @@ export const NewNoteEditor: React.FC<NewNoteEditorProps> = ({
 
   // Function to remove empty lines
   const removeEmptyLines = (input: string): string => {
-    return input
-      .split("\n")
-      .filter((line) => line.trim() !== "")
-      .join("\n");
+    const lines = input.split("\n");
+
+    // Remove empty lines from the start
+    while (lines.length > 0 && lines[0].trim() === "") {
+      lines.shift();
+    }
+
+    // Remove empty lines from the end
+    while (lines.length > 0 && lines[lines.length - 1].trim() === "") {
+      lines.pop();
+    }
+
+    return lines.join("\n");
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -231,7 +249,9 @@ export const NewNoteEditor: React.FC<NewNoteEditorProps> = ({
 
   const handlePasteEvent = async (event: any) => {
     // if not open, open the view
-    openModal();
+    if (!modalIsOpen) {
+      openModal();
+    }
     setIsImage(false);
     let paste = (event.clipboardData || (window as any).clipboardData).getData(
       "text"
@@ -277,6 +297,7 @@ export const NewNoteEditor: React.FC<NewNoteEditorProps> = ({
       content: removeEmptyLines(inputValue),
       createDt: new Date(),
       color: "white",
+      isImage: isImage,
       removeNote: removeNote,
       updateNote: updateNote,
       isNoteLocked: false,

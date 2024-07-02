@@ -10,6 +10,8 @@ import { NoteProps } from "./NoteProps";
 import { isReminderPossible, getReminderTime } from "../../common/remider";
 import { useTimerManager } from "../../service/useTimeManager";
 import DateTimePickerModal from "../datepicker/datepicker";
+import { CollapsibleTextArea } from "./CollapsibleTextArea";
+import { CollapsibleImage } from "./CollapsibleImage";
 
 const TerminalContainer = styled.div<{
   $bgcolor: string;
@@ -81,6 +83,7 @@ export const Note: React.FC<NoteProps> = ({
   content,
   color,
   id,
+  isImage,
   removeNote,
   updateNote,
   isNoteLocked,
@@ -89,7 +92,6 @@ export const Note: React.FC<NoteProps> = ({
   const { showToast } = useToast();
   const [isNoteUpdatorOpen, toggleNoteEditor] = useState<boolean>(false);
   const [formattedContent, setFormattedContent] = useState<string>(content);
-  const [isImage, setIsImage] = useState<boolean>(false);
   const [colorSet, setActiveColorSet] = useState<{
     noteHeader: string;
     fontColor: string;
@@ -155,7 +157,6 @@ export const Note: React.FC<NoteProps> = ({
 
   const handleRemoveItem = () => {
     removeNote(id);
-    setIsImage(false);
     setIsFadingOut(false);
     setSummaryOption(false);
     setReminderOption(false);
@@ -168,9 +169,6 @@ export const Note: React.FC<NoteProps> = ({
     const contentData =
       isPageLocked && isNoteLocked ? maskString(content, 3, 3, "#") : content;
     setFormattedContent(contentData);
-    if (isValidImage(contentData)) {
-      setIsImage(true);
-    }
   }, [content, isPageLocked, isNoteLocked]);
 
   useEffect(() => {
@@ -271,12 +269,14 @@ export const Note: React.FC<NoteProps> = ({
               toggleNoteUpdateMode(true);
             }}
           >
-            {!isImage && formattedContent}
+            {!isImage && (
+              <CollapsibleTextArea text={formattedContent} maxLines={3} />
+            )}
             {isImage && (
-              <img
-                className="imageNote"
+              <CollapsibleImage
                 src={formattedContent}
-                alt={formattedContent}
+                alt="Content Corrupted 😔"
+                maxHeight={200}
               />
             )}
           </TerminalBody>
