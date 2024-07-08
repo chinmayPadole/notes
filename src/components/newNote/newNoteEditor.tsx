@@ -5,9 +5,11 @@ import {
   getClipBoardData,
   getUniqueId,
   isMobile,
+  isValidImage,
 } from "../../common/utils";
 import { NoteProps } from "../note/NoteProps";
 import { useToast } from "../../provider/toastProvider";
+import "./newNoteDetector.css";
 
 const TerminalTextArea = styled.textarea`
   width: 100%;
@@ -26,7 +28,7 @@ const TerminalTextArea = styled.textarea`
 `;
 
 const TerminalContainer = styled.div`
-  background: transparent;
+  background: #1e1e1e;
   border-radius: 10px;
   max-width: 600px;
   width: min(600px, 85%);
@@ -61,17 +63,24 @@ const ContentActions = styled.div`
   background-color: #575353;
 
   padding-right: 40px;
+
+  /*Prevent text selection*/
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Old versions of Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome, Edge, Opera and Firefox */
 `;
 
 const SaveContentButton = styled.div`
-  width: max-content;
+  display: flex;
+  align-items: center;
   cursor: pointer;
   transform: translateX(80%);
-  svg {
-    width: 35px;
-    height: 35px;
-    fill: #27c93f;
-  }
+  font-weight: 600;
+  color: wheat;
 `;
 
 const TextActionButtons = styled.div`
@@ -82,10 +91,8 @@ const TextActionButtons = styled.div`
 `;
 const ActionButton = styled.div`
   cursor: pointer;
-  svg {
-    width: 30px;
-    height: 30px;
-  }
+  font-weight: 600;
+  color: wheat;
 `;
 
 const Modal: React.FC<{
@@ -107,9 +114,14 @@ export interface NewNoteEditorProps {
     isNoteLocked: boolean
   ) => void;
   removeNote: (noteId: string) => void;
-  openNoteEditor: boolean;
-  toggleNoteEditorMode: (isNoteEditorOpen: boolean) => void;
-  turnOffOpenNoteEditorFlag: (isNoteEditorOpen: boolean) => void;
+  noteEditorMode: "new" | "modify" | "null";
+  setNoteEditorMode: (mode: "new" | "modify" | "null") => void;
+
+  //Optional params for modification
+  noteId?: string;
+  isNoteLocked?: boolean;
+  currentContent?: string;
+  setCurrentNote: (note: NoteProps | undefined) => void;
 }
 
 const isMobileBrowser = isMobile();
@@ -118,9 +130,12 @@ export const NewNoteEditor: React.FC<NewNoteEditorProps> = ({
   addNote,
   updateNote,
   removeNote,
-  openNoteEditor,
-  toggleNoteEditorMode,
-  turnOffOpenNoteEditorFlag,
+  noteEditorMode,
+  setNoteEditorMode,
+  noteId,
+  isNoteLocked,
+  currentContent,
+  setCurrentNote,
 }) => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   let [inputValue, setInputValue] = useState<string>("");
@@ -128,6 +143,20 @@ export const NewNoteEditor: React.FC<NewNoteEditorProps> = ({
   const [isImage, setIsImage] = useState<boolean>(false);
 
   const { showToast } = useToast();
+
+  useEffect(() => {
+    if (currentContent !== undefined) {
+      setInputValue(currentContent);
+      if (isValidImage(currentContent)) {
+        setIsImage(true);
+      }
+    }
+
+    return () => {
+      // whenever the component removes it will executes
+      setIsImage(false);
+    };
+  }, [currentContent]);
 
   const openModal = () => {
     setModalIsOpen(true);
@@ -138,7 +167,8 @@ export const NewNoteEditor: React.FC<NewNoteEditorProps> = ({
     setIsImage(false);
     setModalIsOpen(false);
 
-    turnOffOpenNoteEditorFlag(false);
+    setNoteEditorMode("null");
+    setCurrentNote(undefined);
   };
 
   //This code is needed to set the pointer when first char is pressed
@@ -154,15 +184,11 @@ export const NewNoteEditor: React.FC<NewNoteEditorProps> = ({
 
     if (textAreaRef.current) {
       textAreaRef.current.focus();
-      textAreaRef.current.setSelectionRange(
-        inputValue.length,
-        inputValue.length
-      );
     }
   };
 
   useEffect(() => {
-    if (openNoteEditor === true) {
+    if (noteEditorMode !== "null") {
       handleButtonClick();
       openModal();
 
@@ -171,38 +197,14 @@ export const NewNoteEditor: React.FC<NewNoteEditorProps> = ({
         closeModal();
       };
     }
-  }, [openNoteEditor]);
+  }, [noteEditorMode]);
 
   const handleKeyPress = (event: KeyboardEvent) => {
     const key = event.key;
 
-    // if (
-    //   !modalIsOpen &&
-    //   ((key >= "a" && key <= "z") ||
-    //     (key >= "A" && key <= "Z") ||
-    //     (key >= "0" && key <= "9") ||
-    //     key === " " ||
-    //     key === "Enter" ||
-    //     key === "Shift" ||
-    //     key === "Tab" ||
-    //     key.match(
-    //       /[\!\@\#\$\%\^\&\*\(\)\_\+\[\]\{\}\|\;\:\'\"\<\>\,.\?\/\~\`\\\-]/
-    //     ))
-    // ) {
-    //   //console.log("HERE");
-    //   setInputValue((value) => (value.length === 0 ? key : value));
-
-    //   handleButtonClick();
-    // }
-
-    //setInputValue((value) => (value.length === 0 ? key : value));
-    if (inputValue.length === 0 && textAreaRef.current) {
-      textAreaRef.current.value = key;
-      setInputValue(key);
-    }
-
     if (key !== "Enter") {
       openModal();
+      setNoteEditorMode("new");
       handleButtonClick();
     }
   };
@@ -251,6 +253,7 @@ export const NewNoteEditor: React.FC<NewNoteEditorProps> = ({
     // if not open, open the view
     if (!modalIsOpen) {
       openModal();
+      setNoteEditorMode("new");
     }
     setIsImage(false);
     let paste = (event.clipboardData || (window as any).clipboardData).getData(
@@ -292,18 +295,27 @@ export const NewNoteEditor: React.FC<NewNoteEditorProps> = ({
       closeModal();
       return;
     }
-    const newData: NoteProps = {
-      id: getUniqueId(),
-      content: removeEmptyLines(inputValue),
-      createDt: new Date(),
-      color: "white",
-      isImage: isImage,
-      removeNote: removeNote,
-      updateNote: updateNote,
-      isNoteLocked: false,
-      toggleNoteUpdateMode: toggleNoteEditorMode,
-    };
-    addNote(newData);
+    if (noteEditorMode === "new") {
+      const newData: NoteProps = {
+        id: getUniqueId(),
+        content: removeEmptyLines(inputValue),
+        createDt: new Date(),
+        color: "white",
+        isImage: isImage,
+        removeNote: removeNote,
+        updateNote: updateNote,
+        isNoteLocked: false,
+        setNoteEditorMode: setNoteEditorMode,
+        setCurrentNote: setCurrentNote,
+      };
+      addNote(newData);
+    } else if (
+      noteEditorMode === "modify" &&
+      noteId !== undefined &&
+      isNoteLocked !== undefined
+    ) {
+      updateNote(noteId, removeEmptyLines(inputValue), "white", isNoteLocked);
+    }
 
     closeModal();
   };
@@ -349,51 +361,11 @@ export const NewNoteEditor: React.FC<NewNoteEditorProps> = ({
           <ContentActions>
             <TextActionButtons>
               <ActionButton onClick={() => performClipboardPaste()}>
-                <svg
-                  viewBox="0 0 24.00 24.00"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="#ffffff"
-                  stroke="#ffffff"
-                  strokeWidth="0.00024000000000000003"
-                >
-                  <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
-                  <g
-                    id="SVGRepo_tracerCarrier"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  ></g>
-                  <g id="SVGRepo_iconCarrier">
-                    <path d="M3 21h5v-1H4V4h2v2h10V4h2v3h.4a.989.989 0 0 1 .6.221V3h-3V2h-3a2 2 0 0 0-4 0H6v1H3zM7 3h3V1.615A.615.615 0 0 1 10.614 1h.771a.615.615 0 0 1 .615.615V3h3v2H7zm4 14h9v1h-9zM9 8v16h13V11.6L18.4 8zm12 15H10V9h7v4h4zm0-11h-3V9h.31L21 11.69zm-10 2h9v1h-9zm0 6h7v1h-7z"></path>
-                    <path fill="none" d="M0 0h24v24H0z"></path>
-                  </g>
-                </svg>
+                paste
               </ActionButton>
             </TextActionButtons>
             <SaveContentButton onClick={() => performAction()}>
-              <svg
-                fill="#ffffff"
-                width="151px"
-                height="151px"
-                viewBox="0 0 24 24"
-                id="send"
-                data-name="Line Color"
-                xmlns="http://www.w3.org/2000/svg"
-                stroke="#ffffff"
-              >
-                <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
-                <g
-                  id="SVGRepo_tracerCarrier"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                ></g>
-                <g id="SVGRepo_iconCarrier">
-                  <line id="secondary" x1="7" y1="12" x2="11" y2="12"></line>
-                  <path
-                    id="primary"
-                    d="M5.44,4.15l14.65,7a1,1,0,0,1,0,1.8l-14.65,7A1,1,0,0,1,4.1,18.54l2.72-6.13a1.06,1.06,0,0,0,0-.82L4.1,5.46A1,1,0,0,1,5.44,4.15Z"
-                  ></path>
-                </g>
-              </svg>
+              save
             </SaveContentButton>
           </ContentActions>
         </TerminalContainer>

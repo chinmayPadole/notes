@@ -26,7 +26,10 @@ export const CollapsibleImage: React.FC<CollapsibleImageProps> = ({
         <img
           src={src}
           alt={alt}
-          style={{ width: "100%", height: "100%", objectFit: "contain" }}
+          style={{
+            objectFit: "contain",
+            borderRadius: "10px",
+          }}
         />
       </div>
       <button

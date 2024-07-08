@@ -1,10 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import "./note.css";
-import { getFormattedDate, isValidImage, maskString } from "../../common/utils";
+import { getFormattedDate, maskString } from "../../common/utils";
 import { ColorSet } from "../../common/colorSet";
 import styled from "styled-components";
 import { useToast } from "../../provider/toastProvider";
-import { UpdateNote } from "../newNote/UpdateNote";
 import { useSecurity } from "../../provider/securityProvider";
 import { NoteProps } from "./NoteProps";
 import { isReminderPossible, getReminderTime } from "../../common/remider";
@@ -87,10 +86,10 @@ export const Note: React.FC<NoteProps> = ({
   removeNote,
   updateNote,
   isNoteLocked,
-  toggleNoteUpdateMode,
+  setNoteEditorMode,
+  setCurrentNote,
 }): JSX.Element => {
   const { showToast } = useToast();
-  const [isNoteUpdatorOpen, toggleNoteEditor] = useState<boolean>(false);
   const [formattedContent, setFormattedContent] = useState<string>(content);
   const [colorSet, setActiveColorSet] = useState<{
     noteHeader: string;
@@ -105,8 +104,6 @@ export const Note: React.FC<NoteProps> = ({
   const [isFadingOut, setIsFadingOut] = useState(false);
 
   const { isLocked: isPageLocked } = useSecurity();
-
-  const [showSummaryOption, setSummaryOption] = useState(false);
   const [showReminderOption, setReminderOption] = useState(false);
   const [reminderText, setReminderText] = useState("");
   const [showOptions, setShowOptions] = useState(false);
@@ -158,11 +155,9 @@ export const Note: React.FC<NoteProps> = ({
   const handleRemoveItem = () => {
     removeNote(id);
     setIsFadingOut(false);
-    setSummaryOption(false);
     setReminderOption(false);
     setReminderText("");
     setActiveColorSet(ColorSet["white"]);
-    toggleNoteUpdateMode(false);
   };
 
   useEffect(() => {
@@ -172,9 +167,6 @@ export const Note: React.FC<NoteProps> = ({
   }, [content, isPageLocked, isNoteLocked]);
 
   useEffect(() => {
-    if (content.length > 180) {
-      setSummaryOption(true);
-    }
     const reminderText = isReminderPossible(content);
     if (reminderText !== null) {
       setReminderText(reminderText);
@@ -223,12 +215,6 @@ export const Note: React.FC<NoteProps> = ({
   };
 
   useEffect(() => {
-    if (!isNoteUpdatorOpen) {
-      toggleNoteUpdateMode(false);
-    }
-  }, [isNoteUpdatorOpen]);
-
-  useEffect(() => {
     if (selectedDate !== null) {
       const reminderDelay =
         new Date(selectedDate).getTime() - new Date().getTime();
@@ -265,8 +251,19 @@ export const Note: React.FC<NoteProps> = ({
           </TerminalHeader>
           <TerminalBody
             onDoubleClick={() => {
-              toggleNoteEditor(true);
-              toggleNoteUpdateMode(true);
+              setNoteEditorMode("modify");
+              setCurrentNote({
+                createDt,
+                content,
+                color,
+                id,
+                isImage,
+                removeNote,
+                updateNote,
+                isNoteLocked,
+                setNoteEditorMode,
+                setCurrentNote,
+              });
             }}
           >
             {!isImage && (
@@ -314,25 +311,10 @@ export const Note: React.FC<NoteProps> = ({
                   <p>set reminder {reminderText}?</p>
                 </button>
               )}
-              {showSummaryOption && (
-                <button>
-                  <p>summarize ?</p>
-                </button>
-              )}
             </div>
           </div>
         )}
       </NoteContainer>
-      {isNoteUpdatorOpen && (
-        <UpdateNote
-          updateNote={updateNote}
-          noteId={id}
-          currentContent={content}
-          toggleModal={toggleNoteEditor}
-          currentColor={color}
-          isNoteLocked={isNoteLocked}
-        />
-      )}
       {isDatePickerOpen && (
         <DateTimePickerModal
           selectedDate={selectedDate}

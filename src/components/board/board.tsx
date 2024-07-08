@@ -19,9 +19,14 @@ export const Board: React.FC<{
   const [transcript, setTranscript] = useState<string>("");
   const [isVoiceOn, setVoiceOn] = useState<boolean>(false);
   const [searchText, setSearchText] = useState<string>("");
-  const [isNoteUpdating, toggleNoteEditorMode] = useState(false);
 
-  const [isNoteEditorOpen, openNoteEditor] = useState(Boolean);
+  const [currentNote, setCurrentNote] = useState<NoteProps | undefined>(
+    undefined
+  );
+
+  const [noteEditorMode, setNoteEditorMode] = useState<
+    "new" | "modify" | "null"
+  >("null");
   const { isDataReceived, syncNotes } = usePeer();
   const { showToast } = useToast();
 
@@ -49,7 +54,8 @@ export const Board: React.FC<{
         removeNote: removeNote,
         updateNote: updateNote,
         isNoteLocked: false,
-        toggleNoteUpdateMode: toggleNoteEditorMode,
+        setNoteEditorMode: setNoteEditorMode,
+        setCurrentNote: setCurrentNote,
       };
       addNote(newData);
     }
@@ -129,7 +135,8 @@ export const Board: React.FC<{
           isNoteLocked={note.isNoteLocked}
           removeNote={removeNote}
           updateNote={updateNote}
-          toggleNoteUpdateMode={toggleNoteEditorMode}
+          setNoteEditorMode={setNoteEditorMode}
+          setCurrentNote={setCurrentNote}
         />
       );
     });
@@ -140,7 +147,7 @@ export const Board: React.FC<{
     const tapLength = 300;
 
     if (lastTap.current && currentTime - lastTap.current < tapLength) {
-      openNoteEditor(true);
+      setNoteEditorMode("new");
     } else {
       lastTap.current = currentTime;
     }
@@ -151,7 +158,7 @@ export const Board: React.FC<{
       <div
         id="noteEditorDoubleClick"
         onDoubleClick={() => {
-          openNoteEditor(true);
+          setNoteEditorMode("new");
         }}
         onTouchEnd={handleTouch}
       ></div>
@@ -160,26 +167,23 @@ export const Board: React.FC<{
           <div id="board">{getNotesElement()}</div>
         </div>
       </div>
-      {!isSearchMode && !isNoteUpdating && (
+      {!isSearchMode && (
         <>
-          {/* <NewNoteDetector
-            addNote={addNote}
-            updateNote={updateNote}
-            removeNote={removeNote}
-            openNoteEditor={istNoteEditorOpen}
-            toggleNoteEditorMode={toggleNoteEditorMode}
-          /> */}
-
           <NewNoteEditor
             addNote={addNote}
             updateNote={updateNote}
             removeNote={removeNote}
-            openNoteEditor={isNoteEditorOpen}
-            toggleNoteEditorMode={toggleNoteEditorMode}
-            turnOffOpenNoteEditorFlag={openNoteEditor}
+            noteEditorMode={noteEditorMode}
+            setNoteEditorMode={setNoteEditorMode}
+            setCurrentNote={setCurrentNote}
+            noteId={currentNote !== undefined ? currentNote.id : undefined}
+            isNoteLocked={
+              currentNote !== undefined ? currentNote.isNoteLocked : undefined
+            }
+            currentContent={
+              currentNote !== undefined ? currentNote.content : undefined
+            }
           />
-
-          {/* <Voice setTranscript={setTranscript} setVoice={setVoiceOn} /> */}
         </>
       )}
       {isSearchMode && (
@@ -193,7 +197,7 @@ export const Board: React.FC<{
       <FloatingMenu
         setTranscript={setTranscript}
         setVoice={setVoiceOn}
-        setNoteEditorOpen={openNoteEditor}
+        setNoteEditorMode={setNoteEditorMode}
       />
       <Wave showWave={isVoiceOn} />
       {/* {transcript} */}

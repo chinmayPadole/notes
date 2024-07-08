@@ -10,8 +10,8 @@ import { usePeer } from "../../provider/PeerContext";
 export const FloatingMenu: React.FC<{
   setTranscript: (transcript: string) => void;
   setVoice: (isVoiceOn: boolean) => void;
-  setNoteEditorOpen: (openNoteEditor: boolean) => void;
-}> = ({ setTranscript, setVoice, setNoteEditorOpen }) => {
+  setNoteEditorMode: (mode: "new" | "modify" | "null") => void;
+}> = ({ setTranscript, setVoice, setNoteEditorMode }) => {
   const { showToast } = useToast();
   const [isMenuOpen, setMenuVisibility] = useState(false);
   const [isQRCodeVisible, setQRCodeVisibility] = useState(false);
@@ -51,23 +51,23 @@ export const FloatingMenu: React.FC<{
       });
   };
 
-  useEffect(() => {
-    const requestMicrophonePermission = async () => {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({
-          audio: true,
-        });
-        setHasPermission(true);
-        // Remember to stop the tracks to release the microphone
-        stream.getTracks().forEach((track) => track.stop());
-      } catch (error) {
-        console.log(error);
-        setHasPermission(false);
-      }
-    };
+  // useEffect(() => {
+  //   const requestMicrophonePermission = async () => {
+  //     try {
+  //       const stream = await navigator.mediaDevices.getUserMedia({
+  //         audio: true,
+  //       });
+  //       setHasPermission(true);
+  //       // Remember to stop the tracks to release the microphone
+  //       stream.getTracks().forEach((track) => track.stop());
+  //     } catch (error) {
+  //       console.log(error);
+  //       setHasPermission(false);
+  //     }
+  //   };
 
-    requestMicrophonePermission();
-  }, []);
+  //   requestMicrophonePermission();
+  // }, []);
 
   // useEffect(() => {
   //   if (hasPermission === false) {
@@ -207,7 +207,7 @@ export const FloatingMenu: React.FC<{
                     </svg>
                   </a>
                 </li>
-                <li onClick={() => setNoteEditorOpen(true)}>
+                <li onClick={() => setNoteEditorMode("new")}>
                   <a>
                     <svg
                       viewBox="0 0 24 24"
