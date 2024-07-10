@@ -48,6 +48,12 @@ const ModalError = styled.div`
   color: #fff;
 `;
 
+const QRCodeWrapper = styled.div`
+  padding: 10px;
+  background: #fff;
+  border-radius: 10px;
+`;
+
 export const GenerateQRCode: React.FC<{
   show: boolean;
   onClose: () => void;
@@ -329,7 +335,11 @@ export const GenerateQRCode: React.FC<{
                       </svg>
                     </button>
                   )}
-                  {hostCode && <QRCode size={256} value={qrCodeValue} />}
+                  {hostCode && (
+                    <QRCodeWrapper>
+                      <QRCode size={256} value={qrCodeValue} />
+                    </QRCodeWrapper>
+                  )}
                 </div>
               )}
               {!scanCode && !hostCode && <div className="divider"></div>}
