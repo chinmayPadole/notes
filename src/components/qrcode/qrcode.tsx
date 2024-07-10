@@ -32,7 +32,7 @@ const ModalWrapper = styled.div`
 const ModalHeader = styled.div`
   font-size: 24px;
   margin-bottom: 20px;
-  color: #fff;
+  color: red;
 `;
 
 const ModalContent = styled.div`

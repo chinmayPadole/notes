@@ -15,6 +15,7 @@ const PeerContext = createContext({
   isConnectionEstablished: false,
   isDataReceived: 0,
   initialPeerId: "",
+  tryRetry: () => {},
 });
 
 export const usePeer = () => useContext(PeerContext);
@@ -209,6 +210,12 @@ export const PeerProvider = ({ children }: any) => {
     }
   };
 
+  const tryRetry = () => {
+    if (!isConnectionEstablished && peerRef && peerRef.current) {
+      setRetryCount(5);
+    }
+  };
+
   return (
     <PeerContext.Provider
       value={{
@@ -217,6 +224,7 @@ export const PeerProvider = ({ children }: any) => {
         isConnectionEstablished,
         isDataReceived,
         initialPeerId,
+        tryRetry,
       }}
     >
       {children}

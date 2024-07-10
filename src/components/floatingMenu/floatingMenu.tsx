@@ -25,7 +25,7 @@ export const FloatingMenu: React.FC<{
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
 
-  const { syncNotes, isConnectionEstablished } = usePeer();
+  const { syncNotes, isConnectionEstablished, tryRetry } = usePeer();
 
   const requestMicrophonePermission = () => {
     navigator.mediaDevices
@@ -397,6 +397,7 @@ export const FloatingMenu: React.FC<{
                       setQRCodeVisibility(false);
                     } else {
                       setQRCodeVisibility(true);
+                      tryRetry();
                     }
                   }}
                 >
