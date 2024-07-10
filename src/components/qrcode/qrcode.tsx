@@ -22,7 +22,7 @@ const Overlay = styled.div`
 
 const ModalWrapper = styled.div`
   width: max-content;
-  background: white;
+  background: radial-gradient(circle, #0e0e0e 15%, #010101);
   border-radius: 10px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   padding: 20px;
@@ -32,11 +32,20 @@ const ModalWrapper = styled.div`
 const ModalHeader = styled.div`
   font-size: 24px;
   margin-bottom: 20px;
+  color: #fff;
 `;
 
 const ModalContent = styled.div`
   font-size: 18px;
   margin-bottom: 20px;
+`;
+
+const ModalError = styled.div`
+  background: #d32f2f;
+  padding: 10px;
+  border-radius: 10px;
+  font-weight: 600;
+  color: #fff;
 `;
 
 export const GenerateQRCode: React.FC<{
@@ -45,10 +54,19 @@ export const GenerateQRCode: React.FC<{
 }> = ({ show, onClose }) => {
   const { isConnectionEstablished } = usePeer();
 
+  const [isDeviceOffline, setDeviceOffline] = useState<boolean | null>(null);
+
   useEffect(() => {
-    const id = localStorage.getItem("peer_id");
-    if (id !== null && id !== "" && isConnectionEstablished) {
+    const peerId = localStorage.getItem("peer_id");
+    const isPeerAdded = localStorage.getItem("peerStatus");
+    if (peerId !== null && peerId !== "" && isConnectionEstablished) {
       setSessionPresent(true);
+      setDeviceOffline(false);
+    } else if (
+      (isPeerAdded === "peer_added" || (peerId !== null && peerId !== "")) &&
+      !isConnectionEstablished
+    ) {
+      setDeviceOffline(true);
     }
   }, []);
 
@@ -152,11 +170,10 @@ export const GenerateQRCode: React.FC<{
                       <svg
                         version="1.1"
                         id="Layer_1"
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 448 448"
+                        viewBox="0 0 448.00 448.00"
                         enableBackground="new 0 0 448 448"
-                        fill="#000000"
-                        stroke="#000000"
+                        fill="#ffffff"
+                        stroke="#ffffff"
                         strokeWidth="0.00448"
                       >
                         <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
@@ -170,140 +187,140 @@ export const GenerateQRCode: React.FC<{
                           <g>
                             {" "}
                             <path
-                              fill="#323232"
+                              fill="#ffffff"
                               d="M288,0v160h160V0H288z M416,128h-96V32h96V128z"
                             ></path>{" "}
                             <rect
                               x="64"
                               y="64"
-                              fill="#323232"
+                              fill="#ffffff"
                               width="32"
                               height="32"
                             ></rect>{" "}
                             <rect
                               x="352"
                               y="64"
-                              fill="#323232"
+                              fill="#ffffff"
                               width="32"
                               height="32"
                             ></rect>{" "}
                             <polygon
-                              fill="#323232"
+                              fill="#ffffff"
                               points="256,64 224,64 224,32 256,32 256,0 192,0 192,96 224,96 224,128 256,128 "
                             ></polygon>{" "}
                             <path
-                              fill="#323232"
+                              fill="#ffffff"
                               d="M160,160V0H0v160h32H160z M32,32h96v96H32V32z"
                             ></path>{" "}
                             <polygon
-                              fill="#323232"
+                              fill="#ffffff"
                               points="0,192 0,256 32,256 32,224 64,224 64,192 "
                             ></polygon>{" "}
                             <polygon
-                              fill="#323232"
+                              fill="#ffffff"
                               points="224,224 256,224 256,160 224,160 224,128 192,128 192,192 224,192 "
                             ></polygon>{" "}
                             <rect
                               x="352"
                               y="192"
-                              fill="#323232"
+                              fill="#ffffff"
                               width="32"
                               height="32"
                             ></rect>{" "}
                             <rect
                               x="416"
                               y="192"
-                              fill="#323232"
+                              fill="#ffffff"
                               width="32"
                               height="32"
                             ></rect>{" "}
                             <polygon
-                              fill="#323232"
+                              fill="#ffffff"
                               points="320,256 320,288 352,288 352,320 384,320 384,256 352,256 352,224 320,224 320,192 288,192 288,224 256,224 256,256 "
                             ></polygon>{" "}
                             <rect
                               x="384"
                               y="224"
-                              fill="#323232"
+                              fill="#ffffff"
                               width="32"
                               height="32"
                             ></rect>{" "}
                             <path
-                              fill="#323232"
+                              fill="#ffffff"
                               d="M0,288v160h160V288H0z M128,416H32v-96h96V416z"
                             ></path>{" "}
                             <polygon
-                              fill="#323232"
+                              fill="#ffffff"
                               points="256,256 224,256 224,224 192,224 192,192 96,192 96,224 64,224 64,256 128,256 128,224 160,224 160,256 192,256 192,288 224,288 224,320 256,320 "
                             ></polygon>{" "}
                             <rect
                               x="288"
                               y="288"
-                              fill="#323232"
+                              fill="#ffffff"
                               width="32"
                               height="32"
                             ></rect>{" "}
                             <rect
                               x="416"
                               y="256"
-                              fill="#323232"
+                              fill="#ffffff"
                               width="32"
                               height="64"
                             ></rect>{" "}
                             <rect
                               x="320"
                               y="320"
-                              fill="#323232"
+                              fill="#ffffff"
                               width="32"
                               height="32"
                             ></rect>{" "}
                             <rect
                               x="384"
                               y="320"
-                              fill="#323232"
+                              fill="#ffffff"
                               width="32"
                               height="32"
                             ></rect>{" "}
                             <rect
                               x="64"
                               y="352"
-                              fill="#323232"
+                              fill="#ffffff"
                               width="32"
                               height="32"
                             ></rect>{" "}
                             <polygon
-                              fill="#323232"
+                              fill="#ffffff"
                               points="320,384 320,352 288,352 288,320 256,320 256,352 224,352 224,320 192,320 192,384 224,384 224,416 256,416 256,384 "
                             ></polygon>{" "}
                             <polygon
-                              fill="#323232"
+                              fill="#ffffff"
                               points="352,384 320,384 320,416 352,416 352,448 384,448 384,352 352,352 "
                             ></polygon>{" "}
                             <rect
                               x="416"
                               y="352"
-                              fill="#323232"
+                              fill="#ffffff"
                               width="32"
                               height="32"
                             ></rect>{" "}
                             <rect
                               x="192"
                               y="416"
-                              fill="#323232"
+                              fill="#ffffff"
                               width="32"
                               height="32"
                             ></rect>{" "}
                             <rect
                               x="256"
                               y="416"
-                              fill="#323232"
+                              fill="#ffffff"
                               width="64"
                               height="32"
                             ></rect>{" "}
                             <rect
                               x="416"
                               y="416"
-                              fill="#323232"
+                              fill="#ffffff"
                               width="32"
                               height="32"
                             ></rect>{" "}
@@ -382,6 +399,13 @@ export const GenerateQRCode: React.FC<{
             </>
           )}
         </ModalContent>
+
+        {isDeviceOffline === true && (
+          <ModalError>
+            <p>Device is unreachable</p>
+            <p>(Please make sure peer device is online)</p>
+          </ModalError>
+        )}
       </ModalWrapper>
     </Overlay>
   );
