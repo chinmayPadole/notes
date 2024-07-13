@@ -128,3 +128,16 @@ export const formatDateTime = (date: Date) => {
     return inputDate.toLocaleDateString("en-US", dateOptions as any);
   }
 };
+
+export const getNextMonday = () => {
+  const today = new Date();
+  const todayDayOfWeek = today.getDay();
+
+  // Adjust for Sunday (0) as the beginning of the week
+  const daysToAdd = todayDayOfWeek === 0 ? 1 : 8 - todayDayOfWeek;
+
+  const nextMonday = new Date(
+    today.getTime() + daysToAdd * 24 * 60 * 60 * 1000
+  );
+  return nextMonday;
+};

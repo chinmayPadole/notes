@@ -10,6 +10,7 @@ import { FloatingMenu } from "../floatingMenu/floatingMenu";
 import { NewNoteEditor } from "../newNote/newNoteEditor";
 import { usePeer } from "../../provider/PeerContext";
 import { useToast } from "../../provider/toastProvider";
+import { RequestNotificationPermission } from "../requestNotification/requestNotifications";
 
 export const Board: React.FC<{
   isSearchMode: boolean;
@@ -200,6 +201,10 @@ export const Board: React.FC<{
         setNoteEditorMode={setNoteEditorMode}
       />
       <Wave showWave={isVoiceOn} />
+
+      {Notification.permission !== "granted" && (
+        <RequestNotificationPermission />
+      )}
       {/* {transcript} */}
     </>
   );

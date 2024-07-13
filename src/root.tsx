@@ -7,17 +7,17 @@ import { Chat } from "./components/qrcode/testChat";
 
 export const Root = () => {
   // Request notification permission on component mount
-  useEffect(() => {
-    if ("Notification" in window && "serviceWorker" in navigator) {
-      Notification.requestPermission().then((permission) => {
-        if (permission === "granted") {
-          console.log("Notification permission granted.");
-        } else {
-          console.log("Notification permission denied.");
-        }
-      });
-    }
-  }, []);
+  // useEffect(() => {
+  //   if ("Notification" in window && "serviceWorker" in navigator) {
+  //     Notification.requestPermission().then((permission) => {
+  //       if (permission === "granted") {
+  //         console.log("Notification permission granted.");
+  //       } else {
+  //         console.log("Notification permission denied.");
+  //       }
+  //     });
+  //   }
+  // }, []);
 
   useEffect(() => {
     serviceWorker.register({

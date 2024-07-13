@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import styled from "styled-components";
 import { useToast } from "../../provider/toastProvider";
+import { getNextMonday } from "../../common/utils";
 
 const ModalOverlay = styled.div`
   position: fixed;
@@ -21,7 +22,7 @@ const Modal = styled.div`
   border-radius: 20px;
   box-shadow: 2px 4px 16px #333;
   width: 70%;
-  height: 30%;
+  height: max-content;
   text-align: center;
   position: relative;
 `;
@@ -33,22 +34,20 @@ const Title = styled.h2`
 `;
 
 const DateTimeInput = styled.input`
-  margin-top: 60px;
-  padding: 10px;
-  transform: translateX(-10px);
-  margin-bottom: 20px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  font-size: 16px;
-  background: #333;
-  color: #ced4da;
+  color: #fff;
   outline: none;
+  font-size: 16px;
+
+  padding: 0;
+  border: 0;
+  background: no-repeat;
   &:focus {
     border-color: #ff7e5f;
   }
 `;
 
 const Button = styled.button`
+  margin-top: 20px;
   padding: 10px 20px;
   font-size: 16px;
   border: none;
@@ -57,9 +56,58 @@ const Button = styled.button`
   transition: background-color 0.3s;
   background: red;
   color: white;
-  margin: 0 5px;
   &:not(:last-child) {
     margin-right: 10px;
+  }
+`;
+
+const Presets = styled.div`
+  & ul {
+    list-style: none;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    padding: 10px;
+    font-size: 16px;
+
+    & li {
+      padding: 10px;
+      border: 1px solid #5b5b5b;
+      cursor: pointer;
+      color: #fff;
+      background: #7d7c7a;
+    }
+
+    & > li:nth-child(1) {
+      border-top-left-radius: 10px;
+    }
+    & > li:nth-child(4) {
+      border-bottom-left-radius: 10px;
+    }
+    & > li:nth-child(3) {
+      border-top-right-radius: 10px;
+    }
+    & > li:nth-child(6) {
+      border-bottom-right-radius: 10px;
+    }
+
+    @media (max-width: 500px) {
+      grid-template-columns: 1fr;
+
+      & > li:nth-child(1) {
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+      }
+      & > li:nth-child(6) {
+        border-bottom-left-radius: 10px;
+        border-bottom-right-radius: 10px;
+      }
+      & > li:nth-child(4) {
+        border-bottom-left-radius: 0;
+      }
+      & > li:nth-child(3) {
+        border-top-right-radius: 0;
+      }
+    }
   }
 `;
 
@@ -116,12 +164,66 @@ export const DateTimePickerModal: React.FC<{
       {isOpen && (
         <ModalOverlay>
           <Modal ref={modalRef}>
-            <Title>set reminder time</Title>
-            <DateTimeInput
-              type="datetime-local"
-              value={date}
-              onChange={handleDateChange}
-            />
+            <Title>Pick reminder time</Title>
+            <Presets>
+              <ul>
+                <li
+                  onClick={() =>
+                    setDate(
+                      toLocalISOString(
+                        new Date(new Date().getTime() + 20 * 60 * 1000)
+                      )
+                    )
+                  }
+                >
+                  In 20 minutes
+                </li>
+                <li
+                  onClick={() =>
+                    setDate(
+                      toLocalISOString(
+                        new Date(new Date().getTime() + 60 * 60 * 1000)
+                      )
+                    )
+                  }
+                >
+                  In 1 hour
+                </li>
+                <li
+                  onClick={() =>
+                    setDate(
+                      toLocalISOString(
+                        new Date(new Date().getTime() + 3 * 60 * 60 * 1000)
+                      )
+                    )
+                  }
+                >
+                  In 3 hours
+                </li>
+                <li
+                  onClick={() =>
+                    setDate(
+                      toLocalISOString(
+                        new Date(new Date().getTime() + 24 * 60 * 60 * 1000)
+                      )
+                    )
+                  }
+                >
+                  Tomorrow
+                </li>
+                <li onClick={() => setDate(toLocalISOString(getNextMonday()))}>
+                  Next week
+                </li>
+                <li>
+                  {" "}
+                  <DateTimeInput
+                    type="datetime-local"
+                    value={date}
+                    onChange={handleDateChange}
+                  />
+                </li>
+              </ul>
+            </Presets>
             <Button onClick={() => closeModal(true)}>Confirm</Button>
           </Modal>
         </ModalOverlay>
