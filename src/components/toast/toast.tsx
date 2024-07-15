@@ -22,6 +22,9 @@ const ToastContainer = styled.div<{ color: string }>`
   bottom: 20px;
   left: 50%;
   transform: translateX(-50%);
+
+  width: max-content;
+  max-width: 60%;
 `;
 
 const Icon = styled.div`

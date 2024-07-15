@@ -17,4 +17,5 @@ export interface NoteProps {
   setNoteEditorMode: (mode: "new" | "modify" | "null") => void;
   setCurrentNote: (note: NoteProps | undefined) => void;
   preventNewNoteDetection: (isNewNoteDetectionEnabled: boolean) => void;
+  isHighlighted: boolean;
 }

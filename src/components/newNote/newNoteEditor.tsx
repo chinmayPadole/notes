@@ -311,6 +311,7 @@ export const NewNoteEditor: React.FC<NewNoteEditorProps> = ({
         setNoteEditorMode: setNoteEditorMode,
         setCurrentNote: setCurrentNote,
         preventNewNoteDetection: preventNewNoteDetection,
+        isHighlighted: false,
       };
       addNote(newData);
     } else if (

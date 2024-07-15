@@ -46,40 +46,45 @@ self.addEventListener("push", function (event) {
 
 self.addEventListener("notificationclick", function (event) {
   event.notification.close();
-  event.waitUntil(self.clients.openWindow("/"));
+  if (event.action === "dismiss") {
+  } else {
+    console.log("notification click", event);
+    event.waitUntil(
+      self.clients.openWindow(`/?noteId=${event.notification.data.noteId}`)
+    );
+  }
 });
 
 self.addEventListener("message", function (event) {
   const data = event.data;
 
-  //console.log("Recived PUSH Message", data);
-
-  if (data === "keep-alive") {
-    // console.log("Keeping service worker alive");
-    setInterval(
-      () =>
-        self.clients.matchAll().then((clients) => {
-          clients.forEach((client) => client.postMessage("keep-alive"));
-        }),
-      10000
-    ); // Adjust the interval as needed
-  } else if (data && data.type === "TRIGGER_PUSH") {
+  if (data && data.type === "TRIGGER_PUSH") {
     const options = {
       body: data.body,
-      icon: "/icon.png",
-      badge: "/badge.png",
+      icon: "./icons-144.png",
+      badge: "./icons-144.png",
+      image: data.image,
       requireInteraction: true,
+      title: "Super notes Reminder!",
       priority: "high",
+      renotify: true,
+      tag: "new-reminder",
       actions: [
         {
           action: "view",
           title: "View",
         },
+        {
+          action: "dismiss",
+          title: "Dismiss",
+        },
       ],
+      data: {
+        noteId: data.noteId,
+      },
+      timestamp: data.reminderDate,
     };
 
-    this.setTimeout(() => {
-      self.registration.showNotification(data.title, options);
-    }, data.delay);
+    self.registration.showNotification(data.title, options);
   }
 });

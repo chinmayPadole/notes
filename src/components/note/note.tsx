@@ -65,6 +65,8 @@ const TerminalBody = styled.div`
   white-space: pre-wrap;
   position: relative;
   word-break: break-word;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
 `;
 
 const NoteContainer = styled.div`
@@ -89,13 +91,29 @@ const HeaderActions = styled.div`
   user-select: none; /* Non-prefixed version, currently
                                 supported by Chrome, Edge, Opera and Firefox */
 `;
-const NoteTitle = styled.div`
+
+const NoteTitleWrapper = styled.div`
+  width: 95%;
+  align-items: center;
   padding: 8px;
   margin-right: 20px;
+  display: flex;
+  justify-content: end;
+
+  & svg {
+    max-width: 25px;
+    max-height: 25px;
+  }
+
+  @media (max-width: 500px) {
+    justify-content: center;
+  }
+`;
+const NoteTitle = styled.div`
   font-weight: 600;
   font-style: italic;
+  padding: 0 10px;
 
-  max-width: 95%;
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
@@ -120,6 +138,7 @@ export const Note: React.FC<NoteProps> = ({
   setNoteEditorMode,
   setCurrentNote,
   preventNewNoteDetection,
+  isHighlighted,
 }): JSX.Element => {
   const { showToast } = useToast();
   const [noteTitle, setNoteTitle] = useState<string | null>(title);
@@ -150,6 +169,14 @@ export const Note: React.FC<NoteProps> = ({
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const titleRef = useRef<HTMLDivElement>(null);
+  const noteRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (isHighlighted && noteRef.current) {
+      noteRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+      noteRef.current.focus();
+    }
+  }, [isHighlighted]);
 
   useEffect(() => {
     if (isPressing) {
@@ -253,7 +280,12 @@ export const Note: React.FC<NoteProps> = ({
     if (selectedDate !== null) {
       const reminderDelay =
         new Date(selectedDate).getTime() - new Date().getTime();
-      addTimer(reminderDelay, content);
+      addTimer(
+        reminderDelay,
+        !isImage ? content : title || "Untitled image",
+        isImage ? content : null,
+        id
+      );
     }
   }, [selectedDate]);
 
@@ -266,6 +298,7 @@ export const Note: React.FC<NoteProps> = ({
   return (
     <>
       <NoteContainer
+        ref={noteRef}
         className={`long-press-button ${isLongPress ? "long-press" : ""}`}
         onMouseDown={handleMouseDown}
         onMouseUp={handleMouseUp}
@@ -278,7 +311,12 @@ export const Note: React.FC<NoteProps> = ({
           $fontcolor={colorSet.fontColor}
           className={isFadingOut ? "item-fadeout" : "item"}
         >
-          <TerminalHeader $headercolor={colorSet.noteHeader}>
+          <TerminalHeader
+            $headercolor={colorSet.noteHeader}
+            style={{
+              animation: isHighlighted ? `highlight 1s 5` : "",
+            }}
+          >
             <HeaderActions>
               <Dot
                 color="#ff5f56"
@@ -291,30 +329,79 @@ export const Note: React.FC<NoteProps> = ({
               <Dot color="#FF9500" onClick={toggleOptions} />
               <DateElement>{getFormattedDate(createDt)}</DateElement>
             </HeaderActions>
-            <NoteTitle
-              ref={titleRef}
-              contentEditable={true}
-              onFocus={() => preventNewNoteDetection(true)}
-              onBlur={() => {
-                preventNewNoteDetection(false);
-                if (
-                  titleRef.current &&
-                  titleRef.current.innerHTML.length === 0
-                ) {
-                  titleRef.current.innerHTML = "new note";
-                } else if (
-                  titleRef.current &&
-                  titleRef.current.innerHTML.length > 0
-                ) {
-                  setNoteTitle(titleRef.current.innerHTML);
-                }
-              }}
-              suppressContentEditableWarning={true}
-            >
-              {title === null ? "new note" : title}
-            </NoteTitle>
+            <NoteTitleWrapper>
+              <NoteTitle
+                ref={titleRef}
+                contentEditable={true}
+                onFocus={() => preventNewNoteDetection(true)}
+                onBlur={() => {
+                  preventNewNoteDetection(false);
+                  if (
+                    titleRef.current &&
+                    titleRef.current.innerHTML.length === 0
+                  ) {
+                    titleRef.current.innerHTML = "new note";
+                  } else if (
+                    titleRef.current &&
+                    titleRef.current.innerHTML.length > 0
+                  ) {
+                    setNoteTitle(titleRef.current.innerHTML);
+                  }
+                }}
+                suppressContentEditableWarning={true}
+              >
+                {title === null ? "new note" : title}
+              </NoteTitle>
+              <svg
+                viewBox="-2.4 -2.4 28.80 28.80"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                stroke="#948484"
+              >
+                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                <g
+                  id="SVGRepo_tracerCarrier"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke="#a8a8a8"
+                  stroke-width="0.72"
+                >
+                  {" "}
+                  <path
+                    opacity="0.15"
+                    d="M4 20H8L18 10L14 6L4 16V20Z"
+                    fill="#000000"
+                  ></path>{" "}
+                  <path
+                    d="M18 10L21 7L17 3L14 6M18 10L8 20H4V16L14 6M18 10L14 6"
+                    stroke="#000000"
+                    stroke-width="0.792"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  ></path>{" "}
+                </g>
+                <g id="SVGRepo_iconCarrier">
+                  {" "}
+                  <path
+                    opacity="0.15"
+                    d="M4 20H8L18 10L14 6L4 16V20Z"
+                    fill="#000000"
+                  ></path>{" "}
+                  <path
+                    d="M18 10L21 7L17 3L14 6M18 10L8 20H4V16L14 6M18 10L14 6"
+                    stroke="#000000"
+                    stroke-width="0.792"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  ></path>{" "}
+                </g>
+              </svg>
+            </NoteTitleWrapper>
           </TerminalHeader>
           <TerminalBody
+            style={{
+              animation: isHighlighted ? `highlight 1s 5` : "",
+            }}
             onDoubleClick={() => {
               setNoteEditorMode("modify");
               setCurrentNote({
@@ -330,6 +417,7 @@ export const Note: React.FC<NoteProps> = ({
                 setNoteEditorMode,
                 setCurrentNote,
                 preventNewNoteDetection,
+                isHighlighted,
               });
             }}
           >
@@ -368,7 +456,11 @@ export const Note: React.FC<NoteProps> = ({
                     if (remiderData !== undefined) {
                       addTimer(
                         remiderData.reminderTime,
-                        remiderData.reminderText
+                        !isImage
+                          ? remiderData.reminderText
+                          : title || "Untitled image",
+                        isImage ? content : null,
+                        id
                       ); // 5 seconds timer
                     }
                     setShowOptions(false);

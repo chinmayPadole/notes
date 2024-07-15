@@ -23,6 +23,8 @@ export const Board: React.FC<{
   const [isNewNoteDetectionDisabled, preventNewNoteDetection] =
     useState<boolean>(false);
 
+  const [highlightedNote, setHighlightedNote] = useState<string | null>(null);
+
   const [currentNote, setCurrentNote] = useState<NoteProps | undefined>(
     undefined
   );
@@ -61,6 +63,7 @@ export const Board: React.FC<{
         setNoteEditorMode: setNoteEditorMode,
         setCurrentNote: setCurrentNote,
         preventNewNoteDetection: preventNewNoteDetection,
+        isHighlighted: false,
       };
       addNote(newData);
     }
@@ -68,8 +71,30 @@ export const Board: React.FC<{
 
   // Load state from localStorage when the component mounts
   useEffect(() => {
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const paramValue = urlParams.get("noteId");
+    if (paramValue) {
+      setHighlightedNote(paramValue);
+    }
     refreshNotes();
   }, []);
+
+  useEffect(() => {
+    const clearQueryParam = () => {
+      const searchParams = new URLSearchParams(window.location.search);
+      searchParams.delete("noteId");
+      window.history.pushState({}, document.title, window.location.pathname);
+    };
+
+    // Delay execution by 5 seconds
+    const timeoutId = setTimeout(() => {
+      clearQueryParam();
+    }, 5000); // 5000 milliseconds = 5 seconds
+
+    // Cleanup function to clear the timeout if the component unmounts
+    return () => clearTimeout(timeoutId);
+  }, [highlightedNote]);
 
   const refreshNotes = () => {
     const storedState = localStorage.getItem("notes");
@@ -146,6 +171,7 @@ export const Board: React.FC<{
           setNoteEditorMode={setNoteEditorMode}
           setCurrentNote={setCurrentNote}
           preventNewNoteDetection={preventNewNoteDetection}
+          isHighlighted={note.id === highlightedNote}
         />
       );
     });

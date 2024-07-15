@@ -48,6 +48,8 @@
   object-fit: contain;
   border-radius: 10px;
   margin: 10px 20px;
+  display: block;
+  height: auto;
 }
 
 .options-component {
@@ -133,4 +135,56 @@
 
 .long-press {
   border: 2px solid green;
+}
+
+@-webkit-keyframes highlight {
+  0% {
+    background-color: #fff;
+  }
+  49% {
+    background-color: #fff;
+  }
+  50% {
+    background-color: #8cff32;
+  }
+  99% {
+    background-color: #8cff32;
+  }
+  100% {
+    background-color: #fff;
+  }
+}
+@-moz-keyframes highlight {
+  0% {
+    background-color: #fff;
+  }
+  49% {
+    background-color: #fff;
+  }
+  50% {
+    background-color: #8cff32;
+  }
+  99% {
+    background-color: #8cff32;
+  }
+  100% {
+    background-color: #fff;
+  }
+}
+@keyframes highlight {
+  0% {
+    background-color: #fff;
+  }
+  49% {
+    background-color: #fff;
+  }
+  50% {
+    background-color: #8cff32;
+  }
+  99% {
+    background-color: #8cff32;
+  }
+  100% {
+    background-color: #fff;
+  }
 }
