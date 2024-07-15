@@ -111,11 +111,13 @@ export interface NewNoteEditorProps {
     noteId: string,
     updatedContent: string,
     updatedColor: string,
-    isNoteLocked: boolean
+    isNoteLocked: boolean,
+    title: string | null
   ) => void;
   removeNote: (noteId: string) => void;
   noteEditorMode: "new" | "modify" | "null";
   setNoteEditorMode: (mode: "new" | "modify" | "null") => void;
+  preventNewNoteDetection: (isNewNoteDetectionEnabled: boolean) => void;
 
   //Optional params for modification
   noteId?: string;
@@ -136,6 +138,7 @@ export const NewNoteEditor: React.FC<NewNoteEditorProps> = ({
   isNoteLocked,
   currentContent,
   setCurrentNote,
+  preventNewNoteDetection,
 }) => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   let [inputValue, setInputValue] = useState<string>("");
@@ -184,6 +187,10 @@ export const NewNoteEditor: React.FC<NewNoteEditorProps> = ({
 
     if (textAreaRef.current) {
       textAreaRef.current.focus();
+      textAreaRef.current.setSelectionRange(
+        textAreaRef.current.value.length,
+        textAreaRef.current.value.length
+      );
     }
   };
 
@@ -191,11 +198,6 @@ export const NewNoteEditor: React.FC<NewNoteEditorProps> = ({
     if (noteEditorMode !== "null") {
       handleButtonClick();
       openModal();
-
-      return () => {
-        // whenever the component removes it will executes
-        closeModal();
-      };
     }
   }, [noteEditorMode]);
 
@@ -302,11 +304,13 @@ export const NewNoteEditor: React.FC<NewNoteEditorProps> = ({
         createDt: new Date(),
         color: "white",
         isImage: isImage,
+        title: null,
         removeNote: removeNote,
         updateNote: updateNote,
         isNoteLocked: false,
         setNoteEditorMode: setNoteEditorMode,
         setCurrentNote: setCurrentNote,
+        preventNewNoteDetection: preventNewNoteDetection,
       };
       addNote(newData);
     } else if (
@@ -314,7 +318,13 @@ export const NewNoteEditor: React.FC<NewNoteEditorProps> = ({
       noteId !== undefined &&
       isNoteLocked !== undefined
     ) {
-      updateNote(noteId, removeEmptyLines(inputValue), "white", isNoteLocked);
+      updateNote(
+        noteId,
+        removeEmptyLines(inputValue),
+        "white",
+        isNoteLocked,
+        null
+      );
     }
 
     closeModal();

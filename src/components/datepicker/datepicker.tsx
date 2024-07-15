@@ -44,6 +44,9 @@ const DateTimeInput = styled.input`
   &:focus {
     border-color: #ff7e5f;
   }
+  &::selection {
+    background-color: transparent;
+  }
 `;
 
 const Button = styled.button`
@@ -75,6 +78,15 @@ const Presets = styled.div`
       cursor: pointer;
       color: #fff;
       background: #7d7c7a;
+
+      /*Prevent text selection*/
+      -webkit-touch-callout: none; /* iOS Safari */
+      -webkit-user-select: none; /* Safari */
+      -khtml-user-select: none; /* Konqueror HTML */
+      -moz-user-select: none; /* Old versions of Firefox */
+      -ms-user-select: none; /* Internet Explorer/Edge */
+      user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome, Edge, Opera and Firefox */
     }
 
     & > li:nth-child(1) {
@@ -125,19 +137,31 @@ export const DateTimePickerModal: React.FC<{
   setSelectedDate: (date: string | null) => void;
 }> = ({ isOpen, setIsOpen, selectedDate, setSelectedDate }) => {
   const modalRef = useRef<HTMLDivElement>(null);
+  const [selectedOption, setReminderOption] = useState<string | null>(null);
   const { showToast } = useToast();
 
   const [date, setDate] = useState(toLocalISOString(new Date()));
+
   const closeModal = (setDate: boolean = false) => {
-    setIsOpen(false);
-    if (setDate) {
+    if (setDate && selectedOption !== null) {
+      setIsOpen(false);
       setSelectedDate(date);
-      showToast("Reminder set!", "#333", 2000, "success");
+
+      const word = selectedOption === "Next week" ? "" : "in";
+      const toastMessage =
+        selectedOption === "custom"
+          ? "Reminder set for the date"
+          : `Will remind ${word} ${selectedOption}`;
+
+      showToast(toastMessage, "#333", 2000, "success");
+    } else if (selectedOption === null) {
+      showToast("Please select an option", "#333", 2000, "info");
     }
   };
 
   const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setDate(event.target.value);
+    setReminderOption("custom");
   };
 
   const handleClickOutside = (event: MouseEvent) => {
@@ -168,55 +192,99 @@ export const DateTimePickerModal: React.FC<{
             <Presets>
               <ul>
                 <li
-                  onClick={() =>
+                  style={{
+                    background:
+                      selectedOption === "20 minutes" ? "#bed4ff" : "#7d7c7a",
+                    color: selectedOption === "20 minutes" ? "#000" : "#fff",
+                  }}
+                  onClick={() => {
                     setDate(
                       toLocalISOString(
                         new Date(new Date().getTime() + 20 * 60 * 1000)
                       )
-                    )
-                  }
+                    );
+                    setReminderOption("20 minutes");
+                  }}
                 >
                   In 20 minutes
                 </li>
                 <li
-                  onClick={() =>
+                  style={{
+                    background:
+                      selectedOption === "1 hour" ? "#bed4ff" : "#7d7c7a",
+                    color: selectedOption === "1 hour" ? "#000" : "#fff",
+                  }}
+                  onClick={() => {
                     setDate(
                       toLocalISOString(
                         new Date(new Date().getTime() + 60 * 60 * 1000)
                       )
-                    )
-                  }
+                    );
+                    setReminderOption("1 hour");
+                  }}
                 >
                   In 1 hour
                 </li>
                 <li
-                  onClick={() =>
+                  style={{
+                    background:
+                      selectedOption === "3 hours" ? "#bed4ff" : "#7d7c7a",
+                    color: selectedOption === "3 hours" ? "#000" : "#fff",
+                  }}
+                  onClick={() => {
                     setDate(
                       toLocalISOString(
                         new Date(new Date().getTime() + 3 * 60 * 60 * 1000)
                       )
-                    )
-                  }
+                    );
+                    setReminderOption("3 hours");
+                  }}
                 >
                   In 3 hours
                 </li>
                 <li
-                  onClick={() =>
+                  style={{
+                    background:
+                      selectedOption === "Tomorrow" ? "#bed4ff" : "#7d7c7a",
+                    color: selectedOption === "Tomorrow" ? "#000" : "#fff",
+                  }}
+                  onClick={() => {
                     setDate(
                       toLocalISOString(
                         new Date(new Date().getTime() + 24 * 60 * 60 * 1000)
                       )
-                    )
-                  }
+                    );
+                    setReminderOption("Tomorrow");
+                  }}
                 >
                   Tomorrow
                 </li>
-                <li onClick={() => setDate(toLocalISOString(getNextMonday()))}>
+                <li
+                  style={{
+                    background:
+                      selectedOption === "Next week" ? "#bed4ff" : "#7d7c7a",
+                    color: selectedOption === "Next week" ? "#000" : "#fff",
+                  }}
+                  onClick={() => {
+                    setDate(toLocalISOString(getNextMonday()));
+                    setReminderOption("Next week");
+                  }}
+                >
                   Next week
                 </li>
-                <li>
-                  {" "}
+                <li
+                  onClick={() => setReminderOption("custom")}
+                  style={{
+                    background:
+                      selectedOption === "custom" ? "#bed4ff" : "#7d7c7a",
+                  }}
+                >
                   <DateTimeInput
+                    style={{
+                      background:
+                        selectedOption === "custom" ? "#bed4ff" : "#7d7c7a",
+                      color: selectedOption === "custom" ? "#000" : "#fff",
+                    }}
                     type="datetime-local"
                     value={date}
                     onChange={handleDateChange}
@@ -225,6 +293,12 @@ export const DateTimePickerModal: React.FC<{
               </ul>
             </Presets>
             <Button onClick={() => closeModal(true)}>Confirm</Button>
+            <Button
+              onClick={() => setIsOpen(false)}
+              style={{ background: "none", border: " 2px solid red" }}
+            >
+              Cancel
+            </Button>
           </Modal>
         </ModalOverlay>
       )}

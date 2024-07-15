@@ -25,18 +25,20 @@ const ToastContainer = styled.div<{ color: string }>`
 `;
 
 const Icon = styled.div`
-font-size: 20px;
+  font-size: 20px;
   border-radius: 50%;
   width: 24px;
-  height: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-right: 8px;
 `;
 
-
-export const Toast: React.FC<ToastProps> = ({ message, color = "#333", toastType = "success" }) => {
+export const Toast: React.FC<ToastProps> = ({
+  message,
+  color = "#333",
+  toastType = "success",
+}) => {
   return (
     <ToastContainer color={color}>
       <Icon>{getIcon(toastType)}</Icon>

@@ -26,27 +26,23 @@ const TerminalContainer = styled.div<{
   min-width: max(350px, calc(100vw - 100px));
   max-width: max(350px, calc(100vw - 100px));
   word-wrap: break-word;
-  overflow: auto;
   position: relative;
 `;
 
 const TerminalHeader = styled.div<{
   $headercolor: string;
 }>`
-  display: flex;
-  align-items: center;
   background-color: ${(props) => props.$headercolor};
-  padding: 10px;
-  border-radius: 10px 10px 0 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
 
-  /*Prevent text selection*/
-  -webkit-touch-callout: none; /* iOS Safari */
-  -webkit-user-select: none; /* Safari */
-  -khtml-user-select: none; /* Konqueror HTML */
-  -moz-user-select: none; /* Old versions of Firefox */
-  -ms-user-select: none; /* Internet Explorer/Edge */
-  user-select: none; /* Non-prefixed version, currently
-                                supported by Chrome, Edge, Opera and Firefox */
+  @media (max-width: 500px) {
+    align-items: center;
+    flex-direction: column;
+  }
 `;
 
 export const Dot = styled.div`
@@ -77,19 +73,57 @@ const NoteContainer = styled.div`
   border-radius: 10px;
 `;
 
+const HeaderActions = styled.div`
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border-radius: 10px 10px 0 0;
+  min-width: 340px;
+
+  /*Prevent text selection*/
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Old versions of Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Non-prefixed version, currently
+                                supported by Chrome, Edge, Opera and Firefox */
+`;
+const NoteTitle = styled.div`
+  padding: 8px;
+  margin-right: 20px;
+  font-weight: 600;
+  font-style: italic;
+
+  max-width: 95%;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  text-align: end;
+  text-decoration-line: underline;
+
+  @media (max-width: 500px) {
+    text-align: left;
+  }
+`;
+
 export const Note: React.FC<NoteProps> = ({
   createDt,
   content,
   color,
   id,
   isImage,
+  title,
   removeNote,
   updateNote,
   isNoteLocked,
   setNoteEditorMode,
   setCurrentNote,
+  preventNewNoteDetection,
 }): JSX.Element => {
   const { showToast } = useToast();
+  const [noteTitle, setNoteTitle] = useState<string | null>(title);
+
   const [formattedContent, setFormattedContent] = useState<string>(content);
   const [colorSet, setActiveColorSet] = useState<{
     noteHeader: string;
@@ -115,6 +149,7 @@ export const Note: React.FC<NoteProps> = ({
 
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const titleRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (isPressing) {
@@ -180,7 +215,7 @@ export const Note: React.FC<NoteProps> = ({
   };
 
   const lock = () => {
-    updateNote(id, content, color, !isNoteLocked);
+    updateNote(id, content, color, !isNoteLocked, noteTitle);
     showToast(isNoteLocked ? "locked" : "unlocked", "#333", 3000);
   };
 
@@ -190,7 +225,7 @@ export const Note: React.FC<NoteProps> = ({
 
   const updateNoteColor = (color: string) => {
     setActiveColorSet(ColorSet[color]);
-    updateNote(id, content, color, isNoteLocked);
+    updateNote(id, content, color, isNoteLocked, noteTitle);
   };
 
   const getColorPaletteItems = () => {
@@ -222,6 +257,12 @@ export const Note: React.FC<NoteProps> = ({
     }
   }, [selectedDate]);
 
+  useEffect(() => {
+    if (noteTitle && noteTitle.length > 0 && noteTitle !== "new note") {
+      updateNote(id, content, color, isNoteLocked, noteTitle);
+    }
+  }, [noteTitle]);
+
   return (
     <>
       <NoteContainer
@@ -238,16 +279,40 @@ export const Note: React.FC<NoteProps> = ({
           className={isFadingOut ? "item-fadeout" : "item"}
         >
           <TerminalHeader $headercolor={colorSet.noteHeader}>
-            <Dot
-              color="#ff5f56"
-              onClick={() => fadeOut(setTimeout(() => handleRemoveItem(), 300))}
-            />
-            <Dot color="#27c93f" onClick={copy} />
-            <Dot color="#0A20FF" onClick={lock} />
-            <Dot color="#FF9500" onClick={toggleOptions} />
-            <DateElement>{getFormattedDate(createDt)}</DateElement>
-            {/* <Dot color="#ffbd2e" />
-             */}
+            <HeaderActions>
+              <Dot
+                color="#ff5f56"
+                onClick={() =>
+                  fadeOut(setTimeout(() => handleRemoveItem(), 300))
+                }
+              />
+              <Dot color="#27c93f" onClick={copy} />
+              <Dot color="#0A20FF" onClick={lock} />
+              <Dot color="#FF9500" onClick={toggleOptions} />
+              <DateElement>{getFormattedDate(createDt)}</DateElement>
+            </HeaderActions>
+            <NoteTitle
+              ref={titleRef}
+              contentEditable={true}
+              onFocus={() => preventNewNoteDetection(true)}
+              onBlur={() => {
+                preventNewNoteDetection(false);
+                if (
+                  titleRef.current &&
+                  titleRef.current.innerHTML.length === 0
+                ) {
+                  titleRef.current.innerHTML = "new note";
+                } else if (
+                  titleRef.current &&
+                  titleRef.current.innerHTML.length > 0
+                ) {
+                  setNoteTitle(titleRef.current.innerHTML);
+                }
+              }}
+              suppressContentEditableWarning={true}
+            >
+              {title === null ? "new note" : title}
+            </NoteTitle>
           </TerminalHeader>
           <TerminalBody
             onDoubleClick={() => {
@@ -257,12 +322,14 @@ export const Note: React.FC<NoteProps> = ({
                 content,
                 color,
                 id,
+                title,
                 isImage,
                 removeNote,
                 updateNote,
                 isNoteLocked,
                 setNoteEditorMode,
                 setCurrentNote,
+                preventNewNoteDetection,
               });
             }}
           >

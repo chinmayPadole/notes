@@ -20,6 +20,8 @@ export const Board: React.FC<{
   const [transcript, setTranscript] = useState<string>("");
   const [isVoiceOn, setVoiceOn] = useState<boolean>(false);
   const [searchText, setSearchText] = useState<string>("");
+  const [isNewNoteDetectionDisabled, preventNewNoteDetection] =
+    useState<boolean>(false);
 
   const [currentNote, setCurrentNote] = useState<NoteProps | undefined>(
     undefined
@@ -52,11 +54,13 @@ export const Board: React.FC<{
         createDt: new Date(),
         color: "white",
         isImage: false,
+        title: null,
         removeNote: removeNote,
         updateNote: updateNote,
         isNoteLocked: false,
         setNoteEditorMode: setNoteEditorMode,
         setCurrentNote: setCurrentNote,
+        preventNewNoteDetection: preventNewNoteDetection,
       };
       addNote(newData);
     }
@@ -97,7 +101,8 @@ export const Board: React.FC<{
     noteId: string,
     updatedContent: string,
     updatedColor: string,
-    isNoteLocked: boolean
+    isNoteLocked: boolean,
+    title: string | null
   ) => {
     const updatedNotes = notes.map((note) => {
       if (note.id === noteId) {
@@ -106,6 +111,7 @@ export const Board: React.FC<{
           content: updatedContent,
           color: updatedColor,
           isNoteLocked: isNoteLocked,
+          title: title,
         };
       }
       return note;
@@ -134,10 +140,12 @@ export const Board: React.FC<{
           id={note.id}
           isImage={note.isImage}
           isNoteLocked={note.isNoteLocked}
+          title={note.title}
           removeNote={removeNote}
           updateNote={updateNote}
           setNoteEditorMode={setNoteEditorMode}
           setCurrentNote={setCurrentNote}
+          preventNewNoteDetection={preventNewNoteDetection}
         />
       );
     });
@@ -168,7 +176,7 @@ export const Board: React.FC<{
           <div id="board">{getNotesElement()}</div>
         </div>
       </div>
-      {!isSearchMode && (
+      {!isSearchMode && !isNewNoteDetectionDisabled && (
         <>
           <NewNoteEditor
             addNote={addNote}
@@ -184,6 +192,7 @@ export const Board: React.FC<{
             currentContent={
               currentNote !== undefined ? currentNote.content : undefined
             }
+            preventNewNoteDetection={preventNewNoteDetection}
           />
         </>
       )}
