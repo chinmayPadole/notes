@@ -101,24 +101,26 @@ const NoteTitleWrapper = styled.div`
   justify-content: end;
 
   & svg {
-    max-width: 25px;
-    max-height: 25px;
+    max-width: 20px;
+    max-height: 20px;
   }
 
   @media (max-width: 500px) {
     justify-content: center;
+    padding-top: 0;
+    margin-top: -5px;
   }
 `;
 const NoteTitle = styled.div`
   font-weight: 600;
   font-style: italic;
-  padding: 0 10px;
+  padding: 0 5px;
+  cursor: text;
 
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
   text-align: end;
-  text-decoration-line: underline;
 
   @media (max-width: 500px) {
     text-align: left;
@@ -295,6 +297,17 @@ export const Note: React.FC<NoteProps> = ({
     }
   }, [noteTitle]);
 
+  const handleInput = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    console.log(e);
+    if (
+      e.currentTarget.innerText.length > 30 &&
+      !["Backspace", "Delete", "ArrowLeft", "ArrowRight"].includes(e.key)
+    ) {
+      e.preventDefault();
+      e.currentTarget.innerText.slice(0, 30);
+    }
+  };
+
   return (
     <>
       <NoteContainer
@@ -333,6 +346,8 @@ export const Note: React.FC<NoteProps> = ({
               <NoteTitle
                 ref={titleRef}
                 contentEditable={true}
+                spellCheck={false}
+                onKeyDown={handleInput}
                 onFocus={() => preventNewNoteDetection(true)}
                 onBlur={() => {
                   preventNewNoteDetection(false);
@@ -353,46 +368,35 @@ export const Note: React.FC<NoteProps> = ({
                 {title === null ? "new note" : title}
               </NoteTitle>
               <svg
-                viewBox="-2.4 -2.4 28.80 28.80"
+                width="233px"
+                height="233px"
+                viewBox="0 0 28.00 28.00"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
-                stroke="#948484"
+                stroke="#007AFF"
+                strokeWidth="0.308"
               >
-                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
                 <g
                   id="SVGRepo_tracerCarrier"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke="#a8a8a8"
-                  stroke-width="0.72"
-                >
-                  {" "}
-                  <path
-                    opacity="0.15"
-                    d="M4 20H8L18 10L14 6L4 16V20Z"
-                    fill="#000000"
-                  ></path>{" "}
-                  <path
-                    d="M18 10L21 7L17 3L14 6M18 10L8 20H4V16L14 6M18 10L14 6"
-                    stroke="#000000"
-                    stroke-width="0.792"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  ></path>{" "}
-                </g>
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  stroke="#007AFF"
+                  strokeWidth="0.11200000000000002"
+                ></g>
                 <g id="SVGRepo_iconCarrier">
                   {" "}
                   <path
-                    opacity="0.15"
-                    d="M4 20H8L18 10L14 6L4 16V20Z"
-                    fill="#000000"
+                    d="M11.75 2C11.3358 2 11 2.33579 11 2.75C11 3.16421 11.3358 3.5 11.75 3.5H13.25V24.5H11.75C11.3358 24.5 11 24.8358 11 25.25C11 25.6642 11.3358 26 11.75 26H16.25C16.6642 26 17 25.6642 17 25.25C17 24.8358 16.6642 24.5 16.25 24.5H14.75V3.5H16.25C16.6642 3.5 17 3.16421 17 2.75C17 2.33579 16.6642 2 16.25 2H11.75Z"
+                    fill="#007AFF"
                   ></path>{" "}
                   <path
-                    d="M18 10L21 7L17 3L14 6M18 10L8 20H4V16L14 6M18 10L14 6"
-                    stroke="#000000"
-                    stroke-width="0.792"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
+                    d="M6.25 6.01958H12.25V7.51958H6.25C5.2835 7.51958 4.5 8.30308 4.5 9.26958V18.7696C4.5 19.7361 5.2835 20.5196 6.25 20.5196H12.25V22.0196H6.25C4.45507 22.0196 3 20.5645 3 18.7696V9.26958C3 7.47465 4.45507 6.01958 6.25 6.01958Z"
+                    fill="#007AFF"
+                  ></path>{" "}
+                  <path
+                    d="M21.75 20.5196H15.75V22.0196H21.75C23.5449 22.0196 25 20.5645 25 18.7696V9.26958C25 7.47465 23.5449 6.01958 21.75 6.01958H15.75V7.51958H21.75C22.7165 7.51958 23.5 8.30308 23.5 9.26958V18.7696C23.5 19.7361 22.7165 20.5196 21.75 20.5196Z"
+                    fill="#007AFF"
                   ></path>{" "}
                 </g>
               </svg>
