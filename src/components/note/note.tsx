@@ -298,9 +298,9 @@ export const Note: React.FC<NoteProps> = ({
   }, [noteTitle]);
 
   const handleInput = (e: React.KeyboardEvent<HTMLDivElement>) => {
-    console.log(e);
     if (
-      e.currentTarget.innerText.length > 30 &&
+      e.currentTarget.textContent &&
+      e.currentTarget.textContent.length > 30 &&
       !["Backspace", "Delete", "ArrowLeft", "ArrowRight"].includes(e.key)
     ) {
       e.preventDefault();
@@ -353,14 +353,16 @@ export const Note: React.FC<NoteProps> = ({
                   preventNewNoteDetection(false);
                   if (
                     titleRef.current &&
-                    titleRef.current.innerHTML.length === 0
+                    titleRef.current.textContent &&
+                    titleRef.current.textContent.length === 0
                   ) {
-                    titleRef.current.innerHTML = "new note";
+                    titleRef.current.textContent = "new note";
                   } else if (
                     titleRef.current &&
-                    titleRef.current.innerHTML.length > 0
+                    titleRef.current.textContent &&
+                    titleRef.current.textContent.length > 0
                   ) {
-                    setNoteTitle(titleRef.current.innerHTML);
+                    setNoteTitle(titleRef.current.textContent);
                   }
                 }}
                 suppressContentEditableWarning={true}

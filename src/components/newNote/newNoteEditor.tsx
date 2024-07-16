@@ -123,6 +123,7 @@ export interface NewNoteEditorProps {
   noteId?: string;
   isNoteLocked?: boolean;
   currentContent?: string;
+  noteTitle?: string | null;
   setCurrentNote: (note: NoteProps | undefined) => void;
 }
 
@@ -139,6 +140,7 @@ export const NewNoteEditor: React.FC<NewNoteEditorProps> = ({
   currentContent,
   setCurrentNote,
   preventNewNoteDetection,
+  noteTitle,
 }) => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   let [inputValue, setInputValue] = useState<string>("");
@@ -206,7 +208,9 @@ export const NewNoteEditor: React.FC<NewNoteEditorProps> = ({
 
     if (key !== "Enter") {
       openModal();
-      setNoteEditorMode("new");
+      if (noteEditorMode !== "modify") {
+        setNoteEditorMode("new");
+      }
       handleButtonClick();
     }
   };
@@ -324,7 +328,7 @@ export const NewNoteEditor: React.FC<NewNoteEditorProps> = ({
         removeEmptyLines(inputValue),
         "white",
         isNoteLocked,
-        null
+        noteTitle || null
       );
     }
 

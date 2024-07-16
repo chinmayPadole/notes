@@ -211,6 +211,9 @@ export const Board: React.FC<{
             noteEditorMode={noteEditorMode}
             setNoteEditorMode={setNoteEditorMode}
             setCurrentNote={setCurrentNote}
+            noteTitle={
+              currentNote !== undefined ? currentNote.title : undefined
+            }
             noteId={currentNote !== undefined ? currentNote.id : undefined}
             isNoteLocked={
               currentNote !== undefined ? currentNote.isNoteLocked : undefined
