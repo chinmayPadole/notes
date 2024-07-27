@@ -78,15 +78,6 @@ const Presets = styled.div`
       cursor: pointer;
       color: #fff;
       background: #7d7c7a;
-
-      /*Prevent text selection*/
-      -webkit-touch-callout: none; /* iOS Safari */
-      -webkit-user-select: none; /* Safari */
-      -khtml-user-select: none; /* Konqueror HTML */
-      -moz-user-select: none; /* Old versions of Firefox */
-      -ms-user-select: none; /* Internet Explorer/Edge */
-      user-select: none; /* Non-prefixed version, currently
-                                  supported by Chrome, Edge, Opera and Firefox */
     }
 
     & > li:nth-child(1) {
@@ -187,7 +178,7 @@ export const DateTimePickerModal: React.FC<{
     <>
       {isOpen && (
         <ModalOverlay>
-          <Modal ref={modalRef}>
+          <Modal ref={modalRef} className="selection-prevention">
             <Title>Pick reminder time</Title>
             <Presets>
               <ul>

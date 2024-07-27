@@ -1,18 +1,30 @@
 export const getFormattedDate = (
   date: Date,
-  culture: string = "en-US"
+  culture: string = "en-US",
+  isMobileFriendly: boolean = false
 ): string => {
   const retDate = new Date(date);
 
-  return Intl.DateTimeFormat(culture, {
-    weekday: "short",
-    month: "long",
-    day: "2-digit",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: true,
-  }).format(retDate);
+  if (!isMobileFriendly) {
+    return Intl.DateTimeFormat(culture, {
+      weekday: "short",
+      month: "long",
+      day: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    }).format(retDate);
+  } else {
+    return Intl.DateTimeFormat(culture, {
+      month: "short",
+      day: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    }).format(retDate);
+  }
 };
 
 export const getUniqueId = () => {
@@ -140,4 +152,8 @@ export const getNextMonday = () => {
     today.getTime() + daysToAdd * 24 * 60 * 60 * 1000
   );
   return nextMonday;
+};
+
+export const splitTextIntoLines = (text: string): string[] => {
+  return text.split(/\r?\n/).filter((line) => line.trim() !== ""); // This will handle both Windows (\r\n) and Unix (\n) line endings
 };

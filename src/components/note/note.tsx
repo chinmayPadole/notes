@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import "./note.css";
-import { getFormattedDate, maskString } from "../../common/utils";
+import { getFormattedDate, isMobile, maskString } from "../../common/utils";
 import { ColorSet } from "../../common/colorSet";
 import styled from "styled-components";
 import { useToast } from "../../provider/toastProvider";
@@ -11,6 +11,7 @@ import { useTimerManager } from "../../service/useTimeManager";
 import DateTimePickerModal from "../datepicker/datepicker";
 import { CollapsibleTextArea } from "./CollapsibleTextArea";
 import { CollapsibleImage } from "./CollapsibleImage";
+import { Task } from "./Task";
 
 const TerminalContainer = styled.div<{
   $bgcolor: string;
@@ -19,30 +20,25 @@ const TerminalContainer = styled.div<{
   background-color: ${(props) => props.$bgcolor};
   color: ${(props) => props.$fontcolor};
 
-  border-radius: 10px;
+  border-radius: 5px;
   box-shadow: 2px 4px 12px #00000014;
   // width: max-content;
   // max-width: 800px;
   min-width: max(350px, calc(100vw - 100px));
-  max-width: max(350px, calc(100vw - 100px));
+  //max-width: max(350px, calc(100vw - 50px));
   word-wrap: break-word;
   position: relative;
+  transition: background-color 0.3s ease-in;
 `;
 
 const TerminalHeader = styled.div<{
   $headercolor: string;
 }>`
-  background-color: ${(props) => props.$headercolor};
-  display: flex;
-  justify-content: space-between;
+  background: ${(props) => props.$headercolor};
   align-items: center;
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;
-
-  @media (max-width: 500px) {
-    align-items: center;
-    flex-direction: column;
-  }
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  display: flex;
 `;
 
 export const Dot = styled.div`
@@ -55,60 +51,104 @@ export const Dot = styled.div`
 `;
 
 const DateElement = styled.div`
-  border-radius: 50%;
-  margin: 0 5px;
+  text-align: start;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  min-width: 250px;
+  font-size: 12px;
+  padding: 5px;
+`;
+
+const ThemeSwitcher = styled.div<{
+  $bgcolor: string;
+}>`
+  width: 40px;
+  height: 15px;
+  background: ${(props) => props.$bgcolor};
+  border-radius: 10px;
+  cursor: pointer;
 `;
 
 const TerminalBody = styled.div`
-  padding: 20px;
+  padding: 20px 10px;
   letter-spacing: 0.007em !important;
   white-space: pre-wrap;
   position: relative;
   word-break: break-word;
-  border-bottom-left-radius: 10px;
-  border-bottom-right-radius: 10px;
+`;
+
+const TerminalFooter = styled.div<{
+  $footercolor: string;
+}>`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 10px;
+  background-color: ${(props) => props.$footercolor};
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
 `;
 
 const NoteContainer = styled.div`
   padding-top: 10px;
   transition: border 0.4s linear;
-  border-radius: 10px;
+  border-radius: 5px;
+`;
+
+const SVGAction = styled.div<{ $hoverbg: string }>`
+  height: 25px;
+  padding: 3px;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background 0.3s ease-in-out;
+  & svg {
+    width: 20px;
+    height: 25px;
+  }
+
+  &:hover {
+    color: #fff;
+    background: ${(props) => props.$hoverbg};
+  }
+`;
+
+const FooterAction = styled.div`
+  width: max-content;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  gap: 0.5em;
+  padding: 5px;
+  color: #000;
+
+  & input {
+    border-color: #000 !important;
+  }
 `;
 
 const HeaderActions = styled.div`
   display: flex;
   align-items: center;
-  padding: 10px;
+  padding: 5px 10px;
   border-radius: 10px 10px 0 0;
-  min-width: 340px;
 
-  /*Prevent text selection*/
-  -webkit-touch-callout: none; /* iOS Safari */
-  -webkit-user-select: none; /* Safari */
-  -khtml-user-select: none; /* Konqueror HTML */
-  -moz-user-select: none; /* Old versions of Firefox */
-  -ms-user-select: none; /* Internet Explorer/Edge */
-  user-select: none; /* Non-prefixed version, currently
-                                supported by Chrome, Edge, Opera and Firefox */
+  gap: 10px;
+  width: 195px;
+  min-width: 195px;
 `;
 
 const NoteTitleWrapper = styled.div`
   width: 95%;
   align-items: center;
-  padding: 8px;
   margin-right: 20px;
   display: flex;
   justify-content: end;
+  min-width: 140px;
 
   & svg {
     max-width: 20px;
     max-height: 20px;
-  }
-
-  @media (max-width: 500px) {
-    justify-content: center;
-    padding-top: 0;
-    margin-top: -5px;
   }
 `;
 const NoteTitle = styled.div`
@@ -121,10 +161,6 @@ const NoteTitle = styled.div`
   overflow: hidden;
   white-space: nowrap;
   text-align: end;
-
-  @media (max-width: 500px) {
-    text-align: left;
-  }
 `;
 
 export const Note: React.FC<NoteProps> = ({
@@ -141,15 +177,22 @@ export const Note: React.FC<NoteProps> = ({
   setCurrentNote,
   preventNewNoteDetection,
   isHighlighted,
+  isCheckList,
 }): JSX.Element => {
   const { showToast } = useToast();
   const [noteTitle, setNoteTitle] = useState<string | null>(title);
+
+  const [addCheckBoxes, toggleCheckList] = useState<boolean>(isCheckList);
 
   const [formattedContent, setFormattedContent] = useState<string>(content);
   const [colorSet, setActiveColorSet] = useState<{
     noteHeader: string;
     fontColor: string;
     noteBackground: string;
+    noteFooter: string;
+    actionButtonColor: string;
+    actionButtonHoverColor: string;
+    footerActionColor: string;
   }>(ColorSet["white"]);
 
   useEffect(() => {
@@ -157,16 +200,13 @@ export const Note: React.FC<NoteProps> = ({
   }, [color]);
 
   const [isFadingOut, setIsFadingOut] = useState(false);
+  const [taskStatus, setTaskStatus] = useState<number[]>([]);
 
   const { isLocked: isPageLocked } = useSecurity();
   const [showReminderOption, setReminderOption] = useState(false);
   const [reminderText, setReminderText] = useState("");
   const [showOptions, setShowOptions] = useState(false);
   const { addTimer } = useTimerManager();
-
-  const [isPressing, setIsPressing] = useState(false);
-  const [isLongPress, setIsLongPress] = useState(false);
-  const timerRef = useRef<number | null>(null);
 
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
@@ -180,38 +220,6 @@ export const Note: React.FC<NoteProps> = ({
     }
   }, [isHighlighted]);
 
-  useEffect(() => {
-    if (isPressing) {
-      timerRef.current = window.setTimeout(() => {
-        setIsLongPress(true);
-        setIsDatePickerOpen(true);
-      }, 1500); // Adjust the time to your need (1000ms = 1s)
-    } else {
-      if (timerRef.current) {
-        clearTimeout(timerRef.current);
-      }
-      setIsLongPress(false);
-    }
-
-    return () => {
-      if (timerRef.current) {
-        clearTimeout(timerRef.current);
-      }
-    };
-  }, [isPressing]);
-
-  const handleMouseDown = () => {
-    setIsPressing(true);
-  };
-
-  const handleMouseUp = () => {
-    setIsPressing(false);
-  };
-
-  const handleMouseLeave = () => {
-    setIsPressing(false);
-  };
-
   const fadeOut = (cb: NodeJS.Timeout) => {
     setIsFadingOut(true);
   };
@@ -222,6 +230,8 @@ export const Note: React.FC<NoteProps> = ({
     setReminderOption(false);
     setReminderText("");
     setActiveColorSet(ColorSet["white"]);
+    toggleCheckList(false);
+    setTaskStatus([]);
   };
 
   useEffect(() => {
@@ -244,9 +254,42 @@ export const Note: React.FC<NoteProps> = ({
   };
 
   const lock = () => {
-    updateNote(id, content, color, !isNoteLocked, noteTitle);
+    updateNote(id, content, color, !isNoteLocked, noteTitle, addCheckBoxes);
     showToast(isNoteLocked ? "locked" : "unlocked", "#333", 3000);
   };
+
+  const handleNoteList = () => {
+    const list = localStorage.getItem("tasks");
+    if (taskStatus.length > 0) {
+      if (list !== null) {
+        let parsedTask: Task[] = JSON.parse(list);
+        if (parsedTask.some((x) => x.noteId === id)) {
+          parsedTask = parsedTask.map((task) =>
+            task.noteId === id ? { ...task, status: taskStatus } : task
+          );
+          localStorage.setItem("tasks", JSON.stringify(parsedTask));
+        } else {
+          let task: Task = { noteId: id, status: taskStatus };
+          parsedTask.push(task);
+          localStorage.setItem("tasks", JSON.stringify(parsedTask));
+        }
+      } else {
+        let tasks: Task[] = [];
+        let task: Task = { noteId: id, status: taskStatus };
+        tasks.push(task);
+        localStorage.setItem("tasks", JSON.stringify(tasks));
+      }
+    }
+  };
+
+  useEffect(() => {
+    handleNoteList();
+  }, [taskStatus]);
+
+  useEffect(() => {
+    handleNoteList();
+    updateNote(id, content, color, !isNoteLocked, noteTitle, addCheckBoxes);
+  }, [addCheckBoxes]);
 
   const toggleOptions = () => {
     setShowOptions(!showOptions);
@@ -254,28 +297,7 @@ export const Note: React.FC<NoteProps> = ({
 
   const updateNoteColor = (color: string) => {
     setActiveColorSet(ColorSet[color]);
-    updateNote(id, content, color, isNoteLocked, noteTitle);
-  };
-
-  const getColorPaletteItems = () => {
-    return Object.entries(ColorSet).map(([key, value], index) => {
-      return (
-        <div
-          key={index}
-          className="palettecircle"
-          onClick={() => updateNoteColor(key)}
-        >
-          <div
-            className="left-half"
-            style={{ background: value.noteHeader }}
-          ></div>
-          <div
-            className="right-half"
-            style={{ background: value.noteBackground }}
-          ></div>
-        </div>
-      );
-    });
+    updateNote(id, content, color, isNoteLocked, noteTitle, addCheckBoxes);
   };
 
   useEffect(() => {
@@ -293,7 +315,7 @@ export const Note: React.FC<NoteProps> = ({
 
   useEffect(() => {
     if (noteTitle && noteTitle.length > 0 && noteTitle !== "new note") {
-      updateNote(id, content, color, isNoteLocked, noteTitle);
+      updateNote(id, content, color, isNoteLocked, noteTitle, addCheckBoxes);
     }
   }, [noteTitle]);
 
@@ -310,15 +332,7 @@ export const Note: React.FC<NoteProps> = ({
 
   return (
     <>
-      <NoteContainer
-        ref={noteRef}
-        className={`long-press-button ${isLongPress ? "long-press" : ""}`}
-        onMouseDown={handleMouseDown}
-        onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseLeave}
-        onTouchStart={handleMouseDown}
-        onTouchEnd={handleMouseUp}
-      >
+      <NoteContainer ref={noteRef}>
         <TerminalContainer
           $bgcolor={colorSet.noteBackground}
           $fontcolor={colorSet.fontColor}
@@ -331,44 +345,230 @@ export const Note: React.FC<NoteProps> = ({
             }}
           >
             <HeaderActions>
-              <Dot
-                color="#ff5f56"
+              <SVGAction
+                $hoverbg={colorSet.actionButtonHoverColor}
                 onClick={() =>
                   fadeOut(setTimeout(() => handleRemoveItem(), 300))
                 }
-              />
-              <Dot color="#27c93f" onClick={copy} />
-              <Dot color="#0A20FF" onClick={lock} />
-              <Dot color="#FF9500" onClick={toggleOptions} />
-              <DateElement>{getFormattedDate(createDt)}</DateElement>
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+                  <g
+                    id="SVGRepo_tracerCarrier"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  ></g>
+                  <g id="SVGRepo_iconCarrier">
+                    {" "}
+                    <path
+                      d="M19 5L5 19M5.00001 5L19 19"
+                      stroke={colorSet.actionButtonColor}
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    ></path>{" "}
+                  </g>
+                </svg>
+              </SVGAction>
+              <SVGAction
+                $hoverbg={colorSet.actionButtonHoverColor}
+                onClick={copy}
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+                  <g
+                    id="SVGRepo_tracerCarrier"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  ></g>
+                  <g id="SVGRepo_iconCarrier">
+                    {" "}
+                    <path
+                      d="M20.9983 10C20.9862 7.82497 20.8897 6.64706 20.1213 5.87868C19.2426 5 17.8284 5 15 5H12C9.17157 5 7.75736 5 6.87868 5.87868C6 6.75736 6 8.17157 6 11V16C6 18.8284 6 20.2426 6.87868 21.1213C7.75736 22 9.17157 22 12 22H15C17.8284 22 19.2426 22 20.1213 21.1213C21 20.2426 21 18.8284 21 16V15"
+                      stroke={colorSet.actionButtonColor}
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                    ></path>{" "}
+                    <path
+                      d="M3 10V16C3 17.6569 4.34315 19 6 19M18 5C18 3.34315 16.6569 2 15 2H11C7.22876 2 5.34315 2 4.17157 3.17157C3.51839 3.82475 3.22937 4.69989 3.10149 6"
+                      stroke={colorSet.actionButtonColor}
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                    ></path>{" "}
+                  </g>
+                </svg>
+              </SVGAction>
+              <SVGAction
+                $hoverbg={colorSet.actionButtonHoverColor}
+                onClick={lock}
+              >
+                {isNoteLocked && (
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+                    <g
+                      id="SVGRepo_tracerCarrier"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    ></g>
+                    <g id="SVGRepo_iconCarrier">
+                      {" "}
+                      <path
+                        d="M2 16C2 13.1716 2 11.7574 2.87868 10.8787C3.75736 10 5.17157 10 8 10H16C18.8284 10 20.2426 10 21.1213 10.8787C22 11.7574 22 13.1716 22 16C22 18.8284 22 20.2426 21.1213 21.1213C20.2426 22 18.8284 22 16 22H8C5.17157 22 3.75736 22 2.87868 21.1213C2 20.2426 2 18.8284 2 16Z"
+                        stroke={colorSet.actionButtonColor}
+                        strokeWidth="1.5"
+                      ></path>{" "}
+                      <path
+                        d="M12 14V18"
+                        stroke={colorSet.actionButtonColor}
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                      ></path>{" "}
+                      <path
+                        d="M6 10V8C6 4.68629 8.68629 2 12 2C15.3137 2 18 4.68629 18 8V10"
+                        stroke={colorSet.actionButtonColor}
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                      ></path>{" "}
+                    </g>
+                  </svg>
+                )}
+                {!isNoteLocked && (
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+                    <g
+                      id="SVGRepo_tracerCarrier"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    ></g>
+                    <g id="SVGRepo_iconCarrier">
+                      {" "}
+                      <path
+                        d="M2 16C2 13.1716 2 11.7574 2.87868 10.8787C3.75736 10 5.17157 10 8 10H16C18.8284 10 20.2426 10 21.1213 10.8787C22 11.7574 22 13.1716 22 16C22 18.8284 22 20.2426 21.1213 21.1213C20.2426 22 18.8284 22 16 22H8C5.17157 22 3.75736 22 2.87868 21.1213C2 20.2426 2 18.8284 2 16Z"
+                        stroke={colorSet.actionButtonColor}
+                        strokeWidth="1.5"
+                      ></path>{" "}
+                      <path
+                        d="M6 10V8C6 4.68629 8.68629 2 12 2C14.7958 2 17.1449 3.91216 17.811 6.5"
+                        stroke={colorSet.actionButtonColor}
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                      ></path>{" "}
+                      <path
+                        d="M12 14V18"
+                        stroke={colorSet.actionButtonColor}
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                      ></path>{" "}
+                    </g>
+                  </svg>
+                )}
+              </SVGAction>
+              <SVGAction
+                $hoverbg={colorSet.actionButtonHoverColor}
+                onClick={() => setIsDatePickerOpen(true)}
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+                  <g
+                    id="SVGRepo_tracerCarrier"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  ></g>
+                  <g id="SVGRepo_iconCarrier">
+                    {" "}
+                    <path
+                      d="M12 9V13L14.5 15.5"
+                      stroke={colorSet.actionButtonColor}
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    ></path>{" "}
+                    <path
+                      d="M3.5 4.5L7.50002 2"
+                      stroke={colorSet.actionButtonColor}
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    ></path>{" "}
+                    <path
+                      d="M20.5 4.5L16.5 2"
+                      stroke={colorSet.actionButtonColor}
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    ></path>{" "}
+                    <path
+                      d="M7.5 5.20404C8.82378 4.43827 10.3607 4 12 4C16.9706 4 21 8.02944 21 13C21 17.9706 16.9706 22 12 22C7.02944 22 3 17.9706 3 13C3 11.3607 3.43827 9.82378 4.20404 8.5"
+                      stroke={colorSet.actionButtonColor}
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                    ></path>{" "}
+                  </g>
+                </svg>
+              </SVGAction>
+              <SVGAction
+                $hoverbg={colorSet.actionButtonHoverColor}
+                onClick={toggleOptions}
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+                  <g
+                    id="SVGRepo_tracerCarrier"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  ></g>
+                  <g id="SVGRepo_iconCarrier">
+                    {" "}
+                    <path
+                      d="M12.0049 16.005L12.0049 15.995"
+                      stroke={colorSet.actionButtonColor}
+                      strokeWidth="2.4"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    ></path>{" "}
+                    <path
+                      d="M12.0049 12.005L12.0049 11.995"
+                      stroke={colorSet.actionButtonColor}
+                      strokeWidth="2.4"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    ></path>{" "}
+                    <path
+                      d="M12.0049 8.005L12.0049 7.995"
+                      stroke={colorSet.actionButtonColor}
+                      strokeWidth="2.4"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    ></path>{" "}
+                  </g>
+                </svg>
+              </SVGAction>
             </HeaderActions>
             <NoteTitleWrapper>
-              <NoteTitle
-                ref={titleRef}
-                contentEditable={true}
-                spellCheck={false}
-                onKeyDown={handleInput}
-                onFocus={() => preventNewNoteDetection(true)}
-                onBlur={() => {
-                  preventNewNoteDetection(false);
-                  if (
-                    titleRef.current &&
-                    titleRef.current.textContent &&
-                    titleRef.current.textContent.length === 0
-                  ) {
-                    titleRef.current.textContent = "new note";
-                  } else if (
-                    titleRef.current &&
-                    titleRef.current.textContent &&
-                    titleRef.current.textContent.length > 0
-                  ) {
-                    setNoteTitle(titleRef.current.textContent);
-                  }
-                }}
-                suppressContentEditableWarning={true}
-              >
-                {title === null ? "new note" : title}
-              </NoteTitle>
               <svg
                 width="233px"
                 height="233px"
@@ -402,6 +602,32 @@ export const Note: React.FC<NoteProps> = ({
                   ></path>{" "}
                 </g>
               </svg>
+              <NoteTitle
+                ref={titleRef}
+                contentEditable={true}
+                spellCheck={false}
+                onKeyDown={handleInput}
+                onFocus={() => preventNewNoteDetection(true)}
+                onBlur={() => {
+                  preventNewNoteDetection(false);
+                  if (
+                    titleRef.current &&
+                    titleRef.current.textContent &&
+                    titleRef.current.textContent.length === 0
+                  ) {
+                    titleRef.current.textContent = "new note";
+                  } else if (
+                    titleRef.current &&
+                    titleRef.current.textContent &&
+                    titleRef.current.textContent.length > 0
+                  ) {
+                    setNoteTitle(titleRef.current.textContent);
+                  }
+                }}
+                suppressContentEditableWarning={true}
+              >
+                {title === null ? "new note" : title}
+              </NoteTitle>
             </NoteTitleWrapper>
           </TerminalHeader>
           <TerminalBody
@@ -424,11 +650,19 @@ export const Note: React.FC<NoteProps> = ({
                 setCurrentNote,
                 preventNewNoteDetection,
                 isHighlighted,
+                isCheckList: addCheckBoxes,
               });
             }}
           >
             {!isImage && (
-              <CollapsibleTextArea text={formattedContent} maxLines={3} />
+              <CollapsibleTextArea
+                text={formattedContent}
+                maxLines={4}
+                isCheckListMode={addCheckBoxes}
+                taskStatus={taskStatus}
+                setTaskStatus={setTaskStatus}
+                noteId={id}
+              />
             )}
             {isImage && (
               <CollapsibleImage
@@ -438,6 +672,22 @@ export const Note: React.FC<NoteProps> = ({
               />
             )}
           </TerminalBody>
+          <TerminalFooter $footercolor={colorSet.noteFooter}>
+            <DateElement className="selection-prevention">
+              {getFormattedDate(createDt, "en-US", isMobile())}
+            </DateElement>
+
+            <ThemeSwitcher
+              $bgcolor={
+                colorSet.noteBackground === "#2d2d2d" ? "#ffffff" : "#2d2d2d"
+              }
+              onClick={() =>
+                updateNoteColor(
+                  colorSet.noteBackground === "#2d2d2d" ? "white" : "black"
+                )
+              }
+            />
+          </TerminalFooter>
         </TerminalContainer>
         {showOptions && (
           <div
@@ -446,15 +696,23 @@ export const Note: React.FC<NoteProps> = ({
             }`}
           >
             <button
-              className="close-button"
+              className="close-button selection-prevention"
               onClick={() => setShowOptions(false)}
             >
               ×
             </button>
             <div className="options-content">
-              <div className="colorPalettes-container">
-                {getColorPaletteItems()}
-              </div>
+              <FooterAction>
+                <input
+                  type="checkbox"
+                  id="todo"
+                  name="todo"
+                  value="todo"
+                  defaultChecked={isCheckList}
+                  onChange={() => toggleCheckList(!addCheckBoxes)}
+                />
+                <span>Tasks</span>
+              </FooterAction>
               {showReminderOption && (
                 <button
                   onClick={() => {

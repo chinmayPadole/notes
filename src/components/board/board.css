@@ -5,15 +5,16 @@
 }
 
 #board {
-  width: 100vw;
   display: flex;
-  flex-wrap: wrap;
   gap: 1em;
   justify-content: center;
+  flex-flow: column;
+  padding: 0 10px;
 }
 
-.board-container {
-  z-index: 2;
+#board-container {
+  /* z-index: 2; */
+  width: 100%;
 }
 
 #noteEditorDoubleClick {

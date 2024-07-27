@@ -11,11 +11,13 @@ export interface NoteProps {
     newContent: string,
     newColor: string,
     isNoteLocked: boolean,
-    title: string | null
+    title: string | null,
+    isChecklist: boolean
   ) => void;
   isNoteLocked: boolean;
   setNoteEditorMode: (mode: "new" | "modify" | "null") => void;
   setCurrentNote: (note: NoteProps | undefined) => void;
   preventNewNoteDetection: (isNewNoteDetectionEnabled: boolean) => void;
   isHighlighted: boolean;
+  isCheckList: boolean;
 }

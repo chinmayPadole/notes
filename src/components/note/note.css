@@ -61,11 +61,12 @@
   left: 0;
   padding: 10px;
   background: #83c5be;
-  border-radius: 10px;
+  border-radius: 5px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   z-index: 10;
   opacity: 0;
   transition: opacity 300ms ease-in-out;
+  display: flex;
 }
 
 .options-container.fade-in {
@@ -79,9 +80,11 @@
 .options-content {
   display: flex;
   flex-direction: row;
-  justify-content: space-evenly;
-  transform: translateY(-10px);
+  justify-content: start;
   align-items: center;
+  width: 100%;
+  gap: 1em;
+  padding-left: 1em;
 }
 
 .close-button {
@@ -100,41 +103,6 @@
   border-color: #0054e9;
   color: #0054e9;
   cursor: pointer;
-}
-
-.colorPalettes-container {
-  display: flex;
-  gap: 1em;
-  flex-direction: row;
-}
-
-.palettecircle {
-  position: relative;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  overflow: hidden;
-  cursor: pointer;
-}
-
-.left-half,
-.right-half {
-  position: absolute;
-  width: 15px; /* Half of the circle's width */
-  height: 30px;
-  top: 0;
-}
-
-.left-half {
-  left: 0;
-}
-
-.right-half {
-  right: 0;
-}
-
-.long-press {
-  border: 2px solid green;
 }
 
 @-webkit-keyframes highlight {

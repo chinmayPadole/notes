@@ -64,6 +64,7 @@ export const Board: React.FC<{
         setCurrentNote: setCurrentNote,
         preventNewNoteDetection: preventNewNoteDetection,
         isHighlighted: false,
+        isCheckList: false,
       };
       addNote(newData);
     }
@@ -127,7 +128,8 @@ export const Board: React.FC<{
     updatedContent: string,
     updatedColor: string,
     isNoteLocked: boolean,
-    title: string | null
+    title: string | null,
+    isCheckList: boolean
   ) => {
     const updatedNotes = notes.map((note) => {
       if (note.id === noteId) {
@@ -137,6 +139,7 @@ export const Board: React.FC<{
           color: updatedColor,
           isNoteLocked: isNoteLocked,
           title: title,
+          isCheckList: isCheckList,
         };
       }
       return note;
@@ -172,6 +175,7 @@ export const Board: React.FC<{
           setCurrentNote={setCurrentNote}
           preventNewNoteDetection={preventNewNoteDetection}
           isHighlighted={note.id === highlightedNote}
+          isCheckList={note.isCheckList}
         />
       );
     });
@@ -220,6 +224,12 @@ export const Board: React.FC<{
             }
             currentContent={
               currentNote !== undefined ? currentNote.content : undefined
+            }
+            noteColor={
+              currentNote !== undefined ? currentNote.color : undefined
+            }
+            isChecklist={
+              currentNote !== undefined ? currentNote.isCheckList : false
             }
             preventNewNoteDetection={preventNewNoteDetection}
           />

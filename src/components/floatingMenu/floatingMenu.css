@@ -1,8 +1,9 @@
 .floatingMenu-container {
   position: fixed;
-  bottom: 85px;
-  left: 10px;
+  bottom: 30px;
+  right: 10px;
   z-index: 3;
+  transform: rotate(180deg);
 }
 
 .floatingMenu-button {
@@ -63,6 +64,7 @@
 
 .nav {
   margin-left: 30px;
+  rotate: 180deg;
   transition: all 0.2s ease-in-out;
 }
 

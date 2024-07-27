@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import "./superNotes.css";
 import { Board } from "../board/board";
+import { QuickView } from "../quick-view/quickView";
 
 const Container = styled.div`
   position: relative;
@@ -20,9 +21,20 @@ const StaticElement = styled.div<{ $isfixed: string }>`
   transition: position 0.3s ease-in-out; /* Smooth transition */
 `;
 
+const SuperNotesPanels = styled.div<{ $iscollapsed: string }>`
+  display: grid;
+  // grid-template-columns: auto 230px;
+  background: #f5f5f7;
+  grid-template-columns: ${(props) =>
+    props.$iscollapsed === "true" ? "auto 20px" : "auto 230px"};
+
+  transition: grid-template-columns 0.3s ease-in-out;
+`;
+
 export const SuperNotes: React.FC = () => {
   const [$isfixed, setisfixed] = useState<boolean>(true);
   const [isSearchMode, setSearchMode] = useState<boolean>(false);
+  const [isCollapsed, setIsCollapsed] = useState<boolean>(true);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -94,6 +106,12 @@ export const SuperNotes: React.FC = () => {
       <div className="board">
         <Board isSearchMode={isSearchMode} setSearchMode={setSearchMode} />
       </div>
+      {/* <SuperNotesPanels $iscollapsed={isCollapsed ? "true" : "false"}>
+        <div className="board">
+          <Board isSearchMode={isSearchMode} setSearchMode={setSearchMode} />
+        </div>
+        <QuickView isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />
+      </SuperNotesPanels> */}
     </Container>
   );
 };

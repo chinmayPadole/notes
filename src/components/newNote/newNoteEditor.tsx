@@ -10,22 +10,7 @@ import {
 import { NoteProps } from "../note/NoteProps";
 import { useToast } from "../../provider/toastProvider";
 import "./newNoteDetector.css";
-
-const TerminalTextArea = styled.textarea`
-  width: 100%;
-  color: #c5c5c5;
-  background: #1e1e1e;
-  border: none;
-  outline: none;
-  resize: none;
-
-  padding: 20px;
-
-  letter-spacing: 0.007em !important;
-  line-height: 1.5; /* Adjusts line spacing */
-  letter-spacing: 0.1em; /* Adjusts letter spacing */
-  word-spacing: 0.2em; /* Adjusts word spacing */
-`;
+import { TerminalTextArea } from "./TerminalTextArea";
 
 const TerminalContainer = styled.div`
   background: #1e1e1e;
@@ -63,15 +48,6 @@ const ContentActions = styled.div`
   background-color: #575353;
 
   padding-right: 40px;
-
-  /*Prevent text selection*/
-  -webkit-touch-callout: none; /* iOS Safari */
-  -webkit-user-select: none; /* Safari */
-  -khtml-user-select: none; /* Konqueror HTML */
-  -moz-user-select: none; /* Old versions of Firefox */
-  -ms-user-select: none; /* Internet Explorer/Edge */
-  user-select: none; /* Non-prefixed version, currently
-                                  supported by Chrome, Edge, Opera and Firefox */
 `;
 
 const SaveContentButton = styled.div`
@@ -112,7 +88,8 @@ export interface NewNoteEditorProps {
     updatedContent: string,
     updatedColor: string,
     isNoteLocked: boolean,
-    title: string | null
+    title: string | null,
+    isChecklist: boolean
   ) => void;
   removeNote: (noteId: string) => void;
   noteEditorMode: "new" | "modify" | "null";
@@ -121,9 +98,11 @@ export interface NewNoteEditorProps {
 
   //Optional params for modification
   noteId?: string;
+  noteColor?: string;
   isNoteLocked?: boolean;
   currentContent?: string;
   noteTitle?: string | null;
+  isChecklist?: boolean;
   setCurrentNote: (note: NoteProps | undefined) => void;
 }
 
@@ -141,10 +120,12 @@ export const NewNoteEditor: React.FC<NewNoteEditorProps> = ({
   setCurrentNote,
   preventNewNoteDetection,
   noteTitle,
+  noteColor,
+  isChecklist,
 }) => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   let [inputValue, setInputValue] = useState<string>("");
-  const textAreaRef = useRef<HTMLTextAreaElement>(null);
+  const textAreaRef = useRef<HTMLDivElement>(null);
   const [isImage, setIsImage] = useState<boolean>(false);
 
   const { showToast } = useToast();
@@ -189,10 +170,6 @@ export const NewNoteEditor: React.FC<NewNoteEditorProps> = ({
 
     if (textAreaRef.current) {
       textAreaRef.current.focus();
-      textAreaRef.current.setSelectionRange(
-        textAreaRef.current.value.length,
-        textAreaRef.current.value.length
-      );
     }
   };
 
@@ -215,10 +192,6 @@ export const NewNoteEditor: React.FC<NewNoteEditorProps> = ({
     }
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setInputValue(e.target.value);
-  };
-
   // Function to remove empty lines
   const removeEmptyLines = (input: string): string => {
     const lines = input.split("\n");
@@ -236,8 +209,9 @@ export const NewNoteEditor: React.FC<NewNoteEditorProps> = ({
     return lines.join("\n");
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (e.key === "Enter" && !e.shiftKey && !isMobileBrowser) {
+      performAction();
       e.preventDefault();
       // Add logic here if you want to handle Enter key without Shift (e.g., execute command)
     }
@@ -251,7 +225,7 @@ export const NewNoteEditor: React.FC<NewNoteEditorProps> = ({
     }
   };
 
-  const suppressPaste = (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
+  const suppressPaste = (e: React.ClipboardEvent<HTMLDivElement>) => {
     e.preventDefault();
   };
 
@@ -297,18 +271,27 @@ export const NewNoteEditor: React.FC<NewNoteEditorProps> = ({
   };
 
   const performAction = () => {
-    if (inputValue.trim().length === 0) {
+    if (
+      textAreaRef.current &&
+      textAreaRef.current.textContent &&
+      textAreaRef.current.textContent.trim().length === 0
+    ) {
       closeModal();
       return;
     }
-    if (noteEditorMode === "new") {
+
+    if (
+      noteEditorMode === "new" &&
+      textAreaRef.current &&
+      textAreaRef.current.textContent
+    ) {
       const newData: NoteProps = {
         id: getUniqueId(),
-        content: removeEmptyLines(inputValue),
+        content: removeEmptyLines(textAreaRef.current.textContent),
         createDt: new Date(),
         color: "white",
         isImage: isImage,
-        title: null,
+        title: null, // SOME DAY WILL USE text summarization here
         removeNote: removeNote,
         updateNote: updateNote,
         isNoteLocked: false,
@@ -316,19 +299,23 @@ export const NewNoteEditor: React.FC<NewNoteEditorProps> = ({
         setCurrentNote: setCurrentNote,
         preventNewNoteDetection: preventNewNoteDetection,
         isHighlighted: false,
+        isCheckList: false,
       };
       addNote(newData);
     } else if (
       noteEditorMode === "modify" &&
       noteId !== undefined &&
-      isNoteLocked !== undefined
+      isNoteLocked !== undefined &&
+      textAreaRef.current &&
+      textAreaRef.current.textContent
     ) {
       updateNote(
         noteId,
-        removeEmptyLines(inputValue),
-        "white",
+        removeEmptyLines(textAreaRef.current.textContent),
+        noteColor || "white",
         isNoteLocked,
-        noteTitle || null
+        noteTitle || null,
+        isChecklist || false
       );
     }
 
@@ -350,40 +337,62 @@ export const NewNoteEditor: React.FC<NewNoteEditorProps> = ({
   return (
     <>
       <Modal isOpen={modalIsOpen} onClose={closeModal}>
-        <TerminalContainer>
-          <div className="modal-header">
-            <div className="modal-buttons">
-              <span className="close" onClick={closeModal}></span>
-              {/* <span className="minimize"></span>
+        <>
+          <TerminalContainer>
+            <div className="modal-header">
+              <div className="modal-buttons">
+                <svg
+                  onClick={closeModal}
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+                  <g
+                    id="SVGRepo_tracerCarrier"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  ></g>
+                  <g id="SVGRepo_iconCarrier">
+                    {" "}
+                    <path
+                      d="M19 5L5 19M5.00001 5L19 19"
+                      stroke="#ff5f56"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    ></path>{" "}
+                  </g>
+                </svg>
+                {/* <span className="minimize"></span>
                 <span className="maximize"></span> */}
+              </div>
+              <div className="modal-title">Editor</div>
             </div>
-            <div className="modal-title">Editor</div>
-          </div>
-          {!isImage && (
-            <TerminalTextArea
-              ref={textAreaRef}
-              rows={10}
-              value={inputValue}
-              onChange={handleInputChange}
-              onKeyDown={handleKeyDown}
-              onPaste={suppressPaste}
-            />
-          )}
-          {isImage && (
-            <img className="imageNote" src={inputValue} alt={inputValue} />
-          )}
+            {!isImage && (
+              <TerminalTextArea
+                textAreaRef={textAreaRef}
+                onKeyDown={handleKeyDown}
+                onPaste={suppressPaste}
+                text={inputValue}
+              ></TerminalTextArea>
+            )}
+            {isImage && (
+              <img className="imageNote" src={inputValue} alt={inputValue} />
+            )}
 
-          <ContentActions>
-            <TextActionButtons>
-              <ActionButton onClick={() => performClipboardPaste()}>
-                paste
-              </ActionButton>
-            </TextActionButtons>
-            <SaveContentButton onClick={() => performAction()}>
-              save
-            </SaveContentButton>
-          </ContentActions>
-        </TerminalContainer>
+            <ContentActions>
+              <TextActionButtons>
+                <ActionButton onClick={() => performClipboardPaste()}>
+                  paste
+                </ActionButton>
+              </TextActionButtons>
+              <SaveContentButton onClick={() => performAction()}>
+                save
+              </SaveContentButton>
+            </ContentActions>
+          </TerminalContainer>
+        </>
       </Modal>
     </>
   );
