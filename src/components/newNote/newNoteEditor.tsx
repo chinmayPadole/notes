@@ -32,9 +32,10 @@ const Overlay = styled.div`
   height: 100vh;
   background-color: rgba(0, 0, 0, 0.75);
   display: flex;
-  justify-content: center;
+  justify-content: start;
   align-items: center;
   flex-flow: column;
+  padding-top: 180px;
 `;
 
 const ContentActions = styled.div`

@@ -15,6 +15,7 @@ const TextArea = styled.div`
   border: none;
   outline: none;
   resize: none;
+  min-height: 220px;
 
   padding: 20px;
   white-space: pre-wrap;

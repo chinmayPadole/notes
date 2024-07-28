@@ -39,7 +39,7 @@ export const SuperNotes: React.FC = () => {
   useEffect(() => {
     const handleScroll = () => {
       const scrollPos = window.scrollY;
-      const initialOffset = 70; // Adjust as needed
+      const initialOffset = 100; // Adjust as needed
 
       setisfixed(scrollPos <= initialOffset);
     };
