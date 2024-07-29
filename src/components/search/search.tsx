@@ -29,6 +29,16 @@ const Input = styled.input`
   backdrop-filter: blur(90px);
   -webkit-backdrop-filter: blur(90px);
   border: 1px solid rgba(255, 255, 255, 0.3);
+
+  &::placeholder {
+    color: #fff;
+    opacity: 1; /* Firefox */
+  }
+
+  &::-ms-input-placeholder {
+    /* Edge 12 -18 */
+    color: #fff;
+  }
 `;
 
 interface SearchProps {

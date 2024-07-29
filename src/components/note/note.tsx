@@ -34,7 +34,7 @@ const TerminalContainer = styled.div<{
 const TerminalHeader = styled.div<{
   $headercolor: string;
 }>`
-  background: ${(props) => props.$headercolor};
+  // background: ${(props) => props.$headercolor};
   align-items: center;
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;

@@ -8,6 +8,7 @@
 .board {
   padding-bottom: 20px;
   overflow-x: hidden;
+  background-color: #f2f2f2;
 }
 
 .header {
