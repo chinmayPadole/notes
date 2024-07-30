@@ -223,6 +223,9 @@ export const NewNoteEditor: React.FC<NewNoteEditorProps> = ({
       closeModal();
     } else if (event.key === "Enter" && !event.shiftKey && !isMobileBrowser) {
       performAction();
+    } else if (event.key === "Enter" && isMobileBrowser) {
+      document.execCommand("insertLineBreak");
+      event.preventDefault();
     }
   };
 
@@ -272,6 +275,8 @@ export const NewNoteEditor: React.FC<NewNoteEditorProps> = ({
   };
 
   const performAction = () => {
+    let noteContent = inputValue;
+
     if (
       textAreaRef.current &&
       textAreaRef.current.textContent &&
@@ -279,16 +284,14 @@ export const NewNoteEditor: React.FC<NewNoteEditorProps> = ({
     ) {
       closeModal();
       return;
+    } else if (textAreaRef.current && textAreaRef.current.textContent) {
+      noteContent = textAreaRef.current.textContent;
     }
 
-    if (
-      noteEditorMode === "new" &&
-      textAreaRef.current &&
-      textAreaRef.current.textContent
-    ) {
+    if (noteEditorMode === "new") {
       const newData: NoteProps = {
         id: getUniqueId(),
-        content: removeEmptyLines(textAreaRef.current.textContent),
+        content: removeEmptyLines(noteContent),
         createDt: new Date(),
         color: "white",
         isImage: isImage,
@@ -306,13 +309,11 @@ export const NewNoteEditor: React.FC<NewNoteEditorProps> = ({
     } else if (
       noteEditorMode === "modify" &&
       noteId !== undefined &&
-      isNoteLocked !== undefined &&
-      textAreaRef.current &&
-      textAreaRef.current.textContent
+      isNoteLocked !== undefined
     ) {
       updateNote(
         noteId,
-        removeEmptyLines(textAreaRef.current.textContent),
+        removeEmptyLines(noteContent),
         noteColor || "white",
         isNoteLocked,
         noteTitle || null,

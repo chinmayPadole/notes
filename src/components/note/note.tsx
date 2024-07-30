@@ -39,6 +39,7 @@ const TerminalHeader = styled.div<{
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;
   display: flex;
+  border-bottom: 0.8px dotted #898686;
 `;
 
 export const Dot = styled.div`

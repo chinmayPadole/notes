@@ -9,10 +9,9 @@ const Container = styled.div`
   background: #fff;
 `;
 
-const StaticElement = styled.div<{ $isfixed: string }>`
-  position: ${(props) => (props.$isfixed === "true" ? "relative" : "fixed")};
-  top: ${(props) => (props.$isfixed === "true" ? "0" : "auto")};
-  // bottom: ${(props) => (props.$isfixed === "true" ? "auto" : "0")};
+const StaticElement = styled.div`
+  position: fixed;
+  top: 0;
   left: 0;
   width: 100%;
   height: 100px; /* Adjust height as needed */
@@ -21,32 +20,14 @@ const StaticElement = styled.div<{ $isfixed: string }>`
   transition: position 0.3s ease-in-out; /* Smooth transition */
 `;
 
-const SuperNotesPanels = styled.div<{ $iscollapsed: string }>`
+const SuperNotesPanels = styled.div`
   display: grid;
   // grid-template-columns: auto 230px;
   background: #f5f5f7;
-  grid-template-columns: ${(props) =>
-    props.$iscollapsed === "true" ? "auto 20px" : "auto 230px"};
-
-  transition: grid-template-columns 0.3s ease-in-out;
 `;
 
 export const SuperNotes: React.FC = () => {
-  const [$isfixed, setisfixed] = useState<boolean>(true);
   const [isSearchMode, setSearchMode] = useState<boolean>(false);
-  const [isCollapsed, setIsCollapsed] = useState<boolean>(true);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const scrollPos = window.scrollY;
-      const initialOffset = 100; // Adjust as needed
-
-      setisfixed(scrollPos <= initialOffset);
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -65,7 +46,7 @@ export const SuperNotes: React.FC = () => {
 
   return (
     <Container>
-      <StaticElement $isfixed={$isfixed ? "true" : "false"}>
+      <StaticElement>
         <div className="panel">
           <h1 className="jj">
             <span>Super</span>
@@ -106,11 +87,11 @@ export const SuperNotes: React.FC = () => {
       <div className="board">
         <Board isSearchMode={isSearchMode} setSearchMode={setSearchMode} />
       </div>
-      {/* <SuperNotesPanels $iscollapsed={isCollapsed ? "true" : "false"}>
+      {/* <SuperNotesPanels>
         <div className="board">
           <Board isSearchMode={isSearchMode} setSearchMode={setSearchMode} />
         </div>
-        <QuickView isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />
+        <QuickView />
       </SuperNotesPanels> */}
     </Container>
   );

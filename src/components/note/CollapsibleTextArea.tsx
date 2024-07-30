@@ -76,7 +76,7 @@ export const CollapsibleTextArea: React.FC<CollapsibleTextAreaProps> = ({
           </a>
         );
       }
-      return <span key={index}>{part}</span>;
+      return <pre key={index}>{part}</pre>;
     });
   };
 
@@ -94,7 +94,7 @@ export const CollapsibleTextArea: React.FC<CollapsibleTextAreaProps> = ({
         <div
           ref={textAreaRef}
           style={{
-            maxHeight: isExpanded ? "none" : `${maxLines * 1.5}em`,
+            maxHeight: isExpanded ? "none" : `${maxLines * 1.4}em`,
             overflow: "hidden",
           }}
         >
@@ -141,7 +141,7 @@ export const CollapsibleTextArea: React.FC<CollapsibleTextAreaProps> = ({
             defaultChecked={taskStatus[index] === 1 ? true : false}
             onChange={() => handleTaskChange(index)}
           />
-          <span style={{ marginLeft: "8px" }}>{createLinkifiedText(line)}</span>
+          <pre style={{ marginLeft: "8px" }}>{createLinkifiedText(line)}</pre>
         </div>
       );
     });
