@@ -233,6 +233,10 @@ export const Note: React.FC<NoteProps> = ({
     setActiveColorSet(ColorSet["white"]);
     toggleCheckList(false);
     setTaskStatus([]);
+    setShowOptions(false);
+    setIsDatePickerOpen(false);
+    setSelectedDate(null);
+    setNoteTitle(title);
   };
 
   useEffect(() => {
@@ -659,7 +663,7 @@ export const Note: React.FC<NoteProps> = ({
               <CollapsibleTextArea
                 text={formattedContent}
                 maxLines={4}
-                isCheckListMode={addCheckBoxes}
+                isCheckListMode={isCheckList}
                 taskStatus={taskStatus}
                 setTaskStatus={setTaskStatus}
                 noteId={id}

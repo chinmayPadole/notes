@@ -76,7 +76,7 @@ export const CollapsibleTextArea: React.FC<CollapsibleTextAreaProps> = ({
           </a>
         );
       }
-      return <pre key={index}>{part}</pre>;
+      return <span key={index}>{part}</span>;
     });
   };
 
@@ -141,7 +141,7 @@ export const CollapsibleTextArea: React.FC<CollapsibleTextAreaProps> = ({
             defaultChecked={taskStatus[index] === 1 ? true : false}
             onChange={() => handleTaskChange(index)}
           />
-          <pre style={{ marginLeft: "8px" }}>{createLinkifiedText(line)}</pre>
+          <span style={{ marginLeft: "8px" }}>{createLinkifiedText(line)}</span>
         </div>
       );
     });
