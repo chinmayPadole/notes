@@ -8,6 +8,7 @@ interface CollapsibleTextAreaProps {
   maxLines: number;
   isCheckListMode: boolean;
   setTaskStatus: (value: React.SetStateAction<number[]>) => void;
+  setTaskProgress: (value: React.SetStateAction<string>) => void;
   taskStatus: number[];
   noteId: string;
 }
@@ -19,6 +20,7 @@ export const CollapsibleTextArea: React.FC<CollapsibleTextAreaProps> = ({
   setTaskStatus,
   taskStatus,
   noteId,
+  setTaskProgress,
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isOverflowing, setIsOverflowing] = useState(false);
@@ -34,7 +36,7 @@ export const CollapsibleTextArea: React.FC<CollapsibleTextAreaProps> = ({
       const maxHeight = lineHeight * maxLines;
 
       const scrollHeight = isCheckListMode
-        ? totalLines.length * 20
+        ? totalLines.length * 18
         : textAreaRef.current.scrollHeight;
       setIsOverflowing(scrollHeight > maxHeight);
     }
@@ -50,11 +52,17 @@ export const CollapsibleTextArea: React.FC<CollapsibleTextAreaProps> = ({
         const task: Task[] = JSON.parse(list);
         if (task.some((x) => x.noteId === noteId)) {
           status = task.find((obj) => obj.noteId === noteId)?.status || [];
+
+          while (status.length < lines.length) {
+            status.push(0);
+          }
+          // const newTask = task.filter((item) => item.noteId !== noteId);
+          // localStorage.setItem("tasks", JSON.stringify(newTask));
         }
-      }
-      if (status.length === 0) {
+      } else {
         status = new Array(lines.length).fill(0);
       }
+
       setTaskStatus(status);
     }
   }, [lines, isCheckListMode]);
@@ -86,6 +94,13 @@ export const CollapsibleTextArea: React.FC<CollapsibleTextAreaProps> = ({
       status[key] = status[key] === 0 ? 1 : 0;
     }
     setTaskStatus(status);
+    updateTaskProgress(status);
+  };
+
+  const updateTaskProgress = (status: number[]) => {
+    let completed = status.filter((num) => num === 1).length;
+    let total = status.length;
+    setTaskProgress(`${completed} / ${total}`);
   };
 
   return (
@@ -105,7 +120,7 @@ export const CollapsibleTextArea: React.FC<CollapsibleTextAreaProps> = ({
         <div
           ref={textAreaRef}
           style={{
-            maxHeight: isExpanded ? "none" : `${maxLines * 2.2}em`,
+            maxHeight: isExpanded ? "none" : `${maxLines * 2.9}em`,
             overflow: "hidden",
           }}
         >

@@ -84,15 +84,15 @@ export const SuperNotes: React.FC = () => {
           </button>
         </div>
       </StaticElement>
-      <div className="board">
+      {/* <div className="board">
         <Board isSearchMode={isSearchMode} setSearchMode={setSearchMode} />
-      </div>
-      {/* <SuperNotesPanels>
+      </div> */}
+      <SuperNotesPanels>
         <div className="board">
           <Board isSearchMode={isSearchMode} setSearchMode={setSearchMode} />
         </div>
         <QuickView />
-      </SuperNotesPanels> */}
+      </SuperNotesPanels>
     </Container>
   );
 };

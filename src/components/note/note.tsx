@@ -61,6 +61,11 @@ const DateElement = styled.div`
   padding: 5px;
 `;
 
+const TaskProgress = styled.div`
+  color: #35b554;
+  font-weight: 700;
+`;
+
 const ThemeSwitcher = styled.div<{
   $bgcolor: string;
 }>`
@@ -81,14 +86,21 @@ const TerminalBody = styled.div`
 
 const TerminalFooter = styled.div<{
   $footercolor: string;
+  $ischecklist: string;
 }>`
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: ${({ $ischecklist }) =>
+    $ischecklist === "true" ? "250px 1fr 0fr" : "1fr auto"};
   align-items: center;
   padding: 0 10px;
   background-color: ${(props) => props.$footercolor};
   border-bottom-left-radius: 5px;
   border-bottom-right-radius: 5px;
+
+  @media (max-width: 500px) {
+    grid-template-columns: ${({ $ischecklist }) =>
+      $ischecklist === "true" ? "180px 1fr 0fr" : "1fr auto"};
+  }
 `;
 
 const NoteContainer = styled.div`
@@ -182,6 +194,8 @@ export const Note: React.FC<NoteProps> = ({
 }): JSX.Element => {
   const { showToast } = useToast();
   const [noteTitle, setNoteTitle] = useState<string | null>(title);
+
+  const [taskProgress, setTaskProgress] = useState<string>("");
 
   const [addCheckBoxes, toggleCheckList] = useState<boolean>(isCheckList);
 
@@ -284,7 +298,15 @@ export const Note: React.FC<NoteProps> = ({
         tasks.push(task);
         localStorage.setItem("tasks", JSON.stringify(tasks));
       }
+
+      updateTaskProgress(taskStatus);
     }
+  };
+
+  const updateTaskProgress = (status: number[]) => {
+    let completed = status.filter((num) => num === 1).length;
+    let total = status.length;
+    setTaskProgress(`${completed} / ${total}`);
   };
 
   useEffect(() => {
@@ -666,6 +688,7 @@ export const Note: React.FC<NoteProps> = ({
                 isCheckListMode={isCheckList}
                 taskStatus={taskStatus}
                 setTaskStatus={setTaskStatus}
+                setTaskProgress={setTaskProgress}
                 noteId={id}
               />
             )}
@@ -677,11 +700,14 @@ export const Note: React.FC<NoteProps> = ({
               />
             )}
           </TerminalBody>
-          <TerminalFooter $footercolor={colorSet.noteFooter}>
+          <TerminalFooter
+            $footercolor={colorSet.noteFooter}
+            $ischecklist={taskStatus.length > 0 ? "true" : "false"}
+          >
             <DateElement className="selection-prevention">
               {getFormattedDate(createDt, "en-US", isMobile())}
             </DateElement>
-
+            {isCheckList && <TaskProgress>{taskProgress}</TaskProgress>}
             <ThemeSwitcher
               $bgcolor={
                 colorSet.noteBackground === "#2d2d2d" ? "#ffffff" : "#2d2d2d"
