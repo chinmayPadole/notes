@@ -90,7 +90,8 @@ export interface NewNoteEditorProps {
     updatedColor: string,
     isNoteLocked: boolean,
     title: string | null,
-    isChecklist: boolean
+    isChecklist: boolean,
+    pinDate: Date | null
   ) => void;
   removeNote: (noteId: string) => void;
   noteEditorMode: "new" | "modify" | "null";
@@ -105,6 +106,7 @@ export interface NewNoteEditorProps {
   noteTitle?: string | null;
   isChecklist?: boolean;
   setCurrentNote: (note: NoteProps | undefined) => void;
+  pinDate?: Date | null;
 }
 
 const isMobileBrowser = isMobile();
@@ -123,6 +125,7 @@ export const NewNoteEditor: React.FC<NewNoteEditorProps> = ({
   noteTitle,
   noteColor,
   isChecklist,
+  pinDate,
 }) => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   let [inputValue, setInputValue] = useState<string>("");
@@ -304,6 +307,7 @@ export const NewNoteEditor: React.FC<NewNoteEditorProps> = ({
         preventNewNoteDetection: preventNewNoteDetection,
         isHighlighted: false,
         isCheckList: false,
+        pinDate: null,
       };
       addNote(newData);
     } else if (
@@ -317,7 +321,8 @@ export const NewNoteEditor: React.FC<NewNoteEditorProps> = ({
         noteColor || "white",
         isNoteLocked,
         noteTitle || null,
-        isChecklist || false
+        isChecklist || false,
+        pinDate || null
       );
     }
 

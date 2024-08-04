@@ -157,3 +157,9 @@ export const getNextMonday = () => {
 export const splitTextIntoLines = (text: string): string[] => {
   return text.split(/\r?\n/).filter((line) => line.trim() !== ""); // This will handle both Windows (\r\n) and Unix (\n) line endings
 };
+
+export const isDateOlderThanCurrent = (givenDate: Date): boolean => {
+  const date = new Date(givenDate);
+  const currentDate = new Date();
+  return date < currentDate;
+};

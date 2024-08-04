@@ -92,7 +92,7 @@ const Divider = styled.div`
 
 const MetaNotesWrapper = styled.div`
   color: white;
-  overflow: scroll;
+  overflow-y: scroll;
   height: 340px;
 `;
 const MetaNote = styled.div`
@@ -113,14 +113,40 @@ const NoteBody = styled.div`
   white-space: nowrap;
   text-overflow: ellipsis;
   width: 275px;
+  color: #978f8f;
 `;
 
-export const QuickView: React.FC = () => {
+export const QuickView: React.FC<{
+  setHighlightNote: (highlightedNote: string) => void;
+}> = ({ setHighlightNote }) => {
   const [isExpanded, setExpanded] = useState<boolean>(false);
   const [selectedAction, setSelectedAction] = useState<number>(0);
 
+  const [allNotes, setAllNotes] = useState<
+    {
+      id: string;
+      content: string;
+      title: string;
+    }[]
+  >([]);
+  const [pastDueNotes, setPastDueNotes] = useState<
+    {
+      id: string;
+      content: string;
+      title: string;
+    }[]
+  >([]);
+  const [pendingTaskNotes, setPendingTaskNotes] = useState<
+    {
+      id: string;
+      content: string;
+      title: string;
+    }[]
+  >([]);
+
   const highlightNote = (noteId: string) => {
-    console.log(noteId);
+    setExpanded(false);
+    setHighlightNote(noteId);
   };
 
   useEffect(() => {
@@ -129,10 +155,32 @@ export const QuickView: React.FC = () => {
     }
   }, [isExpanded]);
 
+  useEffect(() => {
+    getDisplayNotes();
+  }, []);
+
   const getDisplayNotes = () => {
-    console.log(GetAllNotes());
-    const notes = GetAllNotes();
-    return notes.map((note) => {
+    const [all, past, pending] = GetAllNotes();
+    setAllNotes(all);
+    setPastDueNotes(past);
+    setPendingTaskNotes(pending);
+    //setNoteCount(notes.length > 10 ? "10+" : `${notes.length}`);
+  };
+
+  const getNoteJSX = () => {
+    const data: {
+      id: string;
+      content: string;
+      title: string;
+    }[] =
+      selectedAction === 3
+        ? allNotes
+        : selectedAction === 2
+        ? pastDueNotes
+        : selectedAction === 1
+        ? pendingTaskNotes
+        : [];
+    return data.map((note) => {
       return (
         <MetaNote key={note.id} onClick={() => highlightNote(note.id)}>
           <NoteHeader>{note.title}</NoteHeader>
@@ -156,108 +204,124 @@ export const QuickView: React.FC = () => {
       {isExpanded && (
         <QuickContent>
           <QuickActionsWrapper>
-            <QuickAction
-              style={{ background: selectedAction === 1 ? "red" : "inherit" }}
-              onClick={() => setSelectedAction((prev) => (prev === 1 ? 0 : 1))}
-            >
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
+            {pendingTaskNotes.length > 0 && (
+              <QuickAction
+                style={{ background: selectedAction === 1 ? "red" : "inherit" }}
+                onClick={() =>
+                  setSelectedAction((prev) => (prev === 1 ? 0 : 1))
+                }
               >
-                <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
-                <g
-                  id="SVGRepo_tracerCarrier"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                ></g>
-                <g id="SVGRepo_iconCarrier">
-                  {" "}
-                  <path
-                    opacity="0.4"
-                    d="M11 19.5H21"
-                    stroke="#ffffff"
-                    strokeWidth="1.5"
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+                  <g
+                    id="SVGRepo_tracerCarrier"
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                  ></path>{" "}
-                  <path
-                    opacity="0.4"
-                    d="M11 12.5H21"
-                    stroke="#ffffff"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  ></path>{" "}
-                  <path
-                    opacity="0.4"
-                    d="M11 5.5H21"
-                    stroke="#ffffff"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  ></path>{" "}
-                  <path
-                    d="M3 5.5L4 6.5L7 3.5"
-                    stroke="#ffffff"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  ></path>{" "}
-                  <path
-                    d="M3 12.5L4 13.5L7 10.5"
-                    stroke="#ffffff"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  ></path>{" "}
-                  <path
-                    d="M3 19.5L4 20.5L7 17.5"
-                    stroke="#ffffff"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  ></path>{" "}
-                </g>
-              </svg>
-              <span>10+ incomplete tasks</span>
-            </QuickAction>
-            <QuickAction
-              style={{ background: selectedAction === 2 ? "red" : "inherit" }}
-              onClick={() => setSelectedAction((prev) => (prev === 2 ? 0 : 2))}
-            >
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
+                  ></g>
+                  <g id="SVGRepo_iconCarrier">
+                    {" "}
+                    <path
+                      opacity="0.4"
+                      d="M11 19.5H21"
+                      stroke="#ffffff"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    ></path>{" "}
+                    <path
+                      opacity="0.4"
+                      d="M11 12.5H21"
+                      stroke="#ffffff"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    ></path>{" "}
+                    <path
+                      opacity="0.4"
+                      d="M11 5.5H21"
+                      stroke="#ffffff"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    ></path>{" "}
+                    <path
+                      d="M3 5.5L4 6.5L7 3.5"
+                      stroke="#ffffff"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    ></path>{" "}
+                    <path
+                      d="M3 12.5L4 13.5L7 10.5"
+                      stroke="#ffffff"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    ></path>{" "}
+                    <path
+                      d="M3 19.5L4 20.5L7 17.5"
+                      stroke="#ffffff"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    ></path>{" "}
+                  </g>
+                </svg>
+                <span>
+                  {pendingTaskNotes.length > 10
+                    ? "10+"
+                    : `${pendingTaskNotes.length}`}{" "}
+                  incomplete tasks
+                </span>
+              </QuickAction>
+            )}
+            {pastDueNotes.length > 0 && (
+              <QuickAction
+                style={{ background: selectedAction === 2 ? "red" : "inherit" }}
+                onClick={() =>
+                  setSelectedAction((prev) => (prev === 2 ? 0 : 2))
+                }
               >
-                <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
-                <g
-                  id="SVGRepo_tracerCarrier"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                ></g>
-                <g id="SVGRepo_iconCarrier">
-                  {" "}
-                  <path
-                    d="M22 12C22 17.52 17.52 22 12 22C6.48 22 2 17.52 2 12C2 6.48 6.48 2 12 2C17.52 2 22 6.48 22 12Z"
-                    stroke="#ffffff"
-                    strokeWidth="1.5"
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+                  <g
+                    id="SVGRepo_tracerCarrier"
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                  ></path>{" "}
-                  <path
-                    opacity="0.4"
-                    d="M15.7099 15.1798L12.6099 13.3298C12.0699 13.0098 11.6299 12.2398 11.6299 11.6098V7.50977"
-                    stroke="#ffffff"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  ></path>{" "}
-                </g>
-              </svg>
-              <span>10+ reminders due</span>
-            </QuickAction>
+                  ></g>
+                  <g id="SVGRepo_iconCarrier">
+                    {" "}
+                    <path
+                      d="M22 12C22 17.52 17.52 22 12 22C6.48 22 2 17.52 2 12C2 6.48 6.48 2 12 2C17.52 2 22 6.48 22 12Z"
+                      stroke="#ffffff"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    ></path>{" "}
+                    <path
+                      opacity="0.4"
+                      d="M15.7099 15.1798L12.6099 13.3298C12.0699 13.0098 11.6299 12.2398 11.6299 11.6098V7.50977"
+                      stroke="#ffffff"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    ></path>{" "}
+                  </g>
+                </svg>
+                <span>
+                  {pastDueNotes.length > 10 ? "10+" : `${pastDueNotes.length}`}{" "}
+                  reminders due
+                </span>
+              </QuickAction>
+            )}
             <QuickAction
               style={{ background: selectedAction === 3 ? "red" : "inherit" }}
               onClick={() => setSelectedAction((prev) => (prev === 3 ? 0 : 3))}
@@ -308,7 +372,7 @@ export const QuickView: React.FC = () => {
           {selectedAction > 0 && (
             <>
               <Divider />
-              <MetaNotesWrapper>{getDisplayNotes()}</MetaNotesWrapper>
+              <MetaNotesWrapper>{getNoteJSX()}</MetaNotesWrapper>
             </>
           )}
         </QuickContent>

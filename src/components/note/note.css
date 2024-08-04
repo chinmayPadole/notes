@@ -156,3 +156,7 @@
     background-color: #fff;
   }
 }
+
+.pinSVG {
+  transform: translateX(10px);
+}

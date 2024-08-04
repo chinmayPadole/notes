@@ -12,7 +12,8 @@ export interface NoteProps {
     newColor: string,
     isNoteLocked: boolean,
     title: string | null,
-    isChecklist: boolean
+    isChecklist: boolean,
+    pinDate: Date | null
   ) => void;
   isNoteLocked: boolean;
   setNoteEditorMode: (mode: "new" | "modify" | "null") => void;
@@ -20,4 +21,5 @@ export interface NoteProps {
   preventNewNoteDetection: (isNewNoteDetectionEnabled: boolean) => void;
   isHighlighted: boolean;
   isCheckList: boolean;
+  pinDate: Date | null;
 }

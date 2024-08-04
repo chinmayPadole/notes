@@ -15,7 +15,8 @@ import { RequestNotificationPermission } from "../requestNotification/requestNot
 export const Board: React.FC<{
   isSearchMode: boolean;
   setSearchMode: (toggleSearchMode: boolean) => void;
-}> = ({ isSearchMode, setSearchMode }) => {
+  highlightNote: string | null;
+}> = ({ isSearchMode, setSearchMode, highlightNote }) => {
   const [notes, setNotes] = useState<NoteProps[]>([]);
   const [transcript, setTranscript] = useState<string>("");
   const [isVoiceOn, setVoiceOn] = useState<boolean>(false);
@@ -65,6 +66,7 @@ export const Board: React.FC<{
         preventNewNoteDetection: preventNewNoteDetection,
         isHighlighted: false,
         isCheckList: false,
+        pinDate: null,
       };
       addNote(newData);
     }
@@ -80,6 +82,13 @@ export const Board: React.FC<{
     }
     refreshNotes();
   }, []);
+
+  useEffect(() => {
+    if (highlightNote !== null) {
+      setHighlightedNote(highlightNote);
+      refreshNotes();
+    }
+  }, [highlightNote]);
 
   useEffect(() => {
     const clearQueryParam = () => {
@@ -129,7 +138,8 @@ export const Board: React.FC<{
     updatedColor: string,
     isNoteLocked: boolean,
     title: string | null,
-    isCheckList: boolean
+    isCheckList: boolean,
+    pinDate: Date | null
   ) => {
     const updatedNotes = notes.map((note) => {
       if (note.id === noteId) {
@@ -140,6 +150,7 @@ export const Board: React.FC<{
           isNoteLocked: isNoteLocked,
           title: title,
           isCheckList: isCheckList,
+          pinDate: pinDate,
         };
       }
       return note;
@@ -150,9 +161,25 @@ export const Board: React.FC<{
   const getNotesElement = () => {
     let source = [...notes];
 
-    source = source.sort(
-      (a, b) => new Date(b.createDt).getTime() - new Date(a.createDt).getTime()
-    );
+    // source = source.sort(
+    //   (a, b) => new Date(b.createDt).getTime() - new Date(a.createDt).getTime()
+    // );
+
+    source = source.sort((a, b) => {
+      if (a.pinDate && b.pinDate) {
+        // Both have pinDate, sort by pinDate in descending order
+        return b.pinDate.getTime() - a.pinDate.getTime();
+      } else if (a.pinDate) {
+        // Only a has pinDate, a comes first
+        return -1;
+      } else if (b.pinDate) {
+        // Only b has pinDate, b comes first
+        return 1;
+      } else {
+        // Neither has pinDate, sort by createDate in descending order
+        return new Date(b.createDt).getTime() - new Date(a.createDt).getTime();
+      }
+    });
 
     if (isSearchMode) {
       source = searchAndSort(source, searchText);
@@ -176,6 +203,7 @@ export const Board: React.FC<{
           preventNewNoteDetection={preventNewNoteDetection}
           isHighlighted={note.id === highlightedNote}
           isCheckList={note.isCheckList}
+          pinDate={note.pinDate}
         />
       );
     });

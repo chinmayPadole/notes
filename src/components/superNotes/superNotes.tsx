@@ -28,6 +28,7 @@ const SuperNotesPanels = styled.div`
 
 export const SuperNotes: React.FC = () => {
   const [isSearchMode, setSearchMode] = useState<boolean>(false);
+  const [highlightNote, setHighlightNote] = useState<string | null>(null);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -89,9 +90,13 @@ export const SuperNotes: React.FC = () => {
       </div> */}
       <SuperNotesPanels>
         <div className="board">
-          <Board isSearchMode={isSearchMode} setSearchMode={setSearchMode} />
+          <Board
+            isSearchMode={isSearchMode}
+            setSearchMode={setSearchMode}
+            highlightNote={highlightNote}
+          />
         </div>
-        <QuickView />
+        <QuickView setHighlightNote={setHighlightNote} />
       </SuperNotesPanels>
     </Container>
   );
