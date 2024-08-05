@@ -22,7 +22,7 @@ const QuickViewContainer = styled.div<{
     $isexpanded === "true"
       ? $actionselected === "true"
         ? "60vh"
-        : "10vh"
+        : "12.5vh"
       : "calc(25vh - 170px)"};
   transition: height 0.3s ease-in-out;
 
@@ -39,13 +39,25 @@ const QuickViewContainer = styled.div<{
 const DragBar = styled.div`
   width: 137px;
   height: 23px;
-  border-radius: 20px;
+  border-radius: 5px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   color: #fff;
   border: 1px solid #fff;
+
+  background: linear-gradient(
+    214deg,
+    #4285f4 0,
+    #9b72cb 16%,
+    #d96570 20%,
+    #d96570 28%,
+    #9b72cb 53%,
+    #4285f2 73%,
+    #9b72cb 78%,
+    #d96570 100%
+  );
 `;
 
 const QuickContent = styled.div`
@@ -63,6 +75,15 @@ const QuickActionsWrapper = styled.div`
   flex-wrap: wrap-reverse;
   gap: 10px;
   padding: 0 10px;
+`;
+
+const EmptyText = styled.div`
+  width: 100%;
+  text-align: center;
+  margin-top: 10px;
+  font-size: xxx-large;
+  color: #4b4b4b;
+  font-weight: 700;
 `;
 
 const QuickAction = styled.div`
@@ -92,8 +113,9 @@ const Divider = styled.div`
 
 const MetaNotesWrapper = styled.div`
   color: white;
-  overflow-y: scroll;
+  overflow-y: auto;
   height: 340px;
+  width: calc(100vw - 2px);
 `;
 const MetaNote = styled.div`
   padding: 10px;
@@ -112,7 +134,7 @@ const NoteBody = styled.div`
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
-  width: 275px;
+  width: 100%;
   color: #978f8f;
 `;
 
@@ -204,6 +226,9 @@ export const QuickView: React.FC<{
       {isExpanded && (
         <QuickContent>
           <QuickActionsWrapper>
+            {pendingTaskNotes.length === 0 &&
+              allNotes.length === 0 &&
+              pastDueNotes.length === 0 && <EmptyText>start noting!</EmptyText>}
             {pendingTaskNotes.length > 0 && (
               <QuickAction
                 style={{ background: selectedAction === 1 ? "red" : "inherit" }}
@@ -322,52 +347,56 @@ export const QuickView: React.FC<{
                 </span>
               </QuickAction>
             )}
-            <QuickAction
-              style={{ background: selectedAction === 3 ? "red" : "inherit" }}
-              onClick={() => setSelectedAction((prev) => (prev === 3 ? 0 : 3))}
-            >
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
+            {allNotes.length > 0 && (
+              <QuickAction
+                style={{ background: selectedAction === 3 ? "red" : "inherit" }}
+                onClick={() =>
+                  setSelectedAction((prev) => (prev === 3 ? 0 : 3))
+                }
               >
-                <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
-                <g
-                  id="SVGRepo_tracerCarrier"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                ></g>
-                <g id="SVGRepo_iconCarrier">
-                  {" "}
-                  <g opacity="0.4">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+                  <g
+                    id="SVGRepo_tracerCarrier"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  ></g>
+                  <g id="SVGRepo_iconCarrier">
                     {" "}
+                    <g opacity="0.4">
+                      {" "}
+                      <path
+                        d="M12.0605 16.5V11.5"
+                        stroke="#ffffff"
+                        strokeWidth="1.5"
+                        strokeMiterlimit="10"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      ></path>{" "}
+                      <path
+                        d="M14.5 14H9.5"
+                        stroke="#ffffff"
+                        strokeWidth="1.5"
+                        strokeMiterlimit="10"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      ></path>{" "}
+                    </g>{" "}
                     <path
-                      d="M12.0605 16.5V11.5"
+                      d="M22 11V17C22 21 21 22 17 22H7C3 22 2 21 2 17V7C2 3 3 2 7 2H8.5C10 2 10.33 2.44 10.9 3.2L12.4 5.2C12.78 5.7 13 6 14 6H17C21 6 22 7 22 11Z"
                       stroke="#ffffff"
                       strokeWidth="1.5"
                       strokeMiterlimit="10"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
                     ></path>{" "}
-                    <path
-                      d="M14.5 14H9.5"
-                      stroke="#ffffff"
-                      strokeWidth="1.5"
-                      strokeMiterlimit="10"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    ></path>{" "}
-                  </g>{" "}
-                  <path
-                    d="M22 11V17C22 21 21 22 17 22H7C3 22 2 21 2 17V7C2 3 3 2 7 2H8.5C10 2 10.33 2.44 10.9 3.2L12.4 5.2C12.78 5.7 13 6 14 6H17C21 6 22 7 22 11Z"
-                    stroke="#ffffff"
-                    strokeWidth="1.5"
-                    strokeMiterlimit="10"
-                  ></path>{" "}
-                </g>
-              </svg>
-              <span>browse notes</span>
-            </QuickAction>
+                  </g>
+                </svg>
+                <span>browse notes</span>
+              </QuickAction>
+            )}
           </QuickActionsWrapper>
           {selectedAction > 0 && (
             <>

@@ -114,8 +114,14 @@ export const Board: React.FC<{
     }
   };
 
-  const updateStateAndLocalStorage = (newData: NoteProps[]) => {
-    setNotes(newData);
+  const updateStateAndLocalStorage = (
+    newData: NoteProps[],
+    isSilentUpdate: boolean = false
+  ) => {
+    if (!isSilentUpdate) {
+      setNotes(newData);
+    }
+
     localStorage.setItem("notes", JSON.stringify(newData));
     syncNotes();
   };
@@ -141,8 +147,12 @@ export const Board: React.FC<{
     isCheckList: boolean,
     pinDate: Date | null
   ) => {
+    let isSilentUpdate: boolean = false;
     const updatedNotes = notes.map((note) => {
       if (note.id === noteId) {
+        if (pinDate !== note.pinDate || isCheckList !== note.isCheckList) {
+          isSilentUpdate = true;
+        }
         return {
           ...note,
           content: updatedContent,
@@ -155,7 +165,7 @@ export const Board: React.FC<{
       }
       return note;
     });
-    updateStateAndLocalStorage(updatedNotes);
+    updateStateAndLocalStorage(updatedNotes, isSilentUpdate);
   };
 
   const getNotesElement = () => {
@@ -168,7 +178,7 @@ export const Board: React.FC<{
     source = source.sort((a, b) => {
       if (a.pinDate && b.pinDate) {
         // Both have pinDate, sort by pinDate in descending order
-        return b.pinDate.getTime() - a.pinDate.getTime();
+        return new Date(b.pinDate).getTime() - new Date(a.pinDate).getTime();
       } else if (a.pinDate) {
         // Only a has pinDate, a comes first
         return -1;

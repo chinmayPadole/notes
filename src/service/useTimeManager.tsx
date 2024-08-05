@@ -14,7 +14,7 @@ export const getReminders = (): Timer[] => {
   const storedState = localStorage.getItem("reminders");
   if (storedState) {
     let parsedState: Timer[] = JSON.parse(storedState);
-    parsedState = cleanupPastReminders(parsedState);
+    //parsedState = cleanupPastReminders(parsedState);
     return parsedState;
   }
   return [];

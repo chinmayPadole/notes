@@ -156,7 +156,15 @@ export const CollapsibleTextArea: React.FC<CollapsibleTextAreaProps> = ({
             defaultChecked={taskStatus[index] === 1 ? true : false}
             onChange={() => handleTaskChange(index)}
           />
-          <span style={{ marginLeft: "8px" }}>{createLinkifiedText(line)}</span>
+          <span
+            style={{
+              marginLeft: "8px",
+              textDecoration: taskStatus[index] === 1 ? "line-through" : "none",
+              textDecorationThickness: taskStatus[index] === 1 ? "2px" : "1px",
+            }}
+          >
+            {createLinkifiedText(line)}
+          </span>
         </div>
       );
     });

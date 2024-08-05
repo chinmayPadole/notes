@@ -112,8 +112,7 @@ export const GetAllNotes = (): {
         title: note.title || "new note",
       }));
     }
-
-    return [allNotes, pastNotes, taskNotes];
   }
-  return [];
+
+  return [allNotes, pastNotes, taskNotes];
 };

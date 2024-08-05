@@ -16,6 +16,7 @@ const Square = styled.div`
   align-items: center;
   flex-direction: column;
   text-align: center;
+  z-index: 3;
 `;
 
 const CloseButton = styled.button`
@@ -53,7 +54,7 @@ const Actions = styled.div`
 export const RequestNotificationPermission: React.FC = () => {
   const [content, setContent] = useState<string>(
     Notification.permission !== "granted"
-      ? " Do no miss any task with reminders. Allow notifications to stay up to date."
+      ? " Do not miss any task with reminders. Allow notifications to stay up to date."
       : ""
   );
 
