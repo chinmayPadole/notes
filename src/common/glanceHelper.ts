@@ -72,7 +72,7 @@ export const GetAllNotes = (): {
 
     allNotes = parsedState.map((note) => ({
       id: note.id,
-      content: note.content,
+      content: note.isImage ? "Image" : note.content,
       title: note.title || "new note",
     }));
 
@@ -90,7 +90,7 @@ export const GetAllNotes = (): {
 
       pastNotes = pastDueNotes.map((note) => ({
         id: note.id,
-        content: note.content,
+        content: note.isImage ? "Image" : note.content,
         title: note.title || "new note",
       }));
     }
@@ -108,7 +108,7 @@ export const GetAllNotes = (): {
 
       taskNotes = pendingNotes.map((note) => ({
         id: note.id,
-        content: note.content,
+        content: note.isImage ? "Image" : note.content,
         title: note.title || "new note",
       }));
     }
