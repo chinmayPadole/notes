@@ -810,22 +810,24 @@ export const Note: React.FC<NoteProps> = ({
               });
             }}
           >
-            {(!isImage ||
-              !addCheckBoxes ||
-              (addCheckBoxes && lines.length > 0 && taskStatus.length > 0)) && (
-              <CollapsibleTextArea
-                text={formattedContent}
-                maxLines={4}
-                isCheckListMode={addCheckBoxes}
-                taskStatus={taskStatus}
-                // setTaskStatus={setTaskStatus}
-                // setTaskProgress={setTaskProgress}
-                handleTaskChange={handleTaskChange}
-                noteId={id}
-                taskProgress={taskProgress}
-                lines={lines}
-              />
-            )}
+            {!isImage &&
+              (!addCheckBoxes ||
+                (addCheckBoxes &&
+                  lines.length > 0 &&
+                  taskStatus.length > 0)) && (
+                <CollapsibleTextArea
+                  text={formattedContent}
+                  maxLines={4}
+                  isCheckListMode={addCheckBoxes}
+                  taskStatus={taskStatus}
+                  // setTaskStatus={setTaskStatus}
+                  // setTaskProgress={setTaskProgress}
+                  handleTaskChange={handleTaskChange}
+                  noteId={id}
+                  taskProgress={taskProgress}
+                  lines={lines}
+                />
+              )}
             {isImage && (
               <CollapsibleImage
                 src={formattedContent}

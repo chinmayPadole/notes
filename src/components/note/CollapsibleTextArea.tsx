@@ -163,7 +163,7 @@ export const CollapsibleTextArea: React.FC<CollapsibleTextAreaProps> = ({
         </CollapsedNoteBody>
       )}
       {(!taskProgress.includes("Completed") || !isCompletedTaskHidden) &&
-        taskStatus.length > 0 && (
+        (taskStatus.length > 0 || !isCheckListMode) && (
           <div>
             {!isCheckListMode && (
               <div
