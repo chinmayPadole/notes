@@ -1,6 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
 import "./note.css";
-import { getFormattedDate, isMobile, maskString } from "../../common/utils";
+import {
+  getFormattedDate,
+  isMobile,
+  maskString,
+  splitTextIntoLines,
+} from "../../common/utils";
 import { ColorSet } from "../../common/colorSet";
 import styled from "styled-components";
 import { useToast } from "../../provider/toastProvider";
@@ -59,6 +64,10 @@ const DateElement = styled.div`
   width: 250px;
   font-size: 12px;
   padding: 5px;
+
+  @media (max-width: 500px) {
+    width: 180px;
+  }
 `;
 
 const TaskProgress = styled.div`
@@ -218,7 +227,7 @@ export const Note: React.FC<NoteProps> = ({
   const [isFadingOut, setIsFadingOut] = useState(false);
   const [taskStatus, setTaskStatus] = useState<number[]>([]);
   const [isNotePinned, setNotePinned] = useState<Date | null>(pinDate);
-
+  const [lines, setLines] = useState<string[]>([]);
   const { isLocked: isPageLocked } = useSecurity();
   const [showReminderOption, setReminderOption] = useState(false);
   const [reminderText, setReminderText] = useState("");
@@ -258,6 +267,7 @@ export const Note: React.FC<NoteProps> = ({
     setSelectedDate(null);
     setNoteTitle(title);
     setNotePinned(pinDate);
+    setLines([]);
   };
 
   useEffect(() => {
@@ -324,10 +334,57 @@ export const Note: React.FC<NoteProps> = ({
     }
   };
 
+  useEffect(() => {
+    setLines(splitTextIntoLines(content));
+  }, []);
+
+  useEffect(() => {
+    if (isCheckList) {
+      const list = localStorage.getItem("tasks");
+      let status: number[] = [];
+      if (list != null) {
+        const task: Task[] = JSON.parse(list);
+        if (task.some((x) => x.noteId === id)) {
+          status =
+            task.find((obj) => obj.noteId === id)?.status ||
+            new Array(lines.length).fill(0);
+
+          if (status.length !== lines.length) {
+            status = new Array(lines.length).fill(0);
+          }
+
+          while (status.length < lines.length) {
+            status.push(0);
+          }
+        }
+      }
+      if (status.length === 0) {
+        status = new Array(lines.length).fill(0);
+      }
+
+      console.log(status);
+      setTaskStatus(status);
+    }
+  }, [lines, addCheckBoxes]);
+
+  const handleTaskChange = (key: number) => {
+    let status = [...taskStatus];
+    if (key >= 0 && key < status.length) {
+      status[key] = status[key] === 0 ? 1 : 0;
+    }
+    setTaskStatus(status);
+    updateTaskProgress(status);
+  };
+
   const updateTaskProgress = (status: number[]) => {
     let completed = status.filter((num) => num === 1).length;
     let total = status.length;
-    setTaskProgress(`${completed} / ${total}`);
+
+    if (completed === total && completed > 0) {
+      setTaskProgress(`Completed (${completed} / ${total})`);
+    } else {
+      setTaskProgress(`${completed} / ${total}`);
+    }
   };
 
   useEffect(() => {
@@ -753,15 +810,20 @@ export const Note: React.FC<NoteProps> = ({
               });
             }}
           >
-            {!isImage && (
+            {(!isImage ||
+              !addCheckBoxes ||
+              (addCheckBoxes && lines.length > 0 && taskStatus.length > 0)) && (
               <CollapsibleTextArea
                 text={formattedContent}
                 maxLines={4}
                 isCheckListMode={addCheckBoxes}
                 taskStatus={taskStatus}
-                setTaskStatus={setTaskStatus}
-                setTaskProgress={setTaskProgress}
+                // setTaskStatus={setTaskStatus}
+                // setTaskProgress={setTaskProgress}
+                handleTaskChange={handleTaskChange}
                 noteId={id}
+                taskProgress={taskProgress}
+                lines={lines}
               />
             )}
             {isImage && (

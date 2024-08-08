@@ -7,3 +7,16 @@
   padding-left: 0;
   padding-top: 10px;
 }
+/* Ensure the SVG path is visible */
+path {
+  stroke-dasharray: 1000; /* Value should be large enough to cover the path length */
+  stroke-dashoffset: 1000; /* Start offscreen */
+  animation: draw 5s forwards; /* Animation duration and fill mode */
+}
+
+/* Keyframes to animate the drawing effect */
+@keyframes draw {
+  to {
+    stroke-dashoffset: 0; /* End with the path fully drawn */
+  }
+}

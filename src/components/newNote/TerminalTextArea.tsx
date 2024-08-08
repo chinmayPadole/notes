@@ -24,6 +24,9 @@ const TextArea = styled.div`
   line-height: 1.5; /* Adjusts line spacing */
   word-spacing: 0.2em; /* Adjusts word spacing */
   font-size: 14px;
+
+  max-height: 600px;
+  overflow-y: auto;
 `;
 
 export const TerminalTextArea: React.FC<TerminalTextAreaProps> = ({

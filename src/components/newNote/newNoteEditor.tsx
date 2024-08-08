@@ -22,6 +22,11 @@ const TerminalContainer = styled.div`
   font-family: monospace;
   font-size: 16px;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+  max-height: 600px;
+
+  @media (max-width: 500px) {
+    max-height: 400px;
+  }
 `;
 
 const Overlay = styled.div`

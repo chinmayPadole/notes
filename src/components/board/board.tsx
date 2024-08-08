@@ -269,6 +269,7 @@ export const Board: React.FC<{
             isChecklist={
               currentNote !== undefined ? currentNote.isCheckList : false
             }
+            pinDate={currentNote !== undefined ? currentNote.pinDate : null}
             preventNewNoteDetection={preventNewNoteDetection}
           />
         </>

@@ -121,7 +121,6 @@ const MetaNote = styled.div`
   padding: 10px;
   border: 1px solid;
   border-radius: 5px;
-  margin-bottom: 10px;
   cursor: pointer;
   margin: 10px 10px;
 `;
@@ -202,9 +201,13 @@ export const QuickView: React.FC<{
         : selectedAction === 1
         ? pendingTaskNotes
         : [];
-    return data.map((note) => {
+    return data.map((note, i) => {
       return (
-        <MetaNote key={note.id} onClick={() => highlightNote(note.id)}>
+        <MetaNote
+          style={{ background: i % 2 === 0 ? "#2d2d2d" : "inherit" }}
+          key={note.id}
+          onClick={() => highlightNote(note.id)}
+        >
           <NoteHeader>{note.title}</NoteHeader>
           <NoteBody>{note.content}</NoteBody>
         </MetaNote>
