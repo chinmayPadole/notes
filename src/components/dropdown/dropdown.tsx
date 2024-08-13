@@ -8,7 +8,7 @@ const DropdownContainer = styled.div`
   font-family: Arial, sans-serif;
 `;
 
-const DropdownButton = styled.button<{ isOpen: boolean }>`
+const DropdownButton = styled.button<{ $isopen: boolean }>`
   width: 100%;
   padding: 10px;
   background-color: #fff;
@@ -24,7 +24,7 @@ const DropdownButton = styled.button<{ isOpen: boolean }>`
     outline: none;
   }
 
-  ${({ isOpen }) =>
+  ${({ $isopen: isOpen }) =>
     isOpen &&
     `
     border-bottom-left-radius: 0;
@@ -32,18 +32,18 @@ const DropdownButton = styled.button<{ isOpen: boolean }>`
   `}
 `;
 
-const DropdownList = styled.ul<{ isOpen: boolean }>`
+const DropdownList = styled.ul<{ $isopen: boolean }>`
   position: absolute;
   top: 100%;
   left: 0;
   width: calc(100% - 2.67px);
-  opacity: ${({ isOpen }) => (isOpen ? "1" : "0")};
+  opacity: ${({ $isopen: isOpen }) => (isOpen ? "1" : "0")};
   background-color: #fff;
   border: 1.5px solid #e7e7e9;
   border-top: none;
   border-bottom-left-radius: 8px;
   border-bottom-right-radius: 8px;
-  max-height: ${({ isOpen }) => (isOpen ? "150px" : "0")};
+  max-height: ${({ $isopen: isOpen }) => (isOpen ? "150px" : "0")};
   overflow: hidden;
   transition: max-height 0.3s ease;
   z-index: 100;
@@ -51,7 +51,7 @@ const DropdownList = styled.ul<{ isOpen: boolean }>`
   padding-left: 0;
 `;
 
-const DropdownListItem = styled.li<{ isSelected: boolean }>`
+const DropdownListItem = styled.li<{ $isselected: boolean }>`
   padding: 7px;
   cursor: pointer;
   color: #333;
@@ -66,7 +66,8 @@ const DropdownListItem = styled.li<{ isSelected: boolean }>`
     width: 90%;
     padding: 8px;
     border-radius: 7px;
-    background-color: ${({ isSelected }) => (isSelected ? "#f3f3f4" : "#fff")};
+    background-color: ${({ $isselected: isSelected }) =>
+      isSelected ? "#f3f3f4" : "#fff"};
   }
 
   & p:hover {
@@ -74,11 +75,12 @@ const DropdownListItem = styled.li<{ isSelected: boolean }>`
   }
 `;
 
-const ArrowIcon = styled.span<{ isOpen: boolean }>`
+const ArrowIcon = styled.span<{ $isopen: boolean }>`
   display: inline-block;
   margin-left: 10px;
   transition: transform 0.3s ease;
-  transform: ${({ isOpen }) => (isOpen ? "rotate(180deg)" : "rotate(0deg)")};
+  transform: ${({ $isopen: isOpen }) =>
+    isOpen ? "rotate(180deg)" : "rotate(0deg)"};
 
   & svg {
     fill: currentColor;
@@ -117,9 +119,9 @@ export const Dropdown: React.FC<DropdownProps> = ({
 
   return (
     <DropdownContainer>
-      <DropdownButton isOpen={isOpen} onClick={handleToggle}>
+      <DropdownButton $isopen={isOpen} onClick={handleToggle}>
         {selectedOption}
-        <ArrowIcon isOpen={isOpen}>
+        <ArrowIcon $isopen={isOpen}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="24"
@@ -135,11 +137,11 @@ export const Dropdown: React.FC<DropdownProps> = ({
           </svg>
         </ArrowIcon>
       </DropdownButton>
-      <DropdownList isOpen={isOpen}>
+      <DropdownList $isopen={isOpen}>
         {options.map((option, index) => (
           <DropdownListItem
             key={option}
-            isSelected={option === selectedOption}
+            $isselected={option === selectedOption}
             onClick={() => handleOptionClick(option)}
             style={{
               paddingBottom: index === 0 ? 0 : 10,

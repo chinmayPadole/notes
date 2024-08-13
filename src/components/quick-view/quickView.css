@@ -1,0 +1,13 @@
+.quick-view-grid-style {
+  display: grid;
+  height: auto;
+  grid-template-columns: repeat(auto-fit, minmax(115px, 1fr));
+}
+
+.grid-view-content-style {
+  display: inline-block;
+  line-height: 1.5em;
+  max-height: calc(1.5em * 3);
+  text-overflow: ellipsis;
+  white-space: unset !important;
+}
