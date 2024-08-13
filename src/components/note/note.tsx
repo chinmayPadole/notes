@@ -234,6 +234,8 @@ export const Note: React.FC<NoteProps> = ({
   const [showOptions, setShowOptions] = useState(false);
   const { addTimer } = useTimerManager();
 
+  const optionsMenuRef = useRef<HTMLDivElement>(null);
+
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const titleRef = useRef<HTMLDivElement>(null);
@@ -362,7 +364,6 @@ export const Note: React.FC<NoteProps> = ({
         status = new Array(lines.length).fill(0);
       }
 
-      console.log(status);
       setTaskStatus(status);
     }
   }, [lines, addCheckBoxes]);
@@ -406,6 +407,13 @@ export const Note: React.FC<NoteProps> = ({
 
   const toggleOptions = () => {
     setShowOptions(!showOptions);
+
+    setTimeout(() => {
+      optionsMenuRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest",
+      });
+    }, 0);
   };
 
   const updateNoteColor = (color: string) => {
@@ -861,6 +869,7 @@ export const Note: React.FC<NoteProps> = ({
             className={`options-container ${
               showOptions ? "fade-in" : "fade-out"
             }`}
+            ref={optionsMenuRef}
           >
             <button
               className="close-button selection-prevention"

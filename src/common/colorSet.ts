@@ -14,7 +14,7 @@ export const ColorSet: {
     noteFooter: "#000",
     fontColor: "#cccccc",
     noteBackground: "#2d2d2d",
-    actionButtonColor: "#eeff00",
+    actionButtonColor: "#fdfdfd",
     actionButtonHoverColor: "#1c1c1c",
     footerActionColor: "wheat",
   },

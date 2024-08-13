@@ -7,10 +7,11 @@ import { GenerateQRCode } from "../qrcode/qrcode";
 import { usePeer } from "../../provider/PeerContext";
 
 export const FloatingMenu: React.FC<{
-  setTranscript: (transcript: string) => void;
+  setTranscript: React.Dispatch<React.SetStateAction<string>>;
   setVoice: (isVoiceOn: boolean) => void;
+  isVoice: boolean;
   setNoteEditorMode: (mode: "new" | "modify" | "null") => void;
-}> = ({ setTranscript, setVoice, setNoteEditorMode }) => {
+}> = ({ setTranscript, setVoice, setNoteEditorMode, isVoice }) => {
   const { showToast } = useToast();
   const [isMenuOpen, setMenuVisibility] = useState(false);
   const [isQRCodeVisible, setQRCodeVisibility] = useState(false);
@@ -88,12 +89,13 @@ export const FloatingMenu: React.FC<{
     recognition.lang = "en-US";
     recognition.interimResults = false;
     recognition.maxAlternatives = 1;
-    recognition.continuous = false;
+    recognition.continuous = true;
 
     recognition.onresult = (event: any) => {
       const lastResultIndex = event.results.length - 1;
-      const speechResult = event.results[lastResultIndex][0].transcript;
-      setTranscript(speechResult);
+      const speechResult: string = event.results[lastResultIndex][0].transcript;
+      setTranscript((prev) => `${prev} ${speechResult}`);
+      console.log(speechResult);
     };
 
     recognition.onstart = () => {
@@ -101,10 +103,11 @@ export const FloatingMenu: React.FC<{
     };
 
     recognition.onend = () => {
-      recognitionRef.current.stop();
-      setVoice(false);
-      setIsListening(false);
-      handleStopListening();
+      // recognitionRef.current.stop();
+      // setVoice(false);
+      // setIsListening(false);
+      // handleStopListening();
+      console.log("onend");
     };
 
     recognition.onerror = (event: any) => {
@@ -118,12 +121,24 @@ export const FloatingMenu: React.FC<{
   const handleStartListening = () => {
     if (!hasPermission) {
       requestMicrophonePermission();
+    } else {
+      console.log("PERMISSON DENIED");
     }
+    console.log(recognitionRef.current);
     if (recognitionRef.current && !isListening) {
       recognitionRef.current.start();
       setIsListening(true);
     }
   };
+
+  useEffect(() => {
+    if (!isVoice) {
+      recognitionRef.current.stop();
+      //setVoice(false);
+      setIsListening(false);
+      handleStopListening();
+    }
+  }, [isVoice]);
 
   const handleStopListening = () => {
     if (streamRef.current) {
@@ -156,11 +171,7 @@ export const FloatingMenu: React.FC<{
           {isMenuOpen && (
             <nav className={isMenuOpen ? "nav" : "hiddenMenu"}>
               <ul>
-                <li
-                  onClick={() =>
-                    isListening ? handleStopListening() : handleStartListening()
-                  }
-                >
+                <li onClick={() => handleStartListening()}>
                   <a href="#0">
                     <svg
                       viewBox="0 0 24 24"

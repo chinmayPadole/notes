@@ -39,8 +39,6 @@ export const CollapsibleTextArea: React.FC<CollapsibleTextAreaProps> = ({
   const [isCompletedTaskHidden, setCompletedTaskHidden] = useState(true);
 
   useEffect(() => {
-    console.log(taskProgress);
-    console.log(taskStatus);
     return () => {
       setIsOverflowing(false);
       setIsExpanded(false);
@@ -143,7 +141,7 @@ export const CollapsibleTextArea: React.FC<CollapsibleTextAreaProps> = ({
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
           >
-            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+            <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
             <g
               id="SVGRepo_tracerCarrier"
               strokeLinecap="round"

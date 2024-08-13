@@ -11,6 +11,7 @@ import { NewNoteEditor } from "../newNote/newNoteEditor";
 import { usePeer } from "../../provider/PeerContext";
 import { useToast } from "../../provider/toastProvider";
 import { RequestNotificationPermission } from "../requestNotification/requestNotifications";
+import { Dropdown } from "../dropdown/dropdown";
 
 export const Board: React.FC<{
   isSearchMode: boolean;
@@ -30,6 +31,13 @@ export const Board: React.FC<{
     undefined
   );
 
+  const sortOptions: string[] = ["Newest", "Oldest"];
+  const [selectedSortOption, setSelectedSortOption] = useState<string | null>(
+    sortOptions[0]
+  );
+
+  const [noteElements, setNoteElements] = useState<JSX.Element[] | null>(null);
+
   const [noteEditorMode, setNoteEditorMode] = useState<
     "new" | "modify" | "null"
   >("null");
@@ -46,10 +54,17 @@ export const Board: React.FC<{
   }, [isDataReceived]);
 
   useEffect(() => {
+    if (notes !== null && notes.length > 0) {
+      setNoteElements(getNotesElement());
+    }
+  }, [notes, isSearchMode, searchText, selectedSortOption]);
+
+  useEffect(() => {
     if (
       transcript !== undefined &&
       transcript !== null &&
-      transcript.trim() !== ""
+      transcript.trim() !== "" &&
+      !isVoiceOn
     ) {
       const newData: NoteProps = {
         id: getUniqueId(),
@@ -69,8 +84,9 @@ export const Board: React.FC<{
         pinDate: null,
       };
       addNote(newData);
+      setTranscript("");
     }
-  }, [transcript]);
+  }, [transcript, isVoiceOn]);
 
   // Load state from localStorage when the component mounts
   useEffect(() => {
@@ -114,14 +130,8 @@ export const Board: React.FC<{
     }
   };
 
-  const updateStateAndLocalStorage = (
-    newData: NoteProps[],
-    isSilentUpdate: boolean = false
-  ) => {
-    if (!isSilentUpdate) {
-      setNotes(newData);
-    }
-
+  const updateStateAndLocalStorage = (newData: NoteProps[]) => {
+    setNotes(newData);
     localStorage.setItem("notes", JSON.stringify(newData));
     syncNotes();
   };
@@ -165,7 +175,7 @@ export const Board: React.FC<{
       }
       return note;
     });
-    updateStateAndLocalStorage(updatedNotes, isSilentUpdate);
+    updateStateAndLocalStorage(updatedNotes);
   };
 
   const getNotesElement = () => {
@@ -175,10 +185,31 @@ export const Board: React.FC<{
     //   (a, b) => new Date(b.createDt).getTime() - new Date(a.createDt).getTime()
     // );
 
+    // source = source.sort((a, b) => {
+    //   if (a.pinDate && b.pinDate) {
+    //     // Both have pinDate, sort by pinDate in descending order
+    //     return new Date(b.pinDate).getTime() - new Date(a.pinDate).getTime();
+    //   } else if (a.pinDate) {
+    //     // Only a has pinDate, a comes first
+    //     return -1;
+    //   } else if (b.pinDate) {
+    //     // Only b has pinDate, b comes first
+    //     return 1;
+    //   } else {
+    //     // Neither has pinDate, sort by createDate in descending order
+    //     return new Date(b.createDt).getTime() - new Date(a.createDt).getTime();
+    //   }
+    // });
+
     source = source.sort((a, b) => {
+      const orderMultiplier = selectedSortOption === "Oldest" ? 1 : -1;
+
       if (a.pinDate && b.pinDate) {
-        // Both have pinDate, sort by pinDate in descending order
-        return new Date(b.pinDate).getTime() - new Date(a.pinDate).getTime();
+        // Both have pinDate, sort by pinDate in the specified order
+        return (
+          orderMultiplier *
+          (new Date(a.pinDate).getTime() - new Date(b.pinDate).getTime())
+        );
       } else if (a.pinDate) {
         // Only a has pinDate, a comes first
         return -1;
@@ -186,8 +217,11 @@ export const Board: React.FC<{
         // Only b has pinDate, b comes first
         return 1;
       } else {
-        // Neither has pinDate, sort by createDate in descending order
-        return new Date(b.createDt).getTime() - new Date(a.createDt).getTime();
+        // Neither has pinDate, sort by createDate in the specified order
+        return (
+          orderMultiplier *
+          (new Date(a.createDt).getTime() - new Date(b.createDt).getTime())
+        );
       }
     });
 
@@ -198,7 +232,7 @@ export const Board: React.FC<{
     return source.map((note, i) => {
       return (
         <Note
-          key={i}
+          key={note.id}
           createDt={note.createDt}
           color={note.color}
           content={note.content}
@@ -240,8 +274,15 @@ export const Board: React.FC<{
         onTouchEnd={handleTouch}
       ></div>
       <div id="boardBody">
+        <div id="notesOptions">
+          <Dropdown
+            options={sortOptions}
+            selectedOption={selectedSortOption}
+            setSelectedOption={setSelectedSortOption}
+          />
+        </div>
         <div id="board-container">
-          <div id="board">{getNotesElement()}</div>
+          <div id="board">{noteElements}</div>
         </div>
       </div>
       {!isSearchMode && !isNewNoteDetectionDisabled && (
@@ -286,8 +327,13 @@ export const Board: React.FC<{
         setTranscript={setTranscript}
         setVoice={setVoiceOn}
         setNoteEditorMode={setNoteEditorMode}
+        isVoice={isVoiceOn}
       />
-      <Wave showWave={isVoiceOn} />
+      <Wave
+        showWave={isVoiceOn}
+        setVoice={setVoiceOn}
+        transcript={transcript}
+      />
 
       {Notification.permission !== "granted" && (
         <RequestNotificationPermission />

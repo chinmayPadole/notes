@@ -4,10 +4,14 @@
   top: 110px;
   position: absolute;
   display: flex;
-
+  flex-direction: column;
   height: calc(75vh + 60px);
 
   overflow: auto;
+}
+
+#notesOptions {
+  padding: 10px;
 }
 
 #board {
