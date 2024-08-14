@@ -153,6 +153,9 @@ const MetaNote = styled.div`
 `;
 const NoteHeader = styled.div`
   font-size: 18px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 `;
 const NoteBody = styled.div`
   font-size: 12px;
@@ -456,7 +459,7 @@ export const QuickView: React.FC<{
             <>
               <Divider />
               <QuickViewFilterOptionsContainer>
-                <QuickViewFilterOptions>
+                <QuickViewFilterOptions onClick={() => setRefreshNotes(true)}>
                   <svg
                     viewBox="0 0 24 24"
                     fill="none"
