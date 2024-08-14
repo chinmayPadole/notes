@@ -142,6 +142,7 @@ const MetaNotesWrapper = styled.div`
   color: white;
   overflow-y: auto;
   width: calc(100vw - 2px);
+  height: 350px;
 `;
 const MetaNote = styled.div`
   padding: 10px;
