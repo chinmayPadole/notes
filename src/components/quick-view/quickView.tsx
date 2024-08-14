@@ -112,10 +112,16 @@ const Divider = styled.div`
   margin: 10px 0;
 `;
 
-const QuickViewFilterOptions = styled.div`
+const QuickViewFilterOptionsContainer = styled.div`
   display: flex;
   justify-content: flex-end;
   margin-right: 50px;
+  gap: 20px;
+`;
+
+const QuickViewFilterOptions = styled.div`
+  display: flex;
+  justify-content: flex-end;
   & button {
     width: 40px;
     height: 40px;
@@ -124,12 +130,17 @@ const QuickViewFilterOptions = styled.div`
 
     cursor: pointer;
   }
+
+  > svg {
+    width: 35px;
+    height: 35px;
+    cursor: pointer;
+  }
 `;
 
 const MetaNotesWrapper = styled.div`
   color: white;
   overflow-y: auto;
-  height: 340px;
   width: calc(100vw - 2px);
 `;
 const MetaNote = styled.div`
@@ -151,6 +162,12 @@ const NoteBody = styled.div`
   text-overflow: ellipsis;
   width: 100%;
   color: #978f8f;
+
+  & img {
+    width: 80px;
+    height: 50px;
+    object-fit: contain;
+  }
 `;
 
 export const QuickView: React.FC<{
@@ -160,11 +177,14 @@ export const QuickView: React.FC<{
   const [selectedAction, setSelectedAction] = useState<number>(0);
   const [isGrid, setGridStyle] = useState<boolean>(true);
 
+  const [refresh, setRefreshNotes] = useState<boolean>(false);
+
   const [allNotes, setAllNotes] = useState<
     {
       id: string;
       content: string;
       title: string;
+      isImage: boolean;
     }[]
   >([]);
   const [pastDueNotes, setPastDueNotes] = useState<
@@ -172,6 +192,7 @@ export const QuickView: React.FC<{
       id: string;
       content: string;
       title: string;
+      isImage: boolean;
     }[]
   >([]);
   const [pendingTaskNotes, setPendingTaskNotes] = useState<
@@ -179,6 +200,7 @@ export const QuickView: React.FC<{
       id: string;
       content: string;
       title: string;
+      isImage: boolean;
     }[]
   >([]);
 
@@ -205,11 +227,19 @@ export const QuickView: React.FC<{
     //setNoteCount(notes.length > 10 ? "10+" : `${notes.length}`);
   };
 
+  useEffect(() => {
+    if (refresh) {
+      getDisplayNotes();
+      setRefreshNotes(false);
+    }
+  }, [refresh]);
+
   const getNoteJSX = () => {
     const data: {
       id: string;
       content: string;
       title: string;
+      isImage: boolean;
     }[] =
       selectedAction === 3
         ? allNotes
@@ -226,8 +256,10 @@ export const QuickView: React.FC<{
           onClick={() => highlightNote(note.id)}
         >
           <NoteHeader>{note.title}</NoteHeader>
+          <Divider style={{ margin: "0 0 2px 0" }} />
           <NoteBody className={isGrid ? "grid-view-content-style" : ""}>
-            {note.content}
+            {!note.isImage && note.content}
+            {note.isImage && <img src={note.content} alt="corrupted" />}
           </NoteBody>
         </MetaNote>
       );
@@ -423,15 +455,8 @@ export const QuickView: React.FC<{
           {selectedAction > 0 && (
             <>
               <Divider />
-              <QuickViewFilterOptions>
-                <button
-                  style={{
-                    borderTopLeftRadius: "8px",
-                    borderBottomLeftRadius: "8px",
-                    background: !isGrid ? "#c5c5c5" : "inherit",
-                  }}
-                  onClick={() => setGridStyle(false)}
-                >
+              <QuickViewFilterOptionsContainer>
+                <QuickViewFilterOptions>
                   <svg
                     viewBox="0 0 24 24"
                     fill="none"
@@ -446,7 +471,7 @@ export const QuickView: React.FC<{
                     <g id="SVGRepo_iconCarrier">
                       {" "}
                       <path
-                        d="M8 6.00067L21 6.00139M8 12.0007L21 12.0015M8 18.0007L21 18.0015M3.5 6H3.51M3.5 12H3.51M3.5 18H3.51M4 6C4 6.27614 3.77614 6.5 3.5 6.5C3.22386 6.5 3 6.27614 3 6C3 5.72386 3.22386 5.5 3.5 5.5C3.77614 5.5 4 5.72386 4 6ZM4 12C4 12.2761 3.77614 12.5 3.5 12.5C3.22386 12.5 3 12.2761 3 12C3 11.7239 3.22386 11.5 3.5 11.5C3.77614 11.5 4 11.7239 4 12ZM4 18C4 18.2761 3.77614 18.5 3.5 18.5C3.22386 18.5 3 18.2761 3 18C3 17.7239 3.22386 17.5 3.5 17.5C3.77614 17.5 4 17.7239 4 18Z"
+                        d="M21 3V8M21 8H16M21 8L18 5.29168C16.4077 3.86656 14.3051 3 12 3C7.02944 3 3 7.02944 3 12C3 16.9706 7.02944 21 12 21C16.2832 21 19.8675 18.008 20.777 14"
                         stroke="#ff0000"
                         strokeWidth="0.9600000000000002"
                         strokeLinecap="round"
@@ -454,60 +479,93 @@ export const QuickView: React.FC<{
                       ></path>{" "}
                     </g>
                   </svg>
-                </button>
-                <button
-                  style={{
-                    borderTopRightRadius: "8px",
-                    borderBottomRightRadius: "8px",
-                    background: isGrid ? "#c5c5c5" : "inherit",
-                  }}
-                  onClick={() => setGridStyle(true)}
-                >
-                  <svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
+                </QuickViewFilterOptions>
+                <QuickViewFilterOptions>
+                  <button
+                    style={{
+                      borderTopLeftRadius: "8px",
+                      borderBottomLeftRadius: "8px",
+                      background: !isGrid ? "#fff" : "inherit",
+                    }}
+                    onClick={() => setGridStyle(false)}
                   >
-                    <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
-                    <g
-                      id="SVGRepo_tracerCarrier"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    ></g>
-                    <g id="SVGRepo_iconCarrier">
-                      {" "}
-                      <path
-                        d="M14 5.6C14 5.03995 14 4.75992 14.109 4.54601C14.2049 4.35785 14.3578 4.20487 14.546 4.10899C14.7599 4 15.0399 4 15.6 4H18.4C18.9601 4 19.2401 4 19.454 4.10899C19.6422 4.20487 19.7951 4.35785 19.891 4.54601C20 4.75992 20 5.03995 20 5.6V8.4C20 8.96005 20 9.24008 19.891 9.45399C19.7951 9.64215 19.6422 9.79513 19.454 9.89101C19.2401 10 18.9601 10 18.4 10H15.6C15.0399 10 14.7599 10 14.546 9.89101C14.3578 9.79513 14.2049 9.64215 14.109 9.45399C14 9.24008 14 8.96005 14 8.4V5.6Z"
-                        stroke="#ff0000"
-                        strokeWidth="0.9600000000000002"
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+                      <g
+                        id="SVGRepo_tracerCarrier"
                         strokeLinecap="round"
                         strokeLinejoin="round"
-                      ></path>{" "}
-                      <path
-                        d="M4 5.6C4 5.03995 4 4.75992 4.10899 4.54601C4.20487 4.35785 4.35785 4.20487 4.54601 4.10899C4.75992 4 5.03995 4 5.6 4H8.4C8.96005 4 9.24008 4 9.45399 4.10899C9.64215 4.20487 9.79513 4.35785 9.89101 4.54601C10 4.75992 10 5.03995 10 5.6V8.4C10 8.96005 10 9.24008 9.89101 9.45399C9.79513 9.64215 9.64215 9.79513 9.45399 9.89101C9.24008 10 8.96005 10 8.4 10H5.6C5.03995 10 4.75992 10 4.54601 9.89101C4.35785 9.79513 4.20487 9.64215 4.10899 9.45399C4 9.24008 4 8.96005 4 8.4V5.6Z"
-                        stroke="#ff0000"
-                        strokeWidth="0.9600000000000002"
+                      ></g>
+                      <g id="SVGRepo_iconCarrier">
+                        {" "}
+                        <path
+                          d="M8 6.00067L21 6.00139M8 12.0007L21 12.0015M8 18.0007L21 18.0015M3.5 6H3.51M3.5 12H3.51M3.5 18H3.51M4 6C4 6.27614 3.77614 6.5 3.5 6.5C3.22386 6.5 3 6.27614 3 6C3 5.72386 3.22386 5.5 3.5 5.5C3.77614 5.5 4 5.72386 4 6ZM4 12C4 12.2761 3.77614 12.5 3.5 12.5C3.22386 12.5 3 12.2761 3 12C3 11.7239 3.22386 11.5 3.5 11.5C3.77614 11.5 4 11.7239 4 12ZM4 18C4 18.2761 3.77614 18.5 3.5 18.5C3.22386 18.5 3 18.2761 3 18C3 17.7239 3.22386 17.5 3.5 17.5C3.77614 17.5 4 17.7239 4 18Z"
+                          stroke="#ff0000"
+                          strokeWidth="0.9600000000000002"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        ></path>{" "}
+                      </g>
+                    </svg>
+                  </button>
+                  <button
+                    style={{
+                      borderTopRightRadius: "8px",
+                      borderBottomRightRadius: "8px",
+                      background: isGrid ? "#fff" : "inherit",
+                    }}
+                    onClick={() => setGridStyle(true)}
+                  >
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+                      <g
+                        id="SVGRepo_tracerCarrier"
                         strokeLinecap="round"
                         strokeLinejoin="round"
-                      ></path>{" "}
-                      <path
-                        d="M4 15.6C4 15.0399 4 14.7599 4.10899 14.546C4.20487 14.3578 4.35785 14.2049 4.54601 14.109C4.75992 14 5.03995 14 5.6 14H8.4C8.96005 14 9.24008 14 9.45399 14.109C9.64215 14.2049 9.79513 14.3578 9.89101 14.546C10 14.7599 10 15.0399 10 15.6V18.4C10 18.9601 10 19.2401 9.89101 19.454C9.79513 19.6422 9.64215 19.7951 9.45399 19.891C9.24008 20 8.96005 20 8.4 20H5.6C5.03995 20 4.75992 20 4.54601 19.891C4.35785 19.7951 4.20487 19.6422 4.10899 19.454C4 19.2401 4 18.9601 4 18.4V15.6Z"
-                        stroke="#ff0000"
-                        strokeWidth="0.9600000000000002"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      ></path>{" "}
-                      <path
-                        d="M14 15.6C14 15.0399 14 14.7599 14.109 14.546C14.2049 14.3578 14.3578 14.2049 14.546 14.109C14.7599 14 15.0399 14 15.6 14H18.4C18.9601 14 19.2401 14 19.454 14.109C19.6422 14.2049 19.7951 14.3578 19.891 14.546C20 14.7599 20 15.0399 20 15.6V18.4C20 18.9601 20 19.2401 19.891 19.454C19.7951 19.6422 19.6422 19.7951 19.454 19.891C19.2401 20 18.9601 20 18.4 20H15.6C15.0399 20 14.7599 20 14.546 19.891C14.3578 19.7951 14.2049 19.6422 14.109 19.454C14 19.2401 14 18.9601 14 18.4V15.6Z"
-                        stroke="#ff0000"
-                        strokeWidth="0.9600000000000002"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      ></path>{" "}
-                    </g>
-                  </svg>
-                </button>
-              </QuickViewFilterOptions>
+                      ></g>
+                      <g id="SVGRepo_iconCarrier">
+                        {" "}
+                        <path
+                          d="M14 5.6C14 5.03995 14 4.75992 14.109 4.54601C14.2049 4.35785 14.3578 4.20487 14.546 4.10899C14.7599 4 15.0399 4 15.6 4H18.4C18.9601 4 19.2401 4 19.454 4.10899C19.6422 4.20487 19.7951 4.35785 19.891 4.54601C20 4.75992 20 5.03995 20 5.6V8.4C20 8.96005 20 9.24008 19.891 9.45399C19.7951 9.64215 19.6422 9.79513 19.454 9.89101C19.2401 10 18.9601 10 18.4 10H15.6C15.0399 10 14.7599 10 14.546 9.89101C14.3578 9.79513 14.2049 9.64215 14.109 9.45399C14 9.24008 14 8.96005 14 8.4V5.6Z"
+                          stroke="#ff0000"
+                          strokeWidth="0.9600000000000002"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        ></path>{" "}
+                        <path
+                          d="M4 5.6C4 5.03995 4 4.75992 4.10899 4.54601C4.20487 4.35785 4.35785 4.20487 4.54601 4.10899C4.75992 4 5.03995 4 5.6 4H8.4C8.96005 4 9.24008 4 9.45399 4.10899C9.64215 4.20487 9.79513 4.35785 9.89101 4.54601C10 4.75992 10 5.03995 10 5.6V8.4C10 8.96005 10 9.24008 9.89101 9.45399C9.79513 9.64215 9.64215 9.79513 9.45399 9.89101C9.24008 10 8.96005 10 8.4 10H5.6C5.03995 10 4.75992 10 4.54601 9.89101C4.35785 9.79513 4.20487 9.64215 4.10899 9.45399C4 9.24008 4 8.96005 4 8.4V5.6Z"
+                          stroke="#ff0000"
+                          strokeWidth="0.9600000000000002"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        ></path>{" "}
+                        <path
+                          d="M4 15.6C4 15.0399 4 14.7599 4.10899 14.546C4.20487 14.3578 4.35785 14.2049 4.54601 14.109C4.75992 14 5.03995 14 5.6 14H8.4C8.96005 14 9.24008 14 9.45399 14.109C9.64215 14.2049 9.79513 14.3578 9.89101 14.546C10 14.7599 10 15.0399 10 15.6V18.4C10 18.9601 10 19.2401 9.89101 19.454C9.79513 19.6422 9.64215 19.7951 9.45399 19.891C9.24008 20 8.96005 20 8.4 20H5.6C5.03995 20 4.75992 20 4.54601 19.891C4.35785 19.7951 4.20487 19.6422 4.10899 19.454C4 19.2401 4 18.9601 4 18.4V15.6Z"
+                          stroke="#ff0000"
+                          strokeWidth="0.9600000000000002"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        ></path>{" "}
+                        <path
+                          d="M14 15.6C14 15.0399 14 14.7599 14.109 14.546C14.2049 14.3578 14.3578 14.2049 14.546 14.109C14.7599 14 15.0399 14 15.6 14H18.4C18.9601 14 19.2401 14 19.454 14.109C19.6422 14.2049 19.7951 14.3578 19.891 14.546C20 14.7599 20 15.0399 20 15.6V18.4C20 18.9601 20 19.2401 19.891 19.454C19.7951 19.6422 19.6422 19.7951 19.454 19.891C19.2401 20 18.9601 20 18.4 20H15.6C15.0399 20 14.7599 20 14.546 19.891C14.3578 19.7951 14.2049 19.6422 14.109 19.454C14 19.2401 14 18.9601 14 18.4V15.6Z"
+                          stroke="#ff0000"
+                          strokeWidth="0.9600000000000002"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        ></path>{" "}
+                      </g>
+                    </svg>
+                  </button>
+                </QuickViewFilterOptions>
+              </QuickViewFilterOptionsContainer>
               <MetaNotesWrapper
                 className={isGrid ? "quick-view-grid-style" : ""}
               >

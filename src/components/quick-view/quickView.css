@@ -6,8 +6,9 @@
 
 .grid-view-content-style {
   display: inline-block;
-  line-height: 1.5em;
-  max-height: calc(1.5em * 3);
+  /* line-height: 14.5px;
+  max-height: calc(14.5px * 3); */
+  max-height: 60px;
   text-overflow: ellipsis;
   white-space: unset !important;
 }

@@ -62,18 +62,35 @@ export const GetAllNotes = (): {
   id: string;
   content: string;
   title: string;
+  isImage: boolean;
 }[][] => {
   const storedState = localStorage.getItem("notes");
-  let allNotes: { id: string; content: string; title: string }[] = [];
-  let pastNotes: { id: string; content: string; title: string }[] = [];
-  let taskNotes: { id: string; content: string; title: string }[] = [];
+  let allNotes: {
+    id: string;
+    content: string;
+    title: string;
+    isImage: boolean;
+  }[] = [];
+  let pastNotes: {
+    id: string;
+    content: string;
+    title: string;
+    isImage: boolean;
+  }[] = [];
+  let taskNotes: {
+    id: string;
+    content: string;
+    title: string;
+    isImage: boolean;
+  }[] = [];
   if (storedState) {
     const parsedState: NoteProps[] = JSON.parse(storedState);
 
     allNotes = parsedState.map((note) => ({
       id: note.id,
-      content: note.isImage ? "Image" : note.content,
+      content: note.content,
       title: note.title || "new note",
+      isImage: note.isImage,
     }));
 
     const reminders = localStorage.getItem("reminders");
@@ -90,8 +107,9 @@ export const GetAllNotes = (): {
 
       pastNotes = pastDueNotes.map((note) => ({
         id: note.id,
-        content: note.isImage ? "Image" : note.content,
+        content: note.content,
         title: note.title || "new note",
+        isImage: note.isImage,
       }));
     }
 
@@ -108,8 +126,9 @@ export const GetAllNotes = (): {
 
       taskNotes = pendingNotes.map((note) => ({
         id: note.id,
-        content: note.isImage ? "Image" : note.content,
+        content: note.content,
         title: note.title || "new note",
+        isImage: note.isImage,
       }));
     }
   }
