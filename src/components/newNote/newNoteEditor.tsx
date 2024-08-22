@@ -96,7 +96,8 @@ export interface NewNoteEditorProps {
     isNoteLocked: boolean,
     title: string | null,
     isChecklist: boolean,
-    pinDate: Date | null
+    pinDate: Date | null,
+    isCollapsed: boolean
   ) => void;
   removeNote: (noteId: string) => void;
   noteEditorMode: "new" | "modify" | "null";
@@ -313,6 +314,7 @@ export const NewNoteEditor: React.FC<NewNoteEditorProps> = ({
         isHighlighted: false,
         isCheckList: false,
         pinDate: null,
+        isCollapsed: false,
       };
       addNote(newData);
     } else if (
@@ -327,7 +329,8 @@ export const NewNoteEditor: React.FC<NewNoteEditorProps> = ({
         isNoteLocked,
         noteTitle || null,
         isChecklist || false,
-        pinDate || null
+        pinDate || null,
+        false
       );
     }
 

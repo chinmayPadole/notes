@@ -17,6 +17,7 @@ import DateTimePickerModal from "../datepicker/datepicker";
 import { CollapsibleTextArea } from "./CollapsibleTextArea";
 import { CollapsibleImage } from "./CollapsibleImage";
 import { Task } from "./Task";
+import { transform } from "typescript";
 
 const TerminalContainer = styled.div<{
   $bgcolor: string;
@@ -85,6 +86,22 @@ const ThemeSwitcher = styled.div<{
   cursor: pointer;
 `;
 
+const CollapseButton = styled.div`
+  width: 20px;
+  height: 20px;
+  padding-left: 10px;
+  cursor: pointer;
+  & svg {
+    width: 20px;
+    height: 20px;
+  }
+`;
+
+const CollapsedView = styled.div`
+  font-weight: 900;
+  cursor: pointer;
+`;
+
 const TerminalBody = styled.div`
   padding: 20px 10px;
   letter-spacing: 0.007em !important;
@@ -99,7 +116,7 @@ const TerminalFooter = styled.div<{
 }>`
   display: grid;
   grid-template-columns: ${({ $ischecklist }) =>
-    $ischecklist === "true" ? "250px 1fr 0fr" : "1fr auto"};
+    $ischecklist === "true" ? "250px 1fr 0fr 30px" : "1fr auto 30px"};
   align-items: center;
   padding: 0 10px;
   background-color: ${(props) => props.$footercolor};
@@ -108,7 +125,7 @@ const TerminalFooter = styled.div<{
 
   @media (max-width: 500px) {
     grid-template-columns: ${({ $ischecklist }) =>
-      $ischecklist === "true" ? "180px 1fr 0fr" : "1fr auto"};
+      $ischecklist === "true" ? "180px 1fr 0fr 30px" : "1fr auto 30px"};
   }
 `;
 
@@ -201,6 +218,7 @@ export const Note: React.FC<NoteProps> = ({
   isHighlighted,
   isCheckList,
   pinDate,
+  isCollapsed,
 }): JSX.Element => {
   const { showToast } = useToast();
   const [noteTitle, setNoteTitle] = useState<string | null>(title);
@@ -227,6 +245,7 @@ export const Note: React.FC<NoteProps> = ({
   const [isFadingOut, setIsFadingOut] = useState(false);
   const [taskStatus, setTaskStatus] = useState<number[]>([]);
   const [isNotePinned, setNotePinned] = useState<Date | null>(pinDate);
+  const [isNoteCollapsed, setNoteCollapsed] = useState<boolean>(isCollapsed);
   const [lines, setLines] = useState<string[]>([]);
   const { isLocked: isPageLocked } = useSecurity();
   const [showReminderOption, setReminderOption] = useState(false);
@@ -305,7 +324,8 @@ export const Note: React.FC<NoteProps> = ({
       !isNoteLocked,
       noteTitle,
       addCheckBoxes,
-      isNotePinned
+      isNotePinned,
+      isNoteCollapsed
     );
     showToast(isNoteLocked ? "locked" : "unlocked", "#333", 3000);
   };
@@ -401,9 +421,10 @@ export const Note: React.FC<NoteProps> = ({
       !isNoteLocked,
       noteTitle,
       addCheckBoxes,
-      isNotePinned
+      isNotePinned,
+      isNoteCollapsed
     );
-  }, [addCheckBoxes, isNotePinned]);
+  }, [addCheckBoxes, isNotePinned, isNoteCollapsed]);
 
   const toggleOptions = () => {
     setShowOptions(!showOptions);
@@ -425,7 +446,8 @@ export const Note: React.FC<NoteProps> = ({
       isNoteLocked,
       noteTitle,
       addCheckBoxes,
-      isNotePinned
+      isNotePinned,
+      isNoteCollapsed
     );
   };
 
@@ -451,7 +473,8 @@ export const Note: React.FC<NoteProps> = ({
         isNoteLocked,
         noteTitle,
         addCheckBoxes,
-        isNotePinned
+        isNotePinned,
+        isNoteCollapsed
       );
     }
   }, [noteTitle]);
@@ -815,33 +838,43 @@ export const Note: React.FC<NoteProps> = ({
                 isHighlighted,
                 isCheckList: isCheckList,
                 pinDate,
+                isCollapsed,
               });
             }}
           >
-            {!isImage &&
-              (!addCheckBoxes ||
-                (addCheckBoxes &&
-                  lines.length > 0 &&
-                  taskStatus.length > 0)) && (
-                <CollapsibleTextArea
-                  text={formattedContent}
-                  maxLines={4}
-                  isCheckListMode={addCheckBoxes}
-                  taskStatus={taskStatus}
-                  // setTaskStatus={setTaskStatus}
-                  // setTaskProgress={setTaskProgress}
-                  handleTaskChange={handleTaskChange}
-                  noteId={id}
-                  taskProgress={taskProgress}
-                  lines={lines}
-                />
-              )}
-            {isImage && (
-              <CollapsibleImage
-                src={formattedContent}
-                alt="Content Corrupted 😔"
-                maxHeight={200}
-              />
+            {!isCollapsed && (
+              <>
+                {!isImage &&
+                  (!addCheckBoxes ||
+                    (addCheckBoxes &&
+                      lines.length > 0 &&
+                      taskStatus.length > 0)) && (
+                    <CollapsibleTextArea
+                      text={formattedContent}
+                      maxLines={4}
+                      isCheckListMode={addCheckBoxes}
+                      taskStatus={taskStatus}
+                      // setTaskStatus={setTaskStatus}
+                      // setTaskProgress={setTaskProgress}
+                      handleTaskChange={handleTaskChange}
+                      noteId={id}
+                      taskProgress={taskProgress}
+                      lines={lines}
+                    />
+                  )}
+                {isImage && (
+                  <CollapsibleImage
+                    src={formattedContent}
+                    alt="Content Corrupted 😔"
+                    maxHeight={200}
+                  />
+                )}
+              </>
+            )}
+            {isCollapsed && (
+              <CollapsedView onClick={() => setNoteCollapsed((prev) => !prev)}>
+                . . .
+              </CollapsedView>
             )}
           </TerminalBody>
           <TerminalFooter
@@ -862,6 +895,41 @@ export const Note: React.FC<NoteProps> = ({
                 )
               }
             />
+            <CollapseButton onClick={() => setNoteCollapsed((prev) => !prev)}>
+              <svg
+                fill="red"
+                height="200px"
+                width="200px"
+                version="1.1"
+                id="Layer_1"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 511.735 511.735"
+                stroke="red"
+                strokeWidth="2.2"
+                style={{
+                  transform: isNoteCollapsed
+                    ? "rotate(180deg)"
+                    : "rotate(0deg)",
+                }}
+              >
+                <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+                <g
+                  id="SVGRepo_tracerCarrier"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                ></g>
+                <g id="SVGRepo_iconCarrier">
+                  {" "}
+                  <g>
+                    {" "}
+                    <g>
+                      {" "}
+                      <path d="M508.788,371.087L263.455,125.753c-4.16-4.16-10.88-4.16-15.04,0L2.975,371.087c-4.053,4.267-3.947,10.987,0.213,15.04 c4.16,3.947,10.667,3.947,14.827,0l237.867-237.76l237.76,237.76c4.267,4.053,10.987,3.947,15.04-0.213 C512.734,381.753,512.734,375.247,508.788,371.087z"></path>{" "}
+                    </g>{" "}
+                  </g>{" "}
+                </g>
+              </svg>
+            </CollapseButton>
           </TerminalFooter>
         </TerminalContainer>
         {showOptions && (

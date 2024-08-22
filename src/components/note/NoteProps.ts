@@ -13,7 +13,8 @@ export interface NoteProps {
     isNoteLocked: boolean,
     title: string | null,
     isChecklist: boolean,
-    pinDate: Date | null
+    pinDate: Date | null,
+    isCollapsed: boolean
   ) => void;
   isNoteLocked: boolean;
   setNoteEditorMode: (mode: "new" | "modify" | "null") => void;
@@ -22,4 +23,5 @@ export interface NoteProps {
   isHighlighted: boolean;
   isCheckList: boolean;
   pinDate: Date | null;
+  isCollapsed: boolean;
 }

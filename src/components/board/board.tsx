@@ -82,6 +82,7 @@ export const Board: React.FC<{
         isHighlighted: false,
         isCheckList: false,
         pinDate: null,
+        isCollapsed: false,
       };
       addNote(newData);
       setTranscript("");
@@ -155,7 +156,8 @@ export const Board: React.FC<{
     isNoteLocked: boolean,
     title: string | null,
     isCheckList: boolean,
-    pinDate: Date | null
+    pinDate: Date | null,
+    isCollapsed: boolean
   ) => {
     let isSilentUpdate: boolean = false;
     const updatedNotes = notes.map((note) => {
@@ -171,6 +173,7 @@ export const Board: React.FC<{
           title: title,
           isCheckList: isCheckList,
           pinDate: pinDate,
+          isCollapsed: isCollapsed,
         };
       }
       return note;
@@ -248,6 +251,7 @@ export const Board: React.FC<{
           isHighlighted={note.id === highlightedNote}
           isCheckList={note.isCheckList}
           pinDate={note.pinDate}
+          isCollapsed={note.isCollapsed}
         />
       );
     });
