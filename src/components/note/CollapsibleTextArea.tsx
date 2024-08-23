@@ -59,36 +59,6 @@ export const CollapsibleTextArea: React.FC<CollapsibleTextAreaProps> = ({
     }
   }, [text, maxLines, isCheckListMode]);
 
-  // useEffect(() => {
-  //   if (isCheckListMode) {
-  //     const list = localStorage.getItem("tasks");
-  //     let status: number[] = [];
-  //     if (list != null) {
-  //       const task: Task[] = JSON.parse(list);
-  //       if (task.some((x) => x.noteId === noteId)) {
-  //         status =
-  //           task.find((obj) => obj.noteId === noteId)?.status ||
-  //           new Array(lines.length).fill(0);
-
-  //         if (status.length !== lines.length) {
-  //           status = new Array(lines.length).fill(0);
-  //         }
-
-  //         while (status.length < lines.length) {
-  //           status.push(0);
-  //         }
-  //         // const newTask = task.filter((item) => item.noteId !== noteId);
-  //         // localStorage.setItem("tasks", JSON.stringify(newTask));
-  //       }
-  //     }
-  //     if (status.length === 0) {
-  //       status = new Array(lines.length).fill(0);
-  //     }
-
-  //     setTaskStatus(status);
-  //   }
-  // }, [lines, isCheckListMode]);
-
   const createLinkifiedText = (text: string) => {
     const urlRegex = /(https?:\/\/[^\s]+)/g;
     return text.split(urlRegex).map((part, index) => {
@@ -109,26 +79,6 @@ export const CollapsibleTextArea: React.FC<CollapsibleTextAreaProps> = ({
       return <span key={index}>{part}</span>;
     });
   };
-
-  // const handleTaskChange = (key: number) => {
-  //   let status = [...taskStatus];
-  //   if (key >= 0 && key < status.length) {
-  //     status[key] = status[key] === 0 ? 1 : 0;
-  //   }
-  //   setTaskStatus(status);
-  //   updateTaskProgress(status);
-  // };
-
-  // const updateTaskProgress = (status: number[]) => {
-  //   let completed = status.filter((num) => num === 1).length;
-  //   let total = status.length;
-
-  //   if (completed === total && completed > 0) {
-  //     setTaskProgress(`Completed (${completed} / ${total})`);
-  //   } else {
-  //     setTaskProgress(`${completed} / ${total}`);
-  //   }
-  // };
 
   return (
     <>

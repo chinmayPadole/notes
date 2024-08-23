@@ -386,7 +386,7 @@ export const Note: React.FC<NoteProps> = ({
 
       setTaskStatus(status);
     }
-  }, [lines, addCheckBoxes]);
+  }, [lines, addCheckBoxes, isCheckList]);
 
   const handleTaskChange = (key: number) => {
     let status = [...taskStatus];
@@ -879,12 +879,16 @@ export const Note: React.FC<NoteProps> = ({
           </TerminalBody>
           <TerminalFooter
             $footercolor={colorSet.noteFooter}
-            $ischecklist={taskStatus.length > 0 ? "true" : "false"}
+            $ischecklist={
+              addCheckBoxes && taskStatus.length > 0 ? "true" : "false"
+            }
           >
             <DateElement className="selection-prevention">
               {getFormattedDate(createDt, "en-US", isMobile())}
             </DateElement>
-            {isCheckList && <TaskProgress>{taskProgress}</TaskProgress>}
+            {addCheckBoxes && taskStatus.length > 0 && (
+              <TaskProgress>{taskProgress}</TaskProgress>
+            )}
             <ThemeSwitcher
               $bgcolor={
                 colorSet.noteBackground === "#2d2d2d" ? "#ffffff" : "#2d2d2d"
