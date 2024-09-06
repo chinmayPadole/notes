@@ -5,6 +5,7 @@ import { useToast } from "../../provider/toastProvider";
 import { Reminders } from "../reminders/upcomingReminders";
 import { GenerateQRCode } from "../qrcode/qrcode";
 import { usePeer } from "../../provider/PeerContext";
+import { initDB } from "../../db/IndexedDBManager";
 
 export const FloatingMenu: React.FC<{
   setTranscript: React.Dispatch<React.SetStateAction<string>>;
@@ -325,7 +326,12 @@ export const FloatingMenu: React.FC<{
                   </a>
                 </li>
 
-                <li onClick={() => setIsReminderOpen(true)}>
+                <li
+                  onClick={async () => {
+                    await initDB();
+                    setIsReminderOpen(true);
+                  }}
+                >
                   <a>
                     <svg
                       viewBox="0 0 24 24"

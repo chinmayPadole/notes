@@ -1,8 +1,9 @@
 import React, { useEffect } from "react";
 import styled from "styled-components";
-import { getReminders } from "../../service/useTimeManager";
+import { getReminders, Timer } from "../../service/useTimeManager";
 import { formatDateTime } from "../../common/utils";
 import "./reminders.css";
+import { getData, getStoreData, Stores } from "../../db/IndexedDBManager";
 
 const Overlay = styled.div`
   position: fixed;
@@ -51,7 +52,18 @@ export const Reminders: React.FC<{ show: boolean; onClose: () => void }> = ({
 }) => {
   // const { timers, addTimer, removeTimer, clearAllTimers } = useTimerManager();
 
-  const reminders = getReminders();
+  const [reminders, setReminders] = React.useState<Timer[]>([]);
+  //const reminders = getReminders();
+
+  useEffect(() => {
+    handleGetReminders();
+  }, []);
+
+  const handleGetReminders = async () => {
+    const reminders = await getData(Stores.Reminders);
+    const parsedReminders = reminders.map((x: any) => x.value);
+    setReminders(parsedReminders);
+  };
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {

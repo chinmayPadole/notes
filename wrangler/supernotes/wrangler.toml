@@ -1,0 +1,12 @@
+name = "supernotes"
+main = "src/worker.ts"
+compatibility_date = "2024-09-05"
+workers_dev = true
+node_compat = true
+kv_namespaces = [
+  { binding = "PUSH_SUBSCRIPTION_KV", id = "0651e338de2240ff92a26822d31efa82" }
+]
+[vars]
+VAPID_PUBLIC_KEY = "BBhZ-u4r7sUTWbT7Dt5vrWU_dMvw45MrKSWNtQQbSnBLgV-MTfGXU37dadCBeMGWy27qI8j5OFQD-AbdRriF0aM"
+VAPID_PRIVATE_KEY = "SJ_IsBF5TQOpVM94eSH1wRD6b6GdMUdQ62otlhTLJcU"
+VAPID_EMAIL = "mailto:chinmaypadole97@gmail.com"

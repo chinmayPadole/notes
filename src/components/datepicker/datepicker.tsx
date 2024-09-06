@@ -185,19 +185,19 @@ export const DateTimePickerModal: React.FC<{
                 <li
                   style={{
                     background:
-                      selectedOption === "20 minutes" ? "#bed4ff" : "#7d7c7a",
-                    color: selectedOption === "20 minutes" ? "#000" : "#fff",
+                      selectedOption === "30 minutes" ? "#bed4ff" : "#7d7c7a",
+                    color: selectedOption === "30 minutes" ? "#000" : "#fff",
                   }}
                   onClick={() => {
                     setDate(
                       toLocalISOString(
-                        new Date(new Date().getTime() + 20 * 60 * 1000)
+                        new Date(new Date().getTime() + 30 * 60 * 1000)
                       )
                     );
-                    setReminderOption("20 minutes");
+                    setReminderOption("30 minutes");
                   }}
                 >
-                  In 20 minutes
+                  In 30 minutes
                 </li>
                 <li
                   style={{
@@ -215,6 +215,23 @@ export const DateTimePickerModal: React.FC<{
                   }}
                 >
                   In 1 hour
+                </li>
+                <li
+                  style={{
+                    background:
+                      selectedOption === "2 hours" ? "#bed4ff" : "#7d7c7a",
+                    color: selectedOption === "2 hours" ? "#000" : "#fff",
+                  }}
+                  onClick={() => {
+                    setDate(
+                      toLocalISOString(
+                        new Date(new Date().getTime() + 2 * 60 * 60 * 1000)
+                      )
+                    );
+                    setReminderOption("2 hours");
+                  }}
+                >
+                  In 2 hours
                 </li>
                 <li
                   style={{
@@ -262,24 +279,6 @@ export const DateTimePickerModal: React.FC<{
                   }}
                 >
                   Next week
-                </li>
-                <li
-                  onClick={() => setReminderOption("custom")}
-                  style={{
-                    background:
-                      selectedOption === "custom" ? "#bed4ff" : "#7d7c7a",
-                  }}
-                >
-                  <DateTimeInput
-                    style={{
-                      background:
-                        selectedOption === "custom" ? "#bed4ff" : "#7d7c7a",
-                      color: selectedOption === "custom" ? "#000" : "#fff",
-                    }}
-                    type="datetime-local"
-                    value={date}
-                    onChange={handleDateChange}
-                  />
                 </li>
               </ul>
             </Presets>

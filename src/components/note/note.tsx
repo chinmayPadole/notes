@@ -976,10 +976,10 @@ export const Note: React.FC<NoteProps> = ({
               </FooterAction>
               {showReminderOption && (
                 <button
-                  onClick={() => {
+                  onClick={async () => {
                     const remiderData = getReminderTime(content);
                     if (remiderData !== undefined) {
-                      addTimer(
+                      await addTimer(
                         remiderData.reminderTime,
                         !isImage
                           ? remiderData.reminderText

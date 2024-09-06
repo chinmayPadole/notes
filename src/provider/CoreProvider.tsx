@@ -62,20 +62,20 @@ export const CoreProvider = ({ children }: any) => {
     }
   };
 
-  useEffect(() => {
-    // check & fire reminders immediately
-    FireScheduledReminders();
+  // useEffect(() => {
+  //   // check & fire reminders immediately
+  //   FireScheduledReminders();
 
-    // Set up the interval to fetch data every minute
-    const interval = setInterval(() => {
-      FireScheduledReminders();
-    }, 60000); // 60000 ms = 1 minute
+  //   // Set up the interval to fetch data every minute
+  //   const interval = setInterval(() => {
+  //     FireScheduledReminders();
+  //   }, 60000); // 60000 ms = 1 minute
 
-    // Clean up the interval on component unmount
-    return () => {
-      clearInterval(interval);
-    };
-  }, []); // Empty dependency array ensures this runs once on mount and cleanup on unmount
+  //   // Clean up the interval on component unmount
+  //   return () => {
+  //     clearInterval(interval);
+  //   };
+  // }, []); // Empty dependency array ensures this runs once on mount and cleanup on unmount
 
   return <CoreContext.Provider value={{}}>{children}</CoreContext.Provider>;
 };

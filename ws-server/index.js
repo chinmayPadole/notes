@@ -1,14 +1,35 @@
-const functions = require("firebase-functions");
 const express = require("express");
 const cors = require("cors");
+const webpush = require("web-push");
+
+const port = 3000;
+
+webpush.setVapidDetails(
+  "mailto:chinmaypadole97@gmail.com",
+  "BBhZ-u4r7sUTWbT7Dt5vrWU_dMvw45MrKSWNtQQbSnBLgV-MTfGXU37dadCBeMGWy27qI8j5OFQD-AbdRriF0aM",
+  "SJ_IsBF5TQOpVM94eSH1wRD6b6GdMUdQ62otlhTLJcU"
+);
 
 const app = express();
-app.use(cors({ origin: true }));
+app.use(cors());
+app.use(express.json());
 
-// Create a simple Hello World endpoint
-app.get("/hello", (req, res) => {
-  res.send("Hello, World!");
+const subDatabase = [];
+
+app.post("/api/notifications/subscribe", (req, res) => {
+  subDatabase.push(req.body);
+
+  console.log(subDatabase);
+
+  res.json({ status: "Success", message: { data: "Subscription saved!" } });
 });
 
-// Expose Express API as a single Cloud Function:
-exports.api = functions.https.onRequest(app);
+app.get("/api/notifications/send", (req, res) => {
+  webpush.sendNotification(subDatabase[0], "Hello World");
+
+  res.json({ status: "Success", message: "Message sent to push service" });
+});
+
+app.listen(port, () => {
+  console.log(`Example app listening at http://localhost:${port}`);
+});
