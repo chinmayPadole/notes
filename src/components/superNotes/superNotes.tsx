@@ -3,6 +3,7 @@ import styled from "styled-components";
 import "./superNotes.css";
 import { Board } from "../board/board";
 import { QuickView } from "../quick-view/quickView";
+import { Header } from "../logo/logo";
 
 const Container = styled.div`
   position: relative;
@@ -49,14 +50,7 @@ export const SuperNotes: React.FC = () => {
     <Container>
       <StaticElement>
         <div className="panel">
-          <h1 className="jj">
-            <span>Super</span>
-            <span>Notes</span>
-          </h1>
-          <h1 className="jj">
-            <span>Super</span>
-            <span>Notes</span>
-          </h1>
+          {Header}
           <button className="searchBtn" onClick={() => setSearchMode(true)}>
             <svg
               viewBox="0 0 24 24"

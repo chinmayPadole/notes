@@ -3,7 +3,13 @@ import styled from "styled-components";
 import { getReminders, Timer } from "../../service/useTimeManager";
 import { formatDateTime } from "../../common/utils";
 import "./reminders.css";
-import { getData, getStoreData, Stores } from "../../db/IndexedDBManager";
+import {
+  deleteFromReminders,
+  getData,
+  getStoreData,
+  Stores,
+} from "../../db/IndexedDBManager";
+import { time } from "console";
 
 const Overlay = styled.div`
   position: fixed;
@@ -46,6 +52,17 @@ const ModalContent = styled.div`
   overflow-x: hidden;
 `;
 
+const CloseButton = styled.button`
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #fff;
+  &:hover {
+    color: red;
+  }
+`;
+
 export const Reminders: React.FC<{ show: boolean; onClose: () => void }> = ({
   show,
   onClose,
@@ -85,6 +102,11 @@ export const Reminders: React.FC<{ show: boolean; onClose: () => void }> = ({
     return null;
   }
 
+  // Handle the close button click event
+  const handleClose = async (event: Timer) => {
+    await deleteFromReminders(event.noteId);
+    handleGetReminders();
+  };
   return (
     <Overlay onClick={onClose}>
       <ModalWrapper onClick={(e) => e.stopPropagation()}>
@@ -99,15 +121,23 @@ export const Reminders: React.FC<{ show: boolean; onClose: () => void }> = ({
             .map((event, index) => {
               return (
                 <div className="reminder-container" key={index}>
-                  <div className="reminder-header">
-                    <div className="reminder-circle"></div>
-                    {formatDateTime(event.reminderDate)}
-                  </div>
+                  <div>
+                    <div className="reminder-header">
+                      <div className="reminder-circle"></div>
+                      {formatDateTime(event.reminderDate)}
+                    </div>
 
-                  <div className="reminder-content">{event.reminderText}</div>
+                    <div className="reminder-content">{event.reminderText}</div>
+                  </div>
+                  <div style={{ width: "min-content" }}>
+                    <CloseButton onClick={() => handleClose(event)}>
+                      &times;
+                    </CloseButton>
+                  </div>
                 </div>
               );
             })}
+          {!reminders.length && <div>No upcoming reminders</div>}
         </ModalContent>
       </ModalWrapper>
     </Overlay>

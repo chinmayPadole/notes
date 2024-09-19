@@ -3,6 +3,9 @@
   flex-flow: column;
   padding-bottom: 10px;
   width: 300px;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .reminder-header {

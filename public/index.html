@@ -21,6 +21,12 @@
       work correctly both with client-side routing and a non-root public URL.
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/simple-peer/9.11.1/simplepeer.min.js"
+      integrity="sha512-0f7Ahsuvr+/P2btTY4mZIw9Vl23lS6LY/Y7amdkmUg2dqsUF+cTe4QjWvj/NIBHJoGksOiqndKQuI9yzn2hB0g=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
     <title>Super Notes</title>
   </head>
   <body>
@@ -44,6 +50,23 @@
                     "Worker registration successful",
                     registration.scope
                   );
+
+                  registration.pushManager
+                    .getSubscription()
+                    .then(async (subscription) => {
+                      if (subscription === null && registration.active) {
+                        const subscription =
+                          await registration.pushManager.subscribe({
+                            userVisibleOnly: true,
+                            applicationServerKey: urlBase64ToUint8Array(
+                              "BBhZ-u4r7sUTWbT7Dt5vrWU_dMvw45MrKSWNtQQbSnBLgV-MTfGXU37dadCBeMGWy27qI8j5OFQD-AbdRriF0aM"
+                            ),
+                          });
+                        console.log(subscription);
+
+                        const response = await saveSubscription(subscription);
+                      }
+                    });
                 },
                 function (err) {
                   console.log("Worker registration failed", err);
@@ -57,6 +80,37 @@
       } else {
         console.log("Service Worker is not supported by browser.");
       }
+
+      const urlBase64ToUint8Array = (base64String) => {
+        const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
+        const base64 = (base64String + padding)
+          .replace(/\-/g, "+")
+          .replace(/_/g, "/");
+
+        const rawData = atob(base64);
+        const outputArray = new Uint8Array(rawData.length);
+
+        for (let i = 0; i < rawData.length; ++i) {
+          outputArray[i] = rawData.charCodeAt(i);
+        }
+
+        return outputArray;
+      };
+
+      const saveSubscription = async (subscription) => {
+        const response = await fetch(
+          "https://supernotes.chinmaypadole97.workers.dev/api/notifications/subscribe",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(subscription),
+          }
+        );
+
+        return response;
+      };
     </script>
   </body>
 </html>

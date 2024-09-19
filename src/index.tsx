@@ -21,9 +21,9 @@ root.render(
     <CoreProvider>
       <SecurityProvider>
         <ToastProvider>
-          <PeerProvider>
-            <Root />
-          </PeerProvider>
+          {/* <PeerProvider> */}
+          <Root />
+          {/* </PeerProvider> */}
         </ToastProvider>
       </SecurityProvider>
     </CoreProvider>

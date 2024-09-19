@@ -5,19 +5,21 @@ import { buildPushPayload, type PushSubscription, type PushMessage, type VapidKe
 
 async function generateVAPIDHeaders(subscription, payload, vapid) {
 	//const pushResponse = await sendPushNotification(subscription, payload, VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY);
+	if (subscription) {
+		const message: PushMessage = {
+			data: { type: 'CHECK_REMINDERS' },
+			options: {
+				ttl: 60,
+			},
+		};
 
-	const message: PushMessage = {
-		data: { type: 'CHECK_REMINDERS' },
-		options: {
-			ttl: 60,
-		},
-	};
-
-	const test = await buildPushPayload(message, subscription, vapid);
-	const res = await fetch(subscription.endpoint, test);
-	console.log(subscription);
-	console.log(res.status);
-	return res.status;
+		const test = await buildPushPayload(message, subscription, vapid);
+		const res = await fetch(subscription.endpoint, test);
+		console.log(subscription);
+		console.log(res.status);
+		return res.status;
+	}
+	return 401;
 }
 
 export interface Env {

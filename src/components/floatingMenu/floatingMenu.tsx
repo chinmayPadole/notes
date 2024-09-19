@@ -3,9 +3,8 @@ import "./floatingMenu.css";
 import { useSecurity } from "../../provider/securityProvider";
 import { useToast } from "../../provider/toastProvider";
 import { Reminders } from "../reminders/upcomingReminders";
-import { GenerateQRCode } from "../qrcode/qrcode";
-import { usePeer } from "../../provider/PeerContext";
 import { initDB } from "../../db/IndexedDBManager";
+import { ShareNotes } from "../shareNotes/shareNotes";
 
 export const FloatingMenu: React.FC<{
   setTranscript: React.Dispatch<React.SetStateAction<string>>;
@@ -15,7 +14,7 @@ export const FloatingMenu: React.FC<{
 }> = ({ setTranscript, setVoice, setNoteEditorMode, isVoice }) => {
   const { showToast } = useToast();
   const [isMenuOpen, setMenuVisibility] = useState(false);
-  const [isQRCodeVisible, setQRCodeVisibility] = useState(false);
+  const [isShareMenuVisible, setShareMenuVisibility] = useState(false);
   const { isLocked, toggleLock } = useSecurity();
 
   /* Voice Region */
@@ -25,8 +24,6 @@ export const FloatingMenu: React.FC<{
   const [hasPermission, setHasPermission] = useState<boolean>(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
-
-  const { syncNotes, isConnectionEstablished, tryRetry } = usePeer();
 
   const requestMicrophonePermission = () => {
     navigator.mediaDevices
@@ -380,13 +377,8 @@ export const FloatingMenu: React.FC<{
                 </li>
                 <li
                   onClick={() => {
-                    if (isConnectionEstablished) {
-                      syncNotes();
-                      setQRCodeVisibility(false);
-                    } else {
-                      setQRCodeVisibility(true);
-                      tryRetry();
-                    }
+                    console.log("ENABLED");
+                    setShareMenuVisibility(true);
                   }}
                 >
                   <a>
@@ -428,10 +420,10 @@ export const FloatingMenu: React.FC<{
         />
       )}
 
-      {isQRCodeVisible && !isConnectionEstablished && (
-        <GenerateQRCode
-          show={isQRCodeVisible}
-          onClose={() => setQRCodeVisibility(false)}
+      {isShareMenuVisible && (
+        <ShareNotes
+          show={isShareMenuVisible}
+          onClose={() => setShareMenuVisibility(false)}
         />
       )}
     </>
