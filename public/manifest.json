@@ -16,14 +16,40 @@
       "purpose": "any"
     },
     {
-      "src": "icons-144.png",
+      "src": "maskable-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "maskable-icon-144.png",
       "sizes": "144x144",
       "type": "image/png",
       "purpose": "maskable"
+    },
+    {
+      "src": "monochrome_512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "monochrome"
+    },
+    {
+      "src": "monochrome_144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "monochrome"
     }
   ],
-  "start_url": ".",
+  "start_url": ".https://super-notes-ed64f.web.app/",
   "display": "standalone",
   "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "background_color": "#ffffff",
+  "dir": "ltr",
+  "lang": "en",
+  "orientation": "portrait",
+  "categories": ["personalization", "productivity", "utilities"],
+  "id": "chinmay_padole_notes",
+  "launch_handler": {
+    "client_mode": "focus-existing"
+  }
 }

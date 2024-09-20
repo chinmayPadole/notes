@@ -10,7 +10,7 @@ export enum Stores {
 export const initDB = (): Promise<boolean> => {
   return new Promise((resolve) => {
     // open the connection
-    const request = indexedDB.open("supernotes");
+    const request = indexedDB.open("supernotes", version);
 
     request.onupgradeneeded = () => {
       db = request.result;
@@ -74,7 +74,7 @@ export const addData = <T>(
 
 export const getStoreData = <T>(storeName: Stores): Promise<T[]> => {
   return new Promise((resolve) => {
-    const request = indexedDB.open("supernotes");
+    const request = indexedDB.open("supernotes", version);
 
     request.onsuccess = () => {
       //console.log("request.onsuccess - getAllData");
@@ -91,7 +91,7 @@ export const getStoreData = <T>(storeName: Stores): Promise<T[]> => {
 
 export async function getData<T>(storeName: Stores): Promise<T[]> {
   return new Promise((resolve, reject) => {
-    const request = indexedDB.open("supernotes");
+    const request = indexedDB.open("supernotes", version);
 
     request.onsuccess = () => {
       if (request.readyState === "done") {
@@ -114,7 +114,7 @@ export async function getData<T>(storeName: Stores): Promise<T[]> {
 
 export async function deleteFromReminders(noteId: string) {
   return new Promise((resolve, reject) => {
-    const request = indexedDB.open("supernotes");
+    const request = indexedDB.open("supernotes", version);
 
     request.onsuccess = () => {
       if (request.readyState === "done") {

@@ -3,18 +3,14 @@ import { RandomAvatar } from "../randomAvatar/randomAvatar";
 import "./sharenotes.css";
 import { manageNotesSync } from "../../common/notesDataManagement";
 import { useToast } from "../../provider/toastProvider";
+import { getData, Stores } from "../../db/IndexedDBManager";
+import { usePeer } from "../../provider/PeerContext";
 const Peer = (window as any).SimplePeer;
 
 interface PeerInfo {
   id: string;
 }
 
-type Avatar = {
-  id: number;
-  top: number;
-  left: number;
-  size: number;
-};
 export const ShareNotes: React.FC<{
   show: boolean;
   onClose: () => void;
@@ -26,11 +22,8 @@ export const ShareNotes: React.FC<{
   const wsRef = useRef<WebSocket | null>(null);
   const peersRef = useRef<{ [key: string]: any }>({}); // Store peer objects for each connection
 
-  const rippleRef = useRef<HTMLDivElement>(null);
-  const [avatars, setAvatars] = useState<Avatar[]>([]);
-
   const { showToast } = useToast();
-
+  const { setDataRecieved } = usePeer();
   // WebSocket connection and signaling setup
   useEffect(() => {
     let retryCount = 0;
@@ -41,19 +34,23 @@ export const ShareNotes: React.FC<{
       const ws = new WebSocket("wss://super-notes-signalling-server.glitch.me");
       wsRef.current = ws;
 
+      // const userNameData = (await getData(Stores.Username)) as any;
+      // const userName = userNameData[0].value.username;
       ws.onopen = () => {
-        console.log(`Connected to WebSocket server with ID: ${myId.current}`);
-        ws.send(JSON.stringify({ type: "join", id: myId.current }));
+        // console.log(`Connected to WebSocket server with ID: ${myId.current}`);
+        ws.send(
+          JSON.stringify({ type: "join", id: myId.current, name: "test" })
+        );
       };
 
       ws.onerror = (error) => {
-        console.log("Retrying");
+        //console.log("Retrying");
         retryConnection();
       };
 
       ws.onmessage = (message) => {
         const data = JSON.parse(message.data);
-        console.log(data);
+        //console.log(data);
         switch (data.type) {
           case "peer-list":
             setPeers(
@@ -63,17 +60,6 @@ export const ShareNotes: React.FC<{
             );
             //setMyId(data.selfId);
             myId.current = data.selfId;
-            if (rippleRef.current) {
-              const rect = rippleRef.current.getBoundingClientRect();
-              const centralAvatar: Avatar = {
-                id: 0,
-                top: rect.top,
-                left: rect.left,
-                size: 120,
-              };
-
-              avatars.push(centralAvatar);
-            }
             break;
           case "new-peer":
             if (myId.current !== null) {
@@ -106,17 +92,17 @@ export const ShareNotes: React.FC<{
       if (retryCount < maxRetries) {
         retryCount++;
         const delay = retryDelay * retryCount;
-        console.log(
-          `Attempting to reconnect... Retry #${retryCount} in ${
-            delay / 1000
-          } seconds.`
-        );
+        // console.log(
+        //   `Attempting to reconnect... Retry #${retryCount} in ${
+        //     delay / 1000
+        //   } seconds.`
+        // );
 
         setTimeout(() => {
           connectWebSocket();
         }, delay);
       } else {
-        console.error("Max retries reached. Could not reconnect to WebSocket.");
+        // console.error("Max retries reached. Could not reconnect to WebSocket.");
       }
     };
 
@@ -141,14 +127,14 @@ export const ShareNotes: React.FC<{
   // Connect to a peer as an initiator
   const connectToPeer = (peerId: string) => {
     if (peersRef.current[peerId]) {
-      console.log("Already connected to this peer.");
+      //  console.log("Already connected to this peer.");
       return;
     }
 
     const peer = new Peer({ initiator: true, trickle: false });
 
     peer.on("signal", (signal: any) => {
-      console.log("Connect to peer, SENDING SIGNAL", signal);
+      // console.log("Connect to peer, SENDING SIGNAL", signal);
       wsRef.current?.send(
         JSON.stringify({
           type: "signal",
@@ -160,14 +146,14 @@ export const ShareNotes: React.FC<{
     });
 
     peer.on("connect", () => {
-      console.log("Connected to peer:", peerId);
+      // console.log("Connected to peer:", peerId);
       setConnectedPeers((prev) => [...prev, peerId]); // Mark the peer as connected
 
       sendMessageToPeer(peerId);
     });
 
     peer.on("data", (data: any) => {
-      console.log("Received message from peer:", data.toString());
+      // console.log("Received message from peer:", data.toString());
     });
 
     peersRef.current[peerId] = peer;
@@ -176,13 +162,13 @@ export const ShareNotes: React.FC<{
   // Handle signals from other peers (responder)
   const handleSignal = (peerId: string, signal: any) => {
     let peer = peersRef.current[peerId];
-    console.log("Received signal from peer:", peerId);
+    // console.log("Received signal from peer:", peerId);
     if (!peer) {
-      console.log("Creating new peer object for", peerId);
+      // console.log("Creating new peer object for", peerId);
       peer = new Peer({ initiator: false, trickle: false });
 
       peer.on("signal", (signal: any) => {
-        console.log("Inside handle signal on Signal", myId.current, signal);
+        // console.log("Inside handle signal on Signal", myId.current, signal);
         wsRef.current?.send(
           JSON.stringify({
             type: "signal",
@@ -194,16 +180,18 @@ export const ShareNotes: React.FC<{
       });
 
       peer.on("connect", () => {
-        console.log("Connected to peer:", peerId);
+        //  console.log("Connected to peer:", peerId);
         setConnectedPeers((prev) => [...prev, peerId]);
       });
 
       peer.on("data", (data: any) => {
-        console.log("Received message from peer:", data.toString());
+        //    console.log("Received message from peer:", data.toString());
 
         const parsedData = JSON.parse(data.toString());
         if (parsedData.type === "syncNotes") {
           manageNotesSync(parsedData.data);
+          console.log("synced notes");
+          setDataRecieved(true);
           showToast("synced", "#333", 3000);
           handleClose();
           if (wsRef.current) {
@@ -220,7 +208,7 @@ export const ShareNotes: React.FC<{
 
       peersRef.current[peerId] = peer;
     }
-    console.log("Forwarding signal to peer:", peerId, signal);
+    //console.log("Forwarding signal to peer:", peerId, signal);
     peer.signal(signal);
   };
 
@@ -231,9 +219,9 @@ export const ShareNotes: React.FC<{
       const notes = localStorage.getItem("notes");
       const mesage = { type: "syncNotes", data: notes };
       peer.send(JSON.stringify(mesage)); // Send the message via WebRTC
-      console.log(`Sent message to peer ${peerId}: ${notes}`);
+      // console.log(`Sent message to peer ${peerId}: ${notes}`);
     } else {
-      console.log(`Cannot send message, peer ${peerId} is not connected.`);
+      //console.log(`Cannot send message, peer ${peerId} is not connected.`);
     }
   };
 
@@ -261,7 +249,7 @@ export const ShareNotes: React.FC<{
         textAlign: "center",
       }}
     >
-      <div id="ripples_wrapper" ref={rippleRef}>
+      <div id="ripples_wrapper">
         <div className="circles">
           <div className="circle1"></div>
           <div className="circle2"></div>
@@ -270,7 +258,7 @@ export const ShareNotes: React.FC<{
         {myId.current && myId.current != null && (
           <div id="myavatar">
             <RandomAvatar />
-            <b>( You )</b>
+            <b> You ({myId.current}) </b>
           </div>
         )}
       </div>

@@ -41,15 +41,17 @@ export const Board: React.FC<{
   const [noteEditorMode, setNoteEditorMode] = useState<
     "new" | "modify" | "null"
   >("null");
-  const { isDataReceived, syncNotes } = usePeer();
+  const { isDataReceived, setDataRecieved } = usePeer();
   const { showToast } = useToast();
 
   const lastTap = useRef<number | null>(null);
 
   useEffect(() => {
     if (isDataReceived > 0) {
+      console.log("Data recieved");
       refreshNotes();
-      showToast("synced", "#30DB5B", 3000, "info");
+      showToast("updated", "#30DB5B", 3000, "info");
+      setDataRecieved(false);
     }
   }, [isDataReceived]);
 
@@ -134,19 +136,16 @@ export const Board: React.FC<{
   const updateStateAndLocalStorage = (newData: NoteProps[]) => {
     setNotes(newData);
     localStorage.setItem("notes", JSON.stringify(newData));
-    syncNotes();
   };
 
   const removeNote = (noteId: string) => {
     const newNoteData = notes.filter((data) => data.id !== noteId);
     updateStateAndLocalStorage(newNoteData);
-    syncNotes();
   };
 
   const addNote = (noteData: NoteProps) => {
     const updatedData = [...notes, noteData];
     updateStateAndLocalStorage(updatedData);
-    syncNotes();
   };
 
   const updateNote = (
