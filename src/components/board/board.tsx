@@ -41,17 +41,16 @@ export const Board: React.FC<{
   const [noteEditorMode, setNoteEditorMode] = useState<
     "new" | "modify" | "null"
   >("null");
-  const { isDataReceived, setDataRecieved } = usePeer();
+  const { isDataReceived, resetDataRecieved } = usePeer();
   const { showToast } = useToast();
 
   const lastTap = useRef<number | null>(null);
 
   useEffect(() => {
     if (isDataReceived > 0) {
-      console.log("Data recieved");
       refreshNotes();
-      showToast("updated", "#30DB5B", 3000, "info");
-      setDataRecieved(false);
+      showToast("synced", "#30DB5B", 3000, "info");
+      resetDataRecieved();
     }
   }, [isDataReceived]);
 

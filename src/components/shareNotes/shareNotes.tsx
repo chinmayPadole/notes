@@ -190,9 +190,7 @@ export const ShareNotes: React.FC<{
         const parsedData = JSON.parse(data.toString());
         if (parsedData.type === "syncNotes") {
           manageNotesSync(parsedData.data);
-          console.log("synced notes");
-          setDataRecieved(true);
-          showToast("synced", "#333", 3000);
+
           handleClose();
           if (wsRef.current) {
             wsRef.current.send(
@@ -204,6 +202,11 @@ export const ShareNotes: React.FC<{
             );
           }
         }
+      });
+
+      peer.on("error", (error: any) => {
+        console.log("Peer error:", error);
+        setDataRecieved();
       });
 
       peersRef.current[peerId] = peer;

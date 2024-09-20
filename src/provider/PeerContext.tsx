@@ -7,7 +7,8 @@ import React, {
 } from "react";
 
 const PeerContext = createContext({
-  setDataRecieved: (isReceived: boolean) => {},
+  setDataRecieved: () => {},
+  resetDataRecieved: () => {},
   isDataReceived: 0,
 });
 
@@ -15,15 +16,20 @@ export const usePeer = () => useContext(PeerContext);
 
 export const PeerProvider = ({ children }: any) => {
   const [isDataReceived, setIsDataReceived] = useState<number>(0);
-  const setDataRecieved = (isReceived: boolean) => {
-    setIsDataReceived(isReceived === true ? 1 : 0);
+  const setDataRecieved = () => {
+    setIsDataReceived(1);
+  };
+
+  const resetDataRecieved = () => {
+    setIsDataReceived(0);
   };
 
   return (
     <PeerContext.Provider
       value={{
-        isDataReceived,
         setDataRecieved,
+        resetDataRecieved,
+        isDataReceived,
       }}
     >
       {children}
