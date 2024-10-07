@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import "./note.css";
 import {
+  base64ToBlob,
   getFormattedDate,
   isMobile,
   maskString,
@@ -17,7 +18,6 @@ import DateTimePickerModal from "../datepicker/datepicker";
 import { CollapsibleTextArea } from "./CollapsibleTextArea";
 import { CollapsibleImage } from "./CollapsibleImage";
 import { Task } from "./Task";
-import { transform } from "typescript";
 
 const TerminalContainer = styled.div<{
   $bgcolor: string;
@@ -498,16 +498,33 @@ export const Note: React.FC<NoteProps> = ({
 
   const ShareNotes = async () => {
     try {
-      await navigator.share({
-        title: "Note",
-        text: title || "",
-      });
+      if (!isImage) {
+        await navigator.share({
+          title: "Note",
+          text: content || "",
+        });
 
-      console.log({
-        title: title || "New Note",
-        text: content,
-      });
-      console.log("Note shared successfully!");
+        console.log({
+          title: "via Super Notes",
+          text: content || "",
+        });
+      } else {
+        const blob = base64ToBlob(content, "image/png"); // Assuming the image is PNG
+
+        // Convert Blob to File (optional but provides a file name)
+        const file = new File([blob], "shared-image-via-supernotes.png", {
+          type: "image/png",
+        });
+
+        // Check if the browser can share files
+
+        await navigator.share({
+          title: "Shared Image via Super Notes",
+          text: "Check out this image!",
+          files: [file], // Share the file
+        });
+      }
+      //console.log("Note shared successfully!");
     } catch (error) {
       console.error("Error sharing the note:", error);
     }

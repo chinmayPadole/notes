@@ -163,3 +163,15 @@ export const isDateOlderThanCurrent = (givenDate: Date): boolean => {
   const currentDate = new Date();
   return date < currentDate;
 };
+
+export const base64ToBlob = (base64: string, contentType: string): Blob => {
+  const byteCharacters = atob(base64.split(",")[1]);
+  const byteArrays = [];
+
+  for (let i = 0; i < byteCharacters.length; i++) {
+    byteArrays.push(byteCharacters.charCodeAt(i));
+  }
+
+  const byteArray = new Uint8Array(byteArrays);
+  return new Blob([byteArray], { type: contentType });
+};
