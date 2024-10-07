@@ -503,11 +503,6 @@ export const Note: React.FC<NoteProps> = ({
           title: "Note",
           text: content || "",
         });
-
-        console.log({
-          title: "via Super Notes",
-          text: content || "",
-        });
       } else {
         const blob = base64ToBlob(content, "image/png"); // Assuming the image is PNG
 

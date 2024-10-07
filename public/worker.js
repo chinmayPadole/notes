@@ -25,42 +25,46 @@ self.addEventListener("push", async function (event) {
 
     //const reminders = dueReminders(remindersData);
     const reminders = remindersData;
-    reminders.forEach((reminder) => {
-      const options = {
-        body: reminder.value.reminderText,
-        icon: "./icons-144.png",
-        badge: "./icons-144.png",
-        image: reminder.value.reminderImage,
-        requireInteraction: true,
-        title: "Super notes Reminder!",
-        priority: "high",
-        renotify: true,
-        tag: "new-reminder",
-        actions: [
-          {
-            action: "view",
-            title: "View",
+    if (reminders.length > 0) {
+      reminders.forEach((reminder) => {
+        const options = {
+          body: reminder.value.reminderText,
+          icon: "./icons-144.png",
+          badge: "./icons-144.png",
+          image: reminder.value.reminderImage,
+          requireInteraction: true,
+          title: "Super notes Reminder!",
+          priority: "high",
+          renotify: true,
+          tag: "new-reminder",
+          actions: [
+            {
+              action: "view",
+              title: "View",
+            },
+            {
+              action: "snooze",
+              title: "Snooze",
+            },
+            {
+              action: "dismiss",
+              title: "Dismiss",
+            },
+          ],
+          data: {
+            noteId: reminder.value.noteId,
           },
-          {
-            action: "snooze",
-            title: "Snooze",
-          },
-          {
-            action: "dismiss",
-            title: "Dismiss",
-          },
-        ],
-        data: {
-          noteId: reminder.value.noteId,
-        },
-        timestamp: reminder.value.reminderDate,
-      };
+          timestamp: reminder.value.reminderDate,
+        };
 
-      self.registration.showNotification(
-        `Hey ${username} Super notes Reminder!`,
-        options
-      );
-    });
+        self.registration.showNotification(
+          `Hey ${username} Super notes Reminder!`,
+          options
+        );
+      });
+    } else {
+      event.waitUntil(Promise.resolve());
+    }
 
     // Delete sent reminders
     //await deleteFromIndexedDB(reminders);
