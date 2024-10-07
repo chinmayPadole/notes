@@ -502,6 +502,11 @@ export const Note: React.FC<NoteProps> = ({
         title: "Note",
         text: title || "",
       });
+
+      console.log({
+        title: title || "New Note",
+        text: content,
+      });
       console.log("Note shared successfully!");
     } catch (error) {
       console.error("Error sharing the note:", error);
