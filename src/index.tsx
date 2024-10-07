@@ -6,6 +6,7 @@ import { ToastProvider } from "./provider/toastProvider";
 import { SecurityProvider } from "./provider/securityProvider";
 import { PeerProvider } from "./provider/PeerContext";
 import { CoreProvider } from "./provider/CoreProvider";
+import App from "./app";
 
 declare global {
   interface Window {
@@ -22,7 +23,8 @@ root.render(
       <SecurityProvider>
         <ToastProvider>
           <PeerProvider>
-            <Root />
+            {/* <Root /> */}
+            <App />
           </PeerProvider>
         </ToastProvider>
       </SecurityProvider>

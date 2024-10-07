@@ -227,6 +227,8 @@ export const Note: React.FC<NoteProps> = ({
 
   const [addCheckBoxes, toggleCheckList] = useState<boolean>(isCheckList);
 
+  const [isShareButtonVisible, enableShareButton] = useState<boolean>(false);
+
   const [formattedContent, setFormattedContent] = useState<string>(content);
   const [colorSet, setActiveColorSet] = useState<{
     noteHeader: string;
@@ -292,6 +294,10 @@ export const Note: React.FC<NoteProps> = ({
   };
 
   useEffect(() => {
+    if (!!navigator.share) {
+      enableShareButton(true);
+    }
+
     return () => {
       unmount();
     };
@@ -487,6 +493,18 @@ export const Note: React.FC<NoteProps> = ({
     ) {
       e.preventDefault();
       e.currentTarget.innerText.slice(0, 30);
+    }
+  };
+
+  const ShareNotes = async () => {
+    try {
+      await navigator.share({
+        title: "Note",
+        text: title || "",
+      });
+      console.log("Note shared successfully!");
+    } catch (error) {
+      console.error("Error sharing the note:", error);
     }
   };
 
@@ -974,6 +992,48 @@ export const Note: React.FC<NoteProps> = ({
                 />
                 <span>Pin note</span>
               </FooterAction>
+              {isShareButtonVisible && (
+                <FooterAction>
+                  <span>
+                    <svg
+                      onClick={ShareNotes}
+                      viewBox="0 0 24.00 24.00"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                      style={{
+                        width: "25px",
+                        height: "25px",
+                        cursor: "pointer",
+                      }}
+                    >
+                      <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+                      <g
+                        id="SVGRepo_tracerCarrier"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      ></g>
+                      <g id="SVGRepo_iconCarrier">
+                        {" "}
+                        <path
+                          d="M20 13L20 18C20 19.1046 19.1046 20 18 20L6 20C4.89543 20 4 19.1046 4 18L4 13"
+                          stroke="#000000"
+                          strokeWidth="0.9600000000000002"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        ></path>{" "}
+                        <path
+                          d="M16 8L12 4M12 4L8 8M12 4L12 16"
+                          stroke="#000000"
+                          strokeWidth="0.9600000000000002"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        ></path>{" "}
+                      </g>
+                    </svg>
+                  </span>
+                </FooterAction>
+              )}
+
               {showReminderOption && (
                 <button
                   onClick={async () => {
