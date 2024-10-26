@@ -1,0 +1,36 @@
+:root {
+  --bg: rgb(60, 55, 61);
+  --inputBG: rgba(255, 255, 255, 0.25);
+  --primary: rgba(99, 238, 219, 0.7);
+  --focus: rgba(255, 255, 255, 0.05);
+}
+
+.pinSet {
+  display: flex;
+  gap: 0.75rem;
+  z-index: 5;
+  justify-content: center;
+  width: 412px;
+
+  & input {
+    width: 50px;
+    font: 1rem/3.5 helvetica, sans-serif;
+    color: white;
+    background-color: var(--inputBG);
+    text-align: center;
+    border: none;
+    border-radius: 0.5rem;
+    outline: none;
+    transition: background-color 0.25s, transform 0.25s;
+
+    &:hover,
+    &:focus {
+      border: 2px solid var(--primary);
+    }
+
+    &:focus {
+      background-color: var(--focus);
+      transform: scale(1.1);
+    }
+  }
+}

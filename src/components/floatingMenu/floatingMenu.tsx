@@ -5,17 +5,27 @@ import { useToast } from "../../provider/toastProvider";
 import { Reminders } from "../reminders/upcomingReminders";
 import { initDB } from "../../db/IndexedDBManager";
 import { ShareNotes } from "../shareNotes/shareNotes";
+import { SetLockPin } from "../lock/setlock";
 
 export const FloatingMenu: React.FC<{
   setTranscript: React.Dispatch<React.SetStateAction<string>>;
   setVoice: (isVoiceOn: boolean) => void;
   isVoice: boolean;
   setNoteEditorMode: (mode: "new" | "modify" | "null") => void;
-}> = ({ setTranscript, setVoice, setNoteEditorMode, isVoice }) => {
+  preventNewNoteDetection: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsSetLockOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}> = ({
+  setTranscript,
+  setVoice,
+  setNoteEditorMode,
+  isVoice,
+  preventNewNoteDetection,
+  setIsSetLockOpen,
+}) => {
   const { showToast } = useToast();
   const [isMenuOpen, setMenuVisibility] = useState(false);
   const [isShareMenuVisible, setShareMenuVisibility] = useState(false);
-  const { isLocked, toggleLock } = useSecurity();
+  const { isPageLocked } = useSecurity();
 
   /* Voice Region */
   const [isListening, setIsListening] = useState<boolean>(false);
@@ -268,9 +278,14 @@ export const FloatingMenu: React.FC<{
                     </svg>
                   </a>
                 </li>
-                <li onClick={() => toggleLock(!isLocked)}>
+                <li
+                  onClick={() => {
+                    preventNewNoteDetection(true);
+                    setIsSetLockOpen(true);
+                  }}
+                >
                   <a>
-                    {isLocked && (
+                    {isPageLocked && (
                       <svg
                         viewBox="0 0 24 24"
                         fill="none"
@@ -295,7 +310,7 @@ export const FloatingMenu: React.FC<{
                         </g>
                       </svg>
                     )}
-                    {!isLocked && (
+                    {!isPageLocked && (
                       <svg
                         viewBox="0 0 24 24"
                         fill="none"

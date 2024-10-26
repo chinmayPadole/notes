@@ -304,7 +304,7 @@ export const NewNoteEditor: React.FC<NewNoteEditorProps> = ({
         createDt: new Date(),
         color: "white",
         isImage: isImage,
-        title: null, // SOME DAY WILL USE text summarization here
+        title: "untitled", // SOME DAY WILL USE text summarization here
         removeNote: removeNote,
         updateNote: updateNote,
         isNoteLocked: false,

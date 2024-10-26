@@ -12,6 +12,8 @@ import { usePeer } from "../../provider/PeerContext";
 import { useToast } from "../../provider/toastProvider";
 import { RequestNotificationPermission } from "../requestNotification/requestNotifications";
 import { Dropdown } from "../dropdown/dropdown";
+import { SetLockPin } from "../lock/setlock";
+import { useSecurity } from "../../provider/securityProvider";
 
 export const Board: React.FC<{
   isSearchMode: boolean;
@@ -24,6 +26,9 @@ export const Board: React.FC<{
   const [searchText, setSearchText] = useState<string>("");
   const [isNewNoteDetectionDisabled, preventNewNoteDetection] =
     useState<boolean>(false);
+
+  const [isSetLockOpen, setIsSetLockOpen] = useState(false);
+  const { toggleLock, openLockPinModal } = useSecurity();
 
   const [highlightedNote, setHighlightedNote] = useState<string | null>(null);
 
@@ -55,7 +60,7 @@ export const Board: React.FC<{
   }, [isDataReceived]);
 
   useEffect(() => {
-    if (notes !== null && notes.length > 0) {
+    if (notes !== null) {
       setNoteElements(getNotesElement());
     }
   }, [notes, isSearchMode, searchText, selectedSortOption]);
@@ -182,26 +187,6 @@ export const Board: React.FC<{
   const getNotesElement = () => {
     let source = [...notes];
 
-    // source = source.sort(
-    //   (a, b) => new Date(b.createDt).getTime() - new Date(a.createDt).getTime()
-    // );
-
-    // source = source.sort((a, b) => {
-    //   if (a.pinDate && b.pinDate) {
-    //     // Both have pinDate, sort by pinDate in descending order
-    //     return new Date(b.pinDate).getTime() - new Date(a.pinDate).getTime();
-    //   } else if (a.pinDate) {
-    //     // Only a has pinDate, a comes first
-    //     return -1;
-    //   } else if (b.pinDate) {
-    //     // Only b has pinDate, b comes first
-    //     return 1;
-    //   } else {
-    //     // Neither has pinDate, sort by createDate in descending order
-    //     return new Date(b.createDt).getTime() - new Date(a.createDt).getTime();
-    //   }
-    // });
-
     source = source.sort((a, b) => {
       const orderMultiplier = selectedSortOption === "Oldest" ? 1 : -1;
 
@@ -266,6 +251,10 @@ export const Board: React.FC<{
     }
   };
 
+  useEffect(() => {
+    console.log(openLockPinModal, isSetLockOpen || openLockPinModal);
+  }, [openLockPinModal]);
+
   return (
     <>
       <div
@@ -325,11 +314,22 @@ export const Board: React.FC<{
         />
       )}
 
+      {(isSetLockOpen || openLockPinModal) && (
+        <SetLockPin
+          show={isSetLockOpen}
+          onClose={() => setIsSetLockOpen(false)}
+          preventNewNoteDetection={preventNewNoteDetection}
+          toggleLock={toggleLock}
+        />
+      )}
+
       <FloatingMenu
         setTranscript={setTranscript}
         setVoice={setVoiceOn}
         setNoteEditorMode={setNoteEditorMode}
         isVoice={isVoiceOn}
+        preventNewNoteDetection={preventNewNoteDetection}
+        setIsSetLockOpen={setIsSetLockOpen}
       />
       <Wave
         showWave={isVoiceOn}
